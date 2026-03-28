@@ -11,7 +11,7 @@ function MacOSTitleBar({ variant }: { variant: 'light' | 'dark' }) {
         top: 0,
         left: 0,
         width: '100%',
-        height: '36px',
+        height: '28px',
         background: bgColor,
         borderTopLeftRadius: '10px',
         borderTopRightRadius: '10px',
@@ -19,20 +19,23 @@ function MacOSTitleBar({ variant }: { variant: 'light' | 'dark' }) {
         borderBottom: `1px solid ${borderColor}`,
         display: 'flex',
         alignItems: 'center',
-        paddingLeft: '12px',
+        paddingLeft: '20px',
         gap: '8px',
         pointerEvents: 'none',
         zIndex: 10,
       }}
     >
       <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-        <circle cx="6" cy="6" r="5.5" fill="#FF5F57" stroke="rgba(0,0,0,0.12)" strokeWidth="0.5" />
+        <circle cx="6" cy="6" r="6" fill="#FF5F57" />
+        <circle cx="6" cy="6" r="5.5" fill="transparent" stroke="#E0443E" strokeWidth="1" />
       </svg>
       <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-        <circle cx="6" cy="6" r="5.5" fill="#FEBC2E" stroke="rgba(0,0,0,0.12)" strokeWidth="0.5" />
+        <circle cx="6" cy="6" r="6" fill="#FFBD2E" />
+        <circle cx="6" cy="6" r="5.5" fill="transparent" stroke="#DEA123" strokeWidth="1" />
       </svg>
       <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-        <circle cx="6" cy="6" r="5.5" fill="#28C840" stroke="rgba(0,0,0,0.12)" strokeWidth="0.5" />
+        <circle cx="6" cy="6" r="6" fill="#28C840" />
+        <circle cx="6" cy="6" r="5.5" fill="transparent" stroke="#1AAB29" strokeWidth="1" />
       </svg>
     </div>
   )
@@ -51,7 +54,6 @@ function IPhoneFrame() {
         zIndex: 10,
       }}
     >
-      {/* Bezel border */}
       <div
         style={{
           position: 'absolute',
@@ -61,7 +63,6 @@ function IPhoneFrame() {
           pointerEvents: 'none',
         }}
       />
-      {/* Notch */}
       <div
         style={{
           position: 'absolute',
@@ -75,7 +76,6 @@ function IPhoneFrame() {
           borderBottomRightRadius: '16px',
         }}
       />
-      {/* Home indicator */}
       <div
         style={{
           position: 'absolute',

@@ -24,12 +24,12 @@ export const BACKGROUND_PRESETS: BackgroundPreset[] = [
   { id: 'pure-white', label: 'Paper', background: { type: 'solid', value: '#FFFFFF' } },
   { id: 'soft-gray', label: 'Concrete', background: { type: 'solid', value: '#EEEEED' } },
   { id: 'midnight', label: 'Midnight', background: { type: 'solid', value: '#1A1A18' } },
-  { id: 'ocean', label: 'Deep Sea', background: { type: 'gradient', value: 'linear-gradient(135deg, #667eea, #764ba2)' } },
-  { id: 'sunset', label: 'Dusk', background: { type: 'gradient', value: 'linear-gradient(135deg, #f093fb, #f5576c)' } },
-  { id: 'aurora', label: 'Nordic', background: { type: 'gradient', value: 'linear-gradient(135deg, #4facfe, #00f2fe)' } },
+  { id: 'ocean', label: 'Deep Sea', background: { type: 'gradient', value: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' } },
+  { id: 'sunset', label: 'Dusk', background: { type: 'gradient', value: 'linear-gradient(145deg, #f093fb 0%, #c471f5 50%, #fa71cd 100%)' } },
+  { id: 'aurora', label: 'Nordic', background: { type: 'gradient', value: 'linear-gradient(120deg, #4facfe 0%, #a8edea 55%, #fed6e3 100%)' } },
   { id: 'peach', label: 'Warm', background: { type: 'gradient', value: 'linear-gradient(135deg, #ffecd2, #fcb69f)' } },
-  { id: 'forest', label: 'Moss', background: { type: 'gradient', value: 'linear-gradient(135deg, #134e5e, #71b280)' } },
-  { id: 'rose', label: 'Blush', background: { type: 'gradient', value: 'linear-gradient(135deg, #f8b4c8, #ee82a2)' } },
+  { id: 'forest', label: 'Moss', background: { type: 'gradient', value: 'linear-gradient(150deg, #134e5e 0%, #2d6a4f 50%, #71b280 100%)' } },
+  { id: 'rose', label: 'Blush', background: { type: 'gradient', value: 'linear-gradient(135deg, #ffecd2 0%, #f8b4c8 50%, #ee82a2 100%)' } },
 ]
 
 export const SHADOW_PRESETS: ShadowPreset[] = [

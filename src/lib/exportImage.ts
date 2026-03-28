@@ -8,8 +8,9 @@ function getCanvasNode(): HTMLElement {
 
 export async function exportAsPng(scale: 1 | 2): Promise<void> {
   const node = getCanvasNode()
+  const pixelRatio = scale * window.devicePixelRatio
   try {
-    const dataUrl = await toPng(node, { pixelRatio: scale })
+    const dataUrl = await toPng(node, { pixelRatio })
     const link = document.createElement('a')
     link.download = `popshot-${Date.now()}.png`
     link.href = dataUrl
@@ -23,7 +24,7 @@ export async function exportAsPng(scale: 1 | 2): Promise<void> {
 export async function copyToClipboard(): Promise<void> {
   const node = getCanvasNode()
   try {
-    const blob = await toBlob(node, { pixelRatio: 2 })
+    const blob = await toBlob(node, { pixelRatio: window.devicePixelRatio * 2 })
     if (!blob) throw new Error('Failed to create image blob')
     await navigator.clipboard.write([
       new ClipboardItem({ 'image/png': blob }),

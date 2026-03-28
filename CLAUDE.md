@@ -108,6 +108,9 @@ Weights: 400 / 500 / 600 only
 - Background swatches have named labels below each swatch
 - Canvas size buttons show preset name + dimensions
 - Shadow type 'ambient' renamed to 'deep' throughout codebase
+- Export: Copy (filled primary) + Export (outline secondary), side by side
+- Canvas: background CSS transition 600ms ease on all changes
+- macOS frame: title bar 28px, dots 12px, #FF5F57/#FFBD2E/#28C840
 - No border dividers between panel sections — padding-top only for breathing room
 - Empty state shows 3 fan-arranged example thumbnails + clean upload zone with dashed border
 - Pro badge style: gradient pill #6C47FF→#9C47FF, white text, 9px
@@ -193,6 +196,14 @@ interface EditorState {
 - [x] Shuffle/randomize button in Background section header
 - [x] Pro badges (gradient pill) on Custom Gradient, Presets section, Watermark section
 - [x] Upgrade prompt at bottom of panel ($9 once CTA)
+- [x] Canvas Retina devicePixelRatio fix
+- [x] Background transition animation (600ms ease on all bg changes)
+- [x] Copy as primary export button, Download as secondary
+- [x] Clear/reset × button on canvas
+- [x] Contextual Pro gate popover on PRO badge hover
+- [x] Three-stop hero gradients with varied angles
+- [x] Pixel-perfect macOS traffic lights (Apple HIG spec)
+- [x] Shuffle cross-fade + canvas pop animation
 - [ ] Social presets
 - [ ] Pro gate (Lemon Squeezy)
 

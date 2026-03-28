@@ -4,6 +4,7 @@ import { CornerRadiusControl } from './CornerRadiusControl'
 import { ShadowPicker } from './ShadowPicker'
 import { FramePicker } from './FramePicker'
 import { AspectRatioControl } from './AspectRatioControl'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 const sectionLabelStyle: React.CSSProperties = {
   fontSize: '11px',
@@ -13,24 +14,88 @@ const sectionLabelStyle: React.CSSProperties = {
   letterSpacing: '0.06em',
 }
 
-const ProBadge = () => (
-  <span
-    style={{
-      fontSize: '9px',
-      fontWeight: 600,
-      textTransform: 'uppercase',
-      letterSpacing: '0.05em',
-      background: 'linear-gradient(135deg, #6C47FF, #9C47FF)',
-      color: '#FFFFFF',
-      padding: '2px 6px',
-      borderRadius: '9999px',
-      display: 'inline-block',
-      lineHeight: 1.4,
-    }}
-  >
-    PRO
-  </span>
-)
+function ProBadge() {
+  return (
+    <Popover>
+      <PopoverTrigger
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 0,
+          outline: 'none',
+          display: 'inline-flex',
+        }}
+      >
+        <span
+          style={{
+            fontSize: '9px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            background: 'linear-gradient(135deg, #6C47FF, #9C47FF)',
+            color: '#FFFFFF',
+            padding: '2px 6px',
+            borderRadius: '9999px',
+            display: 'inline-block',
+            lineHeight: 1.4,
+          }}
+        >
+          PRO
+        </span>
+      </PopoverTrigger>
+      <PopoverContent
+        side="left"
+        sideOffset={8}
+        style={{
+          width: '220px',
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+        }}
+      >
+        <span
+          style={{
+            fontSize: '10px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            color: 'var(--color-app-accent)',
+          }}
+        >
+          PRO FEATURE
+        </span>
+        <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
+          Unlock everything for $9
+        </span>
+        <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          No subscription. Yours forever.
+        </span>
+        <button
+          type="button"
+          onClick={() => console.log('open payment modal — Lemon Squeezy coming soon')}
+          style={{
+            width: '100%',
+            height: '30px',
+            background: 'var(--color-app-accent)',
+            color: '#FFFFFF',
+            border: 'none',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '12px',
+            fontWeight: 600,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            marginTop: '4px',
+            outline: 'none',
+          }}
+        >
+          Upgrade to Pro &rarr;
+        </button>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 function Section({ label, children, isFirst = false, action }: {
   label: string
@@ -130,37 +195,6 @@ export function Controls() {
       </Section>
       <LockedSection label="Presets" />
       <LockedSection label="Watermark" />
-
-      {/* Upgrade prompt */}
-      <div style={{ marginTop: 'auto', paddingBottom: '16px' }}>
-        <div
-          style={{
-            borderTop: '1px solid var(--color-app-border)',
-            paddingTop: '16px',
-          }}
-        />
-        <button
-          type="button"
-          onClick={() => console.log('open upgrade modal')}
-          style={{
-            width: '100%',
-            background: 'var(--color-app-accent-subtle)',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '12px 16px',
-            cursor: 'pointer',
-            textAlign: 'left',
-            fontFamily: 'inherit',
-          }}
-        >
-          <div style={{ fontSize: '13px', color: 'var(--color-app-accent)', fontWeight: 500 }}>
-            Unlock Pro — $9 once
-          </div>
-          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: '2px' }}>
-            No subscription. Yours forever.
-          </div>
-        </button>
-      </div>
     </aside>
   )
 }

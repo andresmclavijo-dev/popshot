@@ -41,6 +41,7 @@ function hexFromBackground(bg: Background): string {
 export function ShuffleButton() {
   const setBackground = useEditorStore((s) => s.setBackground)
   const setShadow = useEditorStore((s) => s.setShadow)
+  const triggerShuffle = useEditorStore((s) => s.triggerShuffle)
   const [angle, setAngle] = useState(0)
 
   const handleShuffle = () => {
@@ -48,6 +49,7 @@ export function ShuffleButton() {
     const sh = SHUFFLEABLE_SHADOWS[Math.floor(Math.random() * SHUFFLEABLE_SHADOWS.length)]
     setBackground(bg.background)
     setShadow(sh.id)
+    triggerShuffle()
     setAngle((a) => a + 180)
   }
 

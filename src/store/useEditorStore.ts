@@ -1,6 +1,11 @@
 import { create } from 'zustand'
 import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType } from '@/types'
 
+interface StoreExtras {
+  shuffleCount: number
+  triggerShuffle: () => void
+}
+
 const initialState: EditorState = {
   imageFile: null,
   imageUrl: null,
@@ -14,8 +19,9 @@ const initialState: EditorState = {
   proUnlocked: false,
 }
 
-export const useEditorStore = create<EditorState & EditorActions>()((set) => ({
+export const useEditorStore = create<EditorState & EditorActions & StoreExtras>()((set) => ({
   ...initialState,
+  shuffleCount: 0,
   setImage: (file: File, url: string) => set({ imageFile: file, imageUrl: url }),
   setBackground: (bg: Background) => set({ background: bg }),
   setPadding: (v: number) => set({ padding: v }),
@@ -25,5 +31,6 @@ export const useEditorStore = create<EditorState & EditorActions>()((set) => ({
   setAspectRatio: (v: AspectRatioType) => set({ aspectRatio: v }),
   setAutoColor: (v: boolean) => set({ autoColor: v }),
   setProUnlocked: (v: boolean) => set({ proUnlocked: v }),
-  reset: () => set(initialState),
+  triggerShuffle: () => set((s) => ({ shuffleCount: s.shuffleCount + 1 })),
+  reset: () => set({ ...initialState, shuffleCount: 0 }),
 }))
