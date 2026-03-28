@@ -11,15 +11,36 @@ const sectionLabelStyle: React.CSSProperties = {
   color: 'var(--color-text-tertiary)',
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
-  marginBottom: 'var(--space-2)',
+  marginBottom: 'var(--space-3)',
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({ label, children, showSeparator = true }: {
+  label: string
+  children: React.ReactNode
+  showSeparator?: boolean
+}) {
   return (
-    <section style={{ display: 'flex', flexDirection: 'column' }}>
-      <h3 style={sectionLabelStyle}>{label}</h3>
-      {children}
-    </section>
+    <>
+      <section
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          padding: 'var(--space-4) 0',
+        }}
+      >
+        <h3 style={sectionLabelStyle}>{label}</h3>
+        {children}
+      </section>
+      {showSeparator && (
+        <hr
+          style={{
+            border: 'none',
+            borderTop: '1px solid var(--color-app-border)',
+            margin: 0,
+          }}
+        />
+      )}
+    </>
   )
 }
 
@@ -33,10 +54,9 @@ export function Controls() {
         overflowY: 'auto',
         background: 'var(--color-bg-panel)',
         borderLeft: '1px solid var(--color-app-border)',
-        padding: 'var(--space-6)',
+        padding: '0 var(--space-6)',
         display: 'flex',
         flexDirection: 'column',
-        gap: 'var(--space-6)',
       }}
     >
       <Section label="Background">
@@ -54,7 +74,7 @@ export function Controls() {
       <Section label="Frame">
         <FramePicker />
       </Section>
-      <Section label="Canvas Size">
+      <Section label="Canvas Size" showSeparator={false}>
         <AspectRatioControl />
       </Section>
     </aside>

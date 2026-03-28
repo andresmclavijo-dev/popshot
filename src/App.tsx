@@ -50,10 +50,9 @@ function ExportButton() {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 'var(--space-1)',
-          padding: 'var(--space-2)',
+          padding: 'var(--space-1)',
           width: 'auto',
-          minWidth: '140px',
+          minWidth: '160px',
         }}
       >
         <button
@@ -62,6 +61,7 @@ function ExportButton() {
           style={{
             padding: 'var(--space-2) var(--space-3)',
             fontSize: '13px',
+            fontWeight: 500,
             fontFamily: 'inherit',
             background: 'transparent',
             border: 'none',
@@ -69,6 +69,12 @@ function ExportButton() {
             cursor: 'pointer',
             textAlign: 'left',
             color: 'var(--color-text-primary)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--color-bg-hover)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent'
           }}
         >
           Export 1x
@@ -79,6 +85,7 @@ function ExportButton() {
           style={{
             padding: 'var(--space-2) var(--space-3)',
             fontSize: '13px',
+            fontWeight: 500,
             fontFamily: 'inherit',
             background: 'transparent',
             border: 'none',
@@ -86,6 +93,12 @@ function ExportButton() {
             cursor: 'pointer',
             textAlign: 'left',
             color: 'var(--color-text-primary)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--color-bg-hover)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent'
           }}
         >
           Export 2x

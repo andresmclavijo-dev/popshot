@@ -14,38 +14,33 @@ export function FramePicker() {
 
   return (
     <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-      {FRAME_OPTIONS.map((opt) => (
-        <button
-          key={opt.id}
-          type="button"
-          onClick={() => setFrame(opt.id)}
-          aria-pressed={frame === opt.id}
-          style={{
-            padding: 'var(--space-2) var(--space-3)',
-            fontSize: '12px',
-            fontWeight: 500,
-            fontFamily: 'inherit',
-            borderRadius: 'var(--radius-sm)',
-            border:
-              frame === opt.id
-                ? '1px solid var(--color-app-accent)'
-                : '1px solid var(--color-app-border)',
-            background:
-              frame === opt.id
-                ? 'var(--color-app-accent-subtle)'
-                : 'var(--color-bg-card)',
-            color:
-              frame === opt.id
-                ? 'var(--color-app-accent)'
-                : 'var(--color-text-secondary)',
-            cursor: 'pointer',
-            outline: 'none',
-            transition: 'all 0.15s',
-          }}
-        >
-          {opt.label}
-        </button>
-      ))}
+      {FRAME_OPTIONS.map((opt) => {
+        const active = frame === opt.id
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => setFrame(opt.id)}
+            aria-pressed={active}
+            style={{
+              padding: 'var(--space-2) var(--space-3)',
+              fontSize: '12px',
+              fontWeight: 500,
+              fontFamily: 'inherit',
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              background: active ? 'var(--color-app-accent)' : 'var(--color-bg-card)',
+              color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+              boxShadow: active ? 'none' : 'inset 0 0 0 1px var(--color-app-border)',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.15s',
+            }}
+          >
+            {opt.label}
+          </button>
+        )
+      })}
     </div>
   )
 }

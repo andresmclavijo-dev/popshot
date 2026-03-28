@@ -8,38 +8,33 @@ export function AspectRatioControl() {
 
   return (
     <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-      {ASPECT_RATIO_PRESETS.map((preset) => (
-        <button
-          key={preset.id}
-          type="button"
-          onClick={() => setAspectRatio(preset.id as AspectRatioType)}
-          aria-pressed={aspectRatio === preset.id}
-          style={{
-            padding: 'var(--space-2) var(--space-3)',
-            fontSize: '12px',
-            fontWeight: 500,
-            fontFamily: 'inherit',
-            borderRadius: 'var(--radius-sm)',
-            border:
-              aspectRatio === preset.id
-                ? '1px solid var(--color-app-accent)'
-                : '1px solid var(--color-app-border)',
-            background:
-              aspectRatio === preset.id
-                ? 'var(--color-app-accent-subtle)'
-                : 'var(--color-bg-card)',
-            color:
-              aspectRatio === preset.id
-                ? 'var(--color-app-accent)'
-                : 'var(--color-text-secondary)',
-            cursor: 'pointer',
-            outline: 'none',
-            transition: 'all 0.15s',
-          }}
-        >
-          {preset.label}
-        </button>
-      ))}
+      {ASPECT_RATIO_PRESETS.map((preset) => {
+        const active = aspectRatio === preset.id
+        return (
+          <button
+            key={preset.id}
+            type="button"
+            onClick={() => setAspectRatio(preset.id as AspectRatioType)}
+            aria-pressed={active}
+            style={{
+              padding: 'var(--space-2) var(--space-3)',
+              fontSize: '12px',
+              fontWeight: 500,
+              fontFamily: 'inherit',
+              borderRadius: 'var(--radius-sm)',
+              border: 'none',
+              background: active ? 'var(--color-app-accent)' : 'var(--color-bg-card)',
+              color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+              boxShadow: active ? 'none' : 'inset 0 0 0 1px var(--color-app-border)',
+              cursor: 'pointer',
+              outline: 'none',
+              transition: 'all 0.15s',
+            }}
+          >
+            {preset.label}
+          </button>
+        )
+      })}
     </div>
   )
 }
