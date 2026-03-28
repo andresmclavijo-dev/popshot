@@ -98,6 +98,14 @@ src/
 Font sizes: 11px / 12px / 13px / 14px / 16px / 18px / 24px
 Weights: 400 / 500 / 600 only
 
+### Panel design system
+- Panel: 300px, 16px horizontal padding
+- Section labels: 11px uppercase, letter-spacing 0.06em
+- Number inputs: 30px height, 13px font, 64px wide, right-aligned
+- Segmented controls: 30px height, 12px font, connected pills
+- Slider track: 4px, thumb: 14px
+- Breathing room: 20px between sections, 16px between controls
+
 ---
 
 ## Tailwind rules
@@ -132,7 +140,7 @@ interface EditorState {
   cornerRadius: number
   shadow: 'none' | 'soft' | 'ambient'
   frame: 'none' | 'macos-light' | 'macos-dark' | 'iphone'
-  aspectRatio: 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble'
+  aspectRatio: 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble' | 'behance'
   autoColor: boolean
   proUnlocked: boolean
 }
@@ -156,6 +164,12 @@ interface EditorState {
 - [x] Auto-color toggle
 - [x] PNG export
 - [x] Copy to clipboard export
+- [x] Controls panel redesigned (familiar, scannable, progressively advanced)
+- [x] NumberInput component
+- [x] Segmented control buttons
+- [x] Keyboard shortcuts
+- [x] Behance aspect ratio preset
+- [x] Progressive disclosure (custom shadow, custom gradient)
 - [ ] Social presets
 - [ ] Pro gate
 

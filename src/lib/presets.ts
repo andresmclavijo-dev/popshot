@@ -45,4 +45,5 @@ export const ASPECT_RATIO_PRESETS: AspectRatioPreset[] = [
   { id: 'twitter', label: 'Twitter', width: 1600, height: 900 },
   { id: 'linkedin', label: 'LinkedIn', width: 1200, height: 627 },
   { id: 'dribbble', label: 'Dribbble', width: 1600, height: 1200 },
+  { id: 'behance', label: 'Behance', width: 1400, height: 800 },
 ]

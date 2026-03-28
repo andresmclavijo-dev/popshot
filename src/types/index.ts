@@ -1,7 +1,7 @@
 export type BackgroundType = 'solid' | 'gradient' | 'transparent'
 export type ShadowType = 'none' | 'soft' | 'ambient'
 export type FrameType = 'none' | 'macos-light' | 'macos-dark' | 'iphone'
-export type AspectRatioType = 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble'
+export type AspectRatioType = 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble' | 'behance'
 
 export interface Background {
   type: BackgroundType

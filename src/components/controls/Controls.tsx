@@ -7,7 +7,7 @@ import { AspectRatioControl } from './AspectRatioControl'
 
 const sectionLabelStyle: React.CSSProperties = {
   fontSize: '11px',
-  fontWeight: 600,
+  fontWeight: 500,
   color: 'var(--color-text-tertiary)',
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
@@ -24,8 +24,9 @@ function Section({ label, children, isFirst = false }: {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        padding: '16px 0',
-        borderTop: isFirst ? 'none' : '1px solid var(--color-app-border)',
+        paddingTop: isFirst ? '16px' : '20px',
+        paddingBottom: '20px',
+        borderBottom: '1px solid var(--color-app-border)',
       }}
     >
       <h3 style={sectionLabelStyle}>{label}</h3>
@@ -38,8 +39,8 @@ export function Controls() {
   return (
     <aside
       style={{
-        width: '320px',
-        minWidth: '320px',
+        width: '300px',
+        minWidth: '300px',
         height: '100%',
         overflowY: 'auto',
         background: 'var(--color-bg-panel)',

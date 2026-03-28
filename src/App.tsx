@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Download, Loader2, Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Canvas } from '@/components/canvas/Canvas'
 import { Controls } from '@/components/controls/Controls'
 import { useExport } from '@/hooks/useExport'
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEditorStore } from '@/store/useEditorStore'
 
 const menuItemStyle: React.CSSProperties = {
@@ -39,6 +40,16 @@ function ExportButton() {
     await copyImage()
   }
 
+  const onExportOpen = useCallback(() => {
+    if (imageUrl) setOpen(true)
+  }, [imageUrl])
+
+  const onCopyClipboard = useCallback(() => {
+    if (imageUrl && !isExporting) copyImage()
+  }, [imageUrl, isExporting, copyImage])
+
+  useKeyboardShortcuts({ onExportOpen, onCopyClipboard })
+
   const disabled = isExporting || !imageUrl
 
   return (
@@ -49,11 +60,11 @@ function ExportButton() {
         style={{
           background: '#6C47FF',
           color: '#FFFFFF',
-          fontSize: '13px',
+          fontSize: '12px',
           fontWeight: 600,
           borderRadius: 'var(--radius-md)',
           padding: '0 var(--space-4)',
-          height: '32px',
+          height: '30px',
           display: 'inline-flex',
           alignItems: 'center',
           gap: 'var(--space-2)',
@@ -128,8 +139,8 @@ export function App() {
     >
       <header
         style={{
-          height: '48px',
-          minHeight: '48px',
+          height: '44px',
+          minHeight: '44px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
