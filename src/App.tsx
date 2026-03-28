@@ -11,6 +11,7 @@ import { useImageUpload } from '@/hooks/useImageUpload'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BACKGROUND_PRESETS, SHADOW_PRESETS } from '@/lib/presets'
+import type { Background } from '@/types'
 
 const menuItemStyle: React.CSSProperties = {
   padding: 'var(--space-2) var(--space-3)',
@@ -66,7 +67,7 @@ function TopBarActions() {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      {/* Export — secondary ghost */}
+      {/* Save PNG — secondary ghost */}
       <Tooltip>
         <TooltipTrigger
           render={
@@ -89,8 +90,7 @@ function TopBarActions() {
                     border: '1px solid var(--color-app-border)',
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     opacity: disabled ? 0.4 : 1,
-                    transition: 'background 0.15s ease, border-color 0.15s ease',
-                    outline: 'none',
+                    transition: 'background 100ms var(--ease-out), border-color 100ms var(--ease-out)',
                     fontFamily: 'inherit',
                   }}
                   onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
@@ -103,15 +103,9 @@ function TopBarActions() {
                     e.currentTarget.style.background = 'transparent'
                     e.currentTarget.style.borderColor = 'var(--color-app-border)'
                   }}
-                  onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
-                    e.currentTarget.style.boxShadow = '0 0 0 2px #FFFFFF, 0 0 0 4px #6C47FF'
-                  }}
-                  onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
-                    e.currentTarget.style.boxShadow = 'none'
-                  }}
                 >
                   <ArrowDownToLine size={15} aria-hidden="true" />
-                  Export
+                  Save PNG
                   <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginLeft: '2px' }}>&#8984;E</span>
                 </PopoverTrigger>
                 <PopoverContent
@@ -152,7 +146,7 @@ function TopBarActions() {
         <TooltipContent>Download PNG · &#8984;E</TooltipContent>
       </Tooltip>
 
-      {/* Copy — primary filled */}
+      {/* Copy image — primary filled */}
       <Tooltip>
         <TooltipTrigger
           render={
@@ -175,8 +169,7 @@ function TopBarActions() {
                 border: 'none',
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 opacity: disabled ? 0.4 : 1,
-                transition: 'transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease',
-                outline: 'none',
+                transition: 'transform 100ms var(--ease-out), box-shadow 150ms var(--ease-out), background 100ms var(--ease-out)',
               }}
               onMouseEnter={(e) => {
                 if (!disabled) {
@@ -191,12 +184,6 @@ function TopBarActions() {
               }}
               onMouseDown={(e) => { if (!disabled) e.currentTarget.style.transform = 'scale(0.97)' }}
               onMouseUp={(e) => { if (!disabled) e.currentTarget.style.transform = 'none' }}
-              onFocus={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 0 2px #FFFFFF, 0 0 0 4px #6C47FF'
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.boxShadow = 'none'
-              }}
             />
           }
         >
@@ -207,7 +194,7 @@ function TopBarActions() {
           ) : (
             <Copy size={15} aria-hidden="true" />
           )}
-          {copied ? 'Copied!' : 'Copy'}
+          {copied ? 'Copied' : 'Copy image'}
           {!copied && !isExporting && (
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginLeft: '2px' }}>&#8984;C</span>
           )}
@@ -241,6 +228,8 @@ function DemoLoader() {
 }
 
 export function App() {
+  const [hoveredBackground, setHoveredBackground] = useState<Background | null>(null)
+
   return (
     <TooltipProvider delay={600}>
       <div
@@ -299,8 +288,8 @@ export function App() {
             overflow: 'hidden',
           }}
         >
-          <Canvas />
-          <Controls />
+          <Canvas hoveredBackground={hoveredBackground} />
+          <Controls onHoverBackground={setHoveredBackground} />
         </main>
         <ToastProvider />
       </div>

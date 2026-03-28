@@ -109,7 +109,7 @@ Weights: 400 / 500 / 600 only
 - Canvas size buttons show preset name + dimensions
 - Shadow type 'ambient' renamed to 'deep' throughout codebase
 - Export: Copy (filled primary) + Export (outline secondary), side by side
-- Canvas: background CSS transition 600ms ease on all changes
+- Canvas: background CSS transition 200ms ease-out on all changes
 - macOS frame: title bar 28px, dots 12px, #FF5F57/#FFBD2E/#28C840
 - No border dividers between panel sections — padding-top only for breathing room
 - Empty state shows 3 fan-arranged example thumbnails + clean upload zone with dashed border
@@ -122,6 +122,13 @@ Weights: 400 / 500 / 600 only
 - Drag states: 2px accent outline + rgba tint on canvas wrapper
 - All key controls have Tooltip with 600ms delay
 - Pro copy formula: outcome first, "forever" always included
+- Motion: "Calm over clever" — 150-200ms ease-out, no bounce, no elastic
+- Easing: always use CSS variables (--ease-out, --ease-in, --ease-in-out), never browser default
+- Exits always faster than enters
+- Button heights: 36px primary, 32px small — never arbitrary
+- Section labels: Sentence case, 11px, 500 weight, 0.06em spacing
+- Focus: 2px accent ring, offset 2px, border-radius inherit (global :focus-visible)
+- Toast: bottom-right, 2000ms dismiss, specific copy, past tense, green checkmark
 
 ---
 
@@ -221,6 +228,20 @@ interface EditorState {
 - [x] Pro upgrade copy rewrite ("forever" is the key word)
 - [x] Loading state during image processing
 - [x] Slider thumb CSS transition
+- [x] prefers-reduced-motion WCAG AA compliance
+- [x] Explicit easing CSS variables (--ease-out, --ease-in, --ease-in-out)
+- [x] Animation timing fixed (background 200ms, toast 2000ms, buttons 100ms)
+- [x] Button heights verified (36px primary, 32px small)
+- [x] Section labels converted to Sentence case
+- [x] UX copy: verb rule (Save PNG, Copy image, Edit gradient, Edit shadow)
+- [x] Toast specificity (Saved · 1x, Saved · 2x, Image copied)
+- [x] Pro copy: aspiration pattern, "Get Popshot Pro", "forever"
+- [x] Skeleton shimmer with "Extracting colors..." label
+- [x] Complete hover/active/focus states on all elements
+- [x] TooltipProvider at App.tsx root
+- [x] hoveredBackground in local state (not Zustand)
+- [x] lastShuffle timestamp pattern with @keyframes canvasPop
+- [x] Canvas decomposed (CanvasLoading extracted)
 - [ ] Social presets
 - [ ] Pro gate (Lemon Squeezy)
 

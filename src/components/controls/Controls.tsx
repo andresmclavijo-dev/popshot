@@ -5,12 +5,13 @@ import { ShadowPicker } from './ShadowPicker'
 import { FramePicker } from './FramePicker'
 import { AspectRatioControl } from './AspectRatioControl'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import type { Background } from '@/types'
 
 const sectionLabelStyle: React.CSSProperties = {
   fontSize: '11px',
   fontWeight: 600,
   color: 'var(--color-text-secondary)',
-  textTransform: 'uppercase',
+  textTransform: 'none',
   letterSpacing: '0.06em',
 }
 
@@ -32,7 +33,6 @@ function ProBadge() {
           border: 'none',
           cursor: 'pointer',
           padding: 0,
-          outline: 'none',
           display: 'inline-flex',
         }}
       >
@@ -96,11 +96,13 @@ function ProBadge() {
             fontFamily: 'inherit',
             cursor: 'pointer',
             marginTop: '4px',
-            outline: 'none',
           }}
         >
-          Unlock Pro — $9 forever &rarr;
+          Get Popshot Pro
         </button>
+        <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'center' }}>
+          $9 · one-time · no subscription
+        </span>
       </PopoverContent>
     </Popover>
   )
@@ -158,7 +160,7 @@ function LockedSection({ label }: { label: string }) {
   )
 }
 
-export function Controls() {
+export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   return (
     <aside
       style={{
@@ -173,10 +175,10 @@ export function Controls() {
         flexDirection: 'column',
       }}
     >
-      {/* IMAGE zone */}
+      {/* Image zone */}
       <div style={{ margin: '0 -16px', padding: '0 16px 4px' }}>
         <div style={zoneLabelStyle}>Image</div>
-        <Section label="Corner Radius" isFirst>
+        <Section label="Corner radius" isFirst>
           <CornerRadiusControl />
         </Section>
         <Section label="Shadow">
@@ -187,26 +189,24 @@ export function Controls() {
         </Section>
       </div>
 
-      {/* Separator */}
       <div style={{ margin: '0 -16px', padding: '0 16px' }}>
         <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: 0 }} />
       </div>
 
-      {/* CANVAS zone */}
+      {/* Canvas zone */}
       <div style={{ margin: '0 -16px', padding: '0 16px 4px' }}>
         <div style={zoneLabelStyle}>Canvas</div>
         <Section label="Background" isFirst action={<ShuffleButton />}>
-          <BackgroundPicker />
+          <BackgroundPicker onHoverBackground={onHoverBackground} />
         </Section>
         <Section label="Padding">
           <PaddingControl />
         </Section>
-        <Section label="Canvas Size">
+        <Section label="Canvas size">
           <AspectRatioControl />
         </Section>
       </div>
 
-      {/* Separator */}
       <div style={{ margin: '0 -16px', padding: '0 16px' }}>
         <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: 0 }} />
       </div>

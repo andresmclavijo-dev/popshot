@@ -5,50 +5,35 @@ import { useEditorStore } from '@/store/useEditorStore'
 import { SHADOW_PRESETS, ASPECT_RATIO_PRESETS } from '@/lib/presets'
 import { DropZone } from './DropZone'
 import { FrameOverlay } from './FrameOverlay'
+import { CanvasLoading } from './CanvasLoading'
 import { useImageUpload } from '@/hooks/useImageUpload'
+import type { Background } from '@/types'
 
-export function Canvas() {
+export function Canvas({ hoveredBackground }: { hoveredBackground: Background | null }) {
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const background = useEditorStore((s) => s.background)
-  const hoveredBackground = useEditorStore((s) => s.hoveredBackground)
   const padding = useEditorStore((s) => s.padding)
   const cornerRadius = useEditorStore((s) => s.cornerRadius)
   const shadow = useEditorStore((s) => s.shadow)
   const frame = useEditorStore((s) => s.frame)
   const aspectRatio = useEditorStore((s) => s.aspectRatio)
   const reset = useEditorStore((s) => s.reset)
-  const shuffleCount = useEditorStore((s) => s.shuffleCount)
+  const lastShuffle = useEditorStore((s) => s.lastShuffle)
   const isDemoMode = useEditorStore((s) => s.isDemoMode)
-  const isLoading = useEditorStore((s) => s.isLoading)
 
   const { handleFile } = useImageUpload()
-  const [popping, setPopping] = useState(false)
+  const [popKey, setPopKey] = useState(0)
   const [isDragOver, setIsDragOver] = useState(false)
-  const [showLoader, setShowLoader] = useState(false)
-  const prevShuffle = useRef(shuffleCount)
-  const loaderTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const prevShuffle = useRef(lastShuffle)
+  const canvasRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (shuffleCount > prevShuffle.current) {
-      setPopping(true)
-      const timer = setTimeout(() => setPopping(false), 200)
-      prevShuffle.current = shuffleCount
-      return () => clearTimeout(timer)
+    if (lastShuffle > prevShuffle.current) {
+      setPopKey((k) => k + 1)
+      prevShuffle.current = lastShuffle
     }
-  }, [shuffleCount])
+  }, [lastShuffle])
 
-  // Loading spinner delay (only show if >200ms)
-  useEffect(() => {
-    if (isLoading) {
-      loaderTimer.current = setTimeout(() => setShowLoader(true), 200)
-    } else {
-      clearTimeout(loaderTimer.current)
-      setShowLoader(false)
-    }
-    return () => clearTimeout(loaderTimer.current)
-  }, [isLoading])
-
-  // Canvas-level drag handlers
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     setIsDragOver(true)
@@ -67,7 +52,6 @@ export function Canvas() {
   const displayBg = hoveredBackground ?? background
   const shadowStyle = SHADOW_PRESETS.find((p) => p.id === shadow)?.style ?? ''
   const ratioPreset = ASPECT_RATIO_PRESETS.find((p) => p.id === aspectRatio)
-
   const framePaddingTop = frame.startsWith('macos') ? 28 : 0
   const frameRadius = frame === 'iphone' ? 50 : frame !== 'none' ? 10 : 0
 
@@ -78,8 +62,8 @@ export function Canvas() {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    transition: 'background 600ms ease, transform 200ms ease',
-    transform: popping ? 'scale(1.02)' : 'scale(1)',
+    transition: 'background 200ms var(--ease-out)',
+    animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
     ...(ratioPreset?.width
       ? { width: `${ratioPreset.width}px`, height: `${ratioPreset.height}px` }
       : {}),
@@ -97,34 +81,22 @@ export function Canvas() {
     padding: 'var(--space-8)',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
-    transition: 'background 0.2s, outline 0.2s',
+    transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
     position: 'relative',
   }
 
   if (!imageUrl) {
     return (
-      <div
-        style={workspaceStyle}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-      >
-        {showLoader && <LoadingSpinner />}
+      <div style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+        <CanvasLoading />
         <DropZone isDragOver={isDragOver} />
       </div>
     )
   }
 
   return (
-    <div
-      style={workspaceStyle}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-    >
-      {showLoader && <LoadingSpinner />}
-
-      {/* Demo mode banner */}
+    <div style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <CanvasLoading />
       {isDemoMode && (
         <div
           style={{
@@ -143,12 +115,11 @@ export function Canvas() {
             whiteSpace: 'nowrap',
           }}
         >
-          ✦ Demo mode — drop your screenshot to start
+          Drop, paste, or click to use your screenshot
         </div>
       )}
-
       <div style={{ position: 'relative', display: 'inline-flex' }}>
-        <div id="export-canvas" style={canvasStyle}>
+        <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
           <div style={{ position: 'relative' }}>
             <FrameOverlay frame={frame} />
             <img
@@ -164,7 +135,6 @@ export function Canvas() {
             />
           </div>
         </div>
-        {/* Clear button */}
         <Tooltip>
           <TooltipTrigger
             render={
@@ -176,8 +146,8 @@ export function Canvas() {
                   position: 'absolute',
                   top: '-12px',
                   right: '-12px',
-                  width: '24px',
-                  height: '24px',
+                  width: '32px',
+                  height: '32px',
                   borderRadius: '50%',
                   background: 'var(--color-bg-panel)',
                   border: '1px solid var(--color-app-border)',
@@ -188,8 +158,7 @@ export function Canvas() {
                   justifyContent: 'center',
                   padding: 0,
                   zIndex: 20,
-                  transition: 'all 0.15s',
-                  outline: 'none',
+                  transition: 'all 100ms var(--ease-out)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = 'var(--color-danger)'
@@ -200,7 +169,10 @@ export function Canvas() {
                   e.currentTarget.style.background = 'var(--color-bg-panel)'
                   e.currentTarget.style.color = 'var(--color-text-secondary)'
                   e.currentTarget.style.borderColor = 'var(--color-app-border)'
+                  e.currentTarget.style.transform = 'none'
                 }}
+                onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.95)' }}
+                onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
               />
             }
           >
@@ -209,34 +181,6 @@ export function Canvas() {
           <TooltipContent>Remove image · ⌫</TooltipContent>
         </Tooltip>
       </div>
-    </div>
-  )
-}
-
-function LoadingSpinner() {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 25,
-        opacity: 1,
-        transition: 'opacity 0.2s',
-      }}
-    >
-      <div
-        style={{
-          width: '20px',
-          height: '20px',
-          border: '2px solid var(--color-app-border)',
-          borderTopColor: 'var(--color-app-accent)',
-          borderRadius: '50%',
-          animation: 'spin 0.8s linear infinite',
-        }}
-      />
     </div>
   )
 }

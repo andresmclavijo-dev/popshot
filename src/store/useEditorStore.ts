@@ -2,12 +2,10 @@ import { create } from 'zustand'
 import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType } from '@/types'
 
 interface StoreExtras {
-  shuffleCount: number
+  lastShuffle: number
   triggerShuffle: () => void
   isDemoMode: boolean
   setDemoMode: (v: boolean) => void
-  hoveredBackground: Background | null
-  setHoveredBackground: (bg: Background | null) => void
   isLoading: boolean
   setIsLoading: (v: boolean) => void
 }
@@ -27,9 +25,8 @@ const initialState: EditorState = {
 
 export const useEditorStore = create<EditorState & EditorActions & StoreExtras>()((set) => ({
   ...initialState,
-  shuffleCount: 0,
+  lastShuffle: 0,
   isDemoMode: false,
-  hoveredBackground: null,
   isLoading: false,
   setImage: (file: File, url: string) => set({ imageFile: file, imageUrl: url }),
   setBackground: (bg: Background) => set({ background: bg }),
@@ -41,8 +38,7 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   setAutoColor: (v: boolean) => set({ autoColor: v }),
   setProUnlocked: (v: boolean) => set({ proUnlocked: v }),
   setDemoMode: (v: boolean) => set({ isDemoMode: v }),
-  setHoveredBackground: (bg: Background | null) => set({ hoveredBackground: bg }),
   setIsLoading: (v: boolean) => set({ isLoading: v }),
-  triggerShuffle: () => set((s) => ({ shuffleCount: s.shuffleCount + 1 })),
-  reset: () => set({ ...initialState, shuffleCount: 0, isDemoMode: false, hoveredBackground: null, isLoading: false }),
+  triggerShuffle: () => set({ lastShuffle: Date.now() }),
+  reset: () => set({ ...initialState, lastShuffle: 0, isDemoMode: false, isLoading: false }),
 }))

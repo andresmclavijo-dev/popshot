@@ -86,10 +86,9 @@ export function ShuffleButton() {
   )
 }
 
-export function BackgroundPicker() {
+export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   const background = useEditorStore((s) => s.background)
   const setBackground = useEditorStore((s) => s.setBackground)
-  const setHoveredBackground = useEditorStore((s) => s.setHoveredBackground)
   const autoColor = useEditorStore((s) => s.autoColor)
   const setAutoColor = useEditorStore((s) => s.setAutoColor)
   const imageUrl = useEditorStore((s) => s.imageUrl)
@@ -153,14 +152,14 @@ export function BackgroundPicker() {
                     type="button"
                     onClick={() => setBackground(preset.background)}
                     onMouseEnter={(e) => {
-                      setHoveredBackground(preset.background)
+                      onHoverBackground(preset.background)
                       if (!active) {
                         e.currentTarget.style.transform = 'scale(1.1)'
                         e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'
                       }
                     }}
                     onMouseLeave={(e) => {
-                      setHoveredBackground(null)
+                      onHoverBackground(null)
                       e.currentTarget.style.transform = 'none'
                       e.currentTarget.style.boxShadow = 'none'
                     }}
@@ -280,7 +279,7 @@ export function BackgroundPicker() {
         />
       </div>
 
-      {/* Custom gradient disclosure */}
+      {/* Edit gradient disclosure */}
       <button
         type="button"
         onClick={() => setGradientOpen(!gradientOpen)}
@@ -307,7 +306,7 @@ export function BackgroundPicker() {
         }}
         aria-expanded={gradientOpen}
       >
-        Custom gradient
+        Edit gradient
         <ProBadge />
         <ChevronDown
           size={12}

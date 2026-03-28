@@ -10,7 +10,7 @@ export function useExport() {
     setIsExporting(true)
     try {
       await exportAsPng(scale)
-      showToast('Saved to Downloads')
+      showToast(`Saved · ${scale}x`)
     } finally {
       setIsExporting(false)
     }
@@ -21,8 +21,8 @@ export function useExport() {
     try {
       await copyToClipboard()
       setCopied(true)
-      showToast('Copied to clipboard')
-      setTimeout(() => setCopied(false), 1500)
+      showToast('Image copied')
+      setTimeout(() => setCopied(false), 2000)
     } finally {
       setIsExporting(false)
     }

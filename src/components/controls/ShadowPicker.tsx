@@ -141,7 +141,7 @@ export function ShadowPicker() {
         }}
         aria-expanded={customOpen}
       >
-        Custom shadow
+        Edit shadow
         <ChevronDown
           size={12}
           style={{

@@ -18,7 +18,7 @@ export function ToastProvider() {
 
   useEffect(() => {
     if (!toast) return
-    const timer = setTimeout(() => setToast(null), 1500)
+    const timer = setTimeout(() => setToast(null), 2000)
     return () => clearTimeout(timer)
   }, [toast])
 
@@ -32,8 +32,7 @@ export function ToastProvider() {
       style={{
         position: 'fixed',
         bottom: '24px',
-        left: '50%',
-        transform: 'translateX(-50%)',
+        right: '24px',
         background: 'var(--color-text-primary)',
         color: '#FFFFFF',
         fontSize: '13px',
@@ -41,10 +40,17 @@ export function ToastProvider() {
         padding: '8px 16px',
         borderRadius: 'var(--radius-full)',
         zIndex: 9999,
-        animation: 'toast-in 0.2s ease-out',
+        animation: 'toast-in 200ms var(--ease-out)',
         pointerEvents: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
       }}
     >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <circle cx="7" cy="7" r="7" fill="#16A34A" />
+        <path d="M4 7l2 2 4-4" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
       {toast.message}
     </div>
   )
