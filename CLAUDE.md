@@ -105,6 +105,8 @@ Weights: 400 / 500 / 600 only
 - Segmented controls: 30px height, 12px font, connected pills
 - Slider track: 4px, thumb: 14px
 - Breathing room: 20px between sections, 16px between controls
+- Background swatches have named labels below each swatch
+- Canvas size buttons show preset name + dimensions
 
 ---
 

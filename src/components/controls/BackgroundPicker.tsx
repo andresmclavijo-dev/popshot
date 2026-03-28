@@ -61,45 +61,64 @@ export function BackgroundPicker() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 28px)',
-          gap: '6px',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '8px 6px',
         }}
       >
         {BACKGROUND_PRESETS.map((preset) => {
           const active = isActive(preset)
           return (
-            <button
+            <div
               key={preset.id}
-              type="button"
-              onClick={() => setBackground(preset.background)}
-              aria-label={`${preset.label} background`}
-              aria-pressed={active}
               style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '6px',
-                border: 'none',
-                background: preset.background.value,
-                cursor: 'pointer',
-                outline: active ? '2px solid var(--color-app-accent)' : 'none',
-                outlineOffset: active ? '2px' : undefined,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                padding: 0,
+                gap: '4px',
               }}
             >
-              {active && (
-                <Check
-                  size={12}
-                  strokeWidth={3}
-                  style={{
-                    color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
-                  }}
-                  aria-hidden="true"
-                />
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => setBackground(preset.background)}
+                aria-label={`${preset.label} background`}
+                aria-pressed={active}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: preset.background.value,
+                  cursor: 'pointer',
+                  outline: active ? '2px solid var(--color-app-accent)' : 'none',
+                  outlineOffset: active ? '2px' : undefined,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+                }}
+              >
+                {active && (
+                  <Check
+                    size={12}
+                    strokeWidth={3}
+                    style={{
+                      color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+              <span
+                style={{
+                  fontSize: '10px',
+                  color: 'var(--color-text-tertiary)',
+                  textAlign: 'center',
+                  lineHeight: 1,
+                }}
+              >
+                {preset.label}
+              </span>
+            </div>
           )
         })}
       </div>

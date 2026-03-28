@@ -1,20 +1,102 @@
-import { SegmentedControl } from '@/components/shared/SegmentedControl'
 import { useEditorStore } from '@/store/useEditorStore'
+import { ASPECT_RATIO_PRESETS } from '@/lib/presets'
 import type { AspectRatioType } from '@/types'
 
-const ROW1: { id: AspectRatioType; label: string }[] = [
-  { id: 'free', label: 'Free' },
-  { id: '16:9', label: '16:9' },
-  { id: '1:1', label: '1:1' },
-  { id: '4:3', label: '4:3' },
-]
+const ROW1_IDS: AspectRatioType[] = ['free', '16:9', '1:1', '4:3']
+const ROW2_IDS: AspectRatioType[] = ['twitter', 'linkedin', 'dribbble', 'behance']
 
-const ROW2: { id: AspectRatioType; label: string }[] = [
-  { id: 'twitter', label: 'Twitter' },
-  { id: 'linkedin', label: 'LinkedIn' },
-  { id: 'dribbble', label: 'Dribbble' },
-  { id: 'behance', label: 'Behance' },
-]
+function SizeButton({ id, active, onClick }: {
+  id: AspectRatioType
+  active: boolean
+  onClick: () => void
+}) {
+  const preset = ASPECT_RATIO_PRESETS.find((p) => p.id === id)!
+  const hasDimensions = preset.width !== null
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      style={{
+        flex: 1,
+        height: hasDimensions ? '36px' : '30px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '1px',
+        fontSize: '11px',
+        fontWeight: 500,
+        fontFamily: 'inherit',
+        cursor: 'pointer',
+        outline: 'none',
+        transition: 'all 0.15s',
+        border: active ? '1px solid #6C47FF' : '1px solid var(--color-app-border)',
+        background: active ? '#6C47FF' : 'transparent',
+        color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+        position: 'relative',
+        zIndex: active ? 1 : 0,
+      }}
+    >
+      <span>{preset.label}</span>
+      {hasDimensions && (
+        <span
+          style={{
+            fontSize: '10px',
+            fontWeight: 400,
+            opacity: active ? 0.8 : 0.6,
+            color: active ? '#FFFFFF' : 'var(--color-text-tertiary)',
+          }}
+        >
+          {preset.width}&times;{preset.height}
+        </span>
+      )}
+    </button>
+  )
+}
+
+function SegmentedRow({ ids, value, onChange }: {
+  ids: AspectRatioType[]
+  value: AspectRatioType
+  onChange: (v: AspectRatioType) => void
+}) {
+  return (
+    <div style={{ display: 'flex' }}>
+      {ids.map((id, i) => {
+        const isFirst = i === 0
+        const isLast = i === ids.length - 1
+
+        return (
+          <div
+            key={id}
+            style={{
+              flex: 1,
+              marginLeft: !isFirst ? '-1px' : undefined,
+            }}
+          >
+            <div
+              style={{
+                borderRadius: isFirst
+                  ? 'var(--radius-sm) 0 0 var(--radius-sm)'
+                  : isLast
+                    ? '0 var(--radius-sm) var(--radius-sm) 0'
+                    : '0',
+                overflow: 'hidden',
+              }}
+            >
+              <SizeButton
+                id={id}
+                active={value === id}
+                onClick={() => onChange(id)}
+              />
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 export function AspectRatioControl() {
   const aspectRatio = useEditorStore((s) => s.aspectRatio)
@@ -22,8 +104,8 @@ export function AspectRatioControl() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <SegmentedControl options={ROW1} value={aspectRatio} onChange={setAspectRatio} />
-      <SegmentedControl options={ROW2} value={aspectRatio} onChange={setAspectRatio} />
+      <SegmentedRow ids={ROW1_IDS} value={aspectRatio} onChange={setAspectRatio} />
+      <SegmentedRow ids={ROW2_IDS} value={aspectRatio} onChange={setAspectRatio} />
     </div>
   )
 }

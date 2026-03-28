@@ -21,7 +21,7 @@ export interface AspectRatioPreset {
 
 export const BACKGROUND_PRESETS: BackgroundPreset[] = [
   { id: 'pure-white', label: 'White', background: { type: 'solid', value: '#FFFFFF' } },
-  { id: 'soft-gray', label: 'Gray', background: { type: 'solid', value: '#EEEEED' } },
+  { id: 'soft-gray', label: 'Stone', background: { type: 'solid', value: '#EEEEED' } },
   { id: 'midnight', label: 'Midnight', background: { type: 'solid', value: '#1A1A18' } },
   { id: 'ocean', label: 'Ocean', background: { type: 'gradient', value: 'linear-gradient(135deg, #667eea, #764ba2)' } },
   { id: 'sunset', label: 'Sunset', background: { type: 'gradient', value: 'linear-gradient(135deg, #f093fb, #f5576c)' } },
