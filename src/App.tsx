@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Canvas } from '@/components/canvas/Canvas'
 import { Controls } from '@/components/controls/Controls'
+import { ToastProvider } from '@/components/shared/Toast'
 import { useExport } from '@/hooks/useExport'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -170,6 +171,7 @@ export function App() {
         <Canvas />
         <Controls />
       </main>
+      <ToastProvider />
     </div>
   )
 }

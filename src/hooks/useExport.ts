@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { exportAsPng, copyToClipboard } from '@/lib/exportImage'
+import { showToast } from '@/components/shared/Toast'
 
 export function useExport() {
   const [isExporting, setIsExporting] = useState(false)
@@ -9,6 +10,7 @@ export function useExport() {
     setIsExporting(true)
     try {
       await exportAsPng(scale)
+      showToast('Saved to Downloads')
     } finally {
       setIsExporting(false)
     }
@@ -19,6 +21,7 @@ export function useExport() {
     try {
       await copyToClipboard()
       setCopied(true)
+      showToast('Copied to clipboard')
       setTimeout(() => setCopied(false), 1500)
     } finally {
       setIsExporting(false)

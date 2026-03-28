@@ -20,6 +20,7 @@ export interface AspectRatioPreset {
 }
 
 export const BACKGROUND_PRESETS: BackgroundPreset[] = [
+  { id: 'transparent', label: 'None', background: { type: 'transparent', value: 'transparent' } },
   { id: 'pure-white', label: 'White', background: { type: 'solid', value: '#FFFFFF' } },
   { id: 'soft-gray', label: 'Stone', background: { type: 'solid', value: '#EEEEED' } },
   { id: 'midnight', label: 'Midnight', background: { type: 'solid', value: '#1A1A18' } },
@@ -34,7 +35,7 @@ export const BACKGROUND_PRESETS: BackgroundPreset[] = [
 export const SHADOW_PRESETS: ShadowPreset[] = [
   { id: 'none', label: 'None', style: '' },
   { id: 'soft', label: 'Soft', style: '0 20px 60px rgba(0,0,0,0.12)' },
-  { id: 'ambient', label: 'Ambient', style: '0 2px 8px rgba(0,0,0,0.18), 0 32px 64px rgba(0,0,0,0.22)' },
+  { id: 'deep', label: 'Deep', style: '0 2px 8px rgba(0,0,0,0.18), 0 32px 64px rgba(0,0,0,0.22)' },
 ]
 
 export const ASPECT_RATIO_PRESETS: AspectRatioPreset[] = [
@@ -46,4 +47,6 @@ export const ASPECT_RATIO_PRESETS: AspectRatioPreset[] = [
   { id: 'linkedin', label: 'LinkedIn', width: 1200, height: 627 },
   { id: 'dribbble', label: 'Dribbble', width: 1600, height: 1200 },
   { id: 'behance', label: 'Behance', width: 1400, height: 800 },
+  { id: 'og', label: 'Open Graph', width: 1200, height: 630 },
+  { id: 'pinterest', label: 'Pinterest', width: 1000, height: 1500 },
 ]

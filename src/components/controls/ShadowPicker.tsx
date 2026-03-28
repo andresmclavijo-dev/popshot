@@ -9,7 +9,7 @@ import type { ShadowType } from '@/types'
 const SHADOW_OPTIONS: { id: ShadowType; label: string }[] = [
   { id: 'none', label: 'None' },
   { id: 'soft', label: 'Soft' },
-  { id: 'ambient', label: 'Ambient' },
+  { id: 'deep', label: 'Deep' },
 ]
 
 export function ShadowPicker() {

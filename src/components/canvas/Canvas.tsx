@@ -38,7 +38,7 @@ export function Canvas() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'var(--color-bg-page)',
+          background: '#E8E8E6',
           padding: 'var(--space-8)',
         }}
       >

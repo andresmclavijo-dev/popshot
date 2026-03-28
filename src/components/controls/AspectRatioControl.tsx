@@ -3,7 +3,8 @@ import { ASPECT_RATIO_PRESETS } from '@/lib/presets'
 import type { AspectRatioType } from '@/types'
 
 const ROW1_IDS: AspectRatioType[] = ['free', '16:9', '1:1', '4:3']
-const ROW2_IDS: AspectRatioType[] = ['twitter', 'linkedin', 'dribbble', 'behance']
+const ROW2_IDS: AspectRatioType[] = ['twitter', 'linkedin', 'dribbble']
+const ROW3_IDS: AspectRatioType[] = ['behance', 'og', 'pinterest']
 
 function SizeButton({ id, active, onClick }: {
   id: AspectRatioType
@@ -106,6 +107,7 @@ export function AspectRatioControl() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       <SegmentedRow ids={ROW1_IDS} value={aspectRatio} onChange={setAspectRatio} />
       <SegmentedRow ids={ROW2_IDS} value={aspectRatio} onChange={setAspectRatio} />
+      <SegmentedRow ids={ROW3_IDS} value={aspectRatio} onChange={setAspectRatio} />
     </div>
   )
 }

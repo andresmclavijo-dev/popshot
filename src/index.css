@@ -7,7 +7,7 @@
 
 :root {
   /* App design tokens */
-  --color-bg-page: #EEEEED;
+  --color-bg-page: #E8E8E6;
   --color-bg-panel: #F7F7F6;
   --color-bg-card: #FFFFFF;
   --color-bg-hover: #F0F0EE;
@@ -135,4 +135,9 @@ body {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }

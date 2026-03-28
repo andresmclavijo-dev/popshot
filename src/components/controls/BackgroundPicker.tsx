@@ -7,7 +7,9 @@ import { BACKGROUND_PRESETS } from '@/lib/presets'
 import { extractColorsFromImage } from '@/lib/colorExtract'
 import type { Background } from '@/types'
 
-const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach'])
+const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach', 'transparent'])
+
+const CHECKERBOARD = 'repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 0 0 / 8px 8px'
 
 function hexFromBackground(bg: Background): string {
   if (bg.type === 'solid') return bg.value.replace('#', '')
@@ -55,6 +57,10 @@ export function BackgroundPicker() {
     })
   }, [gradAngle, gradColor1, gradColor2, setBackground])
 
+  const hexDisplayValue = background.type === 'solid'
+    ? hexFromBackground(background)
+    : background.type === 'gradient' ? '\u2014' : '\u2014'
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {/* Swatch grid */}
@@ -67,6 +73,7 @@ export function BackgroundPicker() {
       >
         {BACKGROUND_PRESETS.map((preset) => {
           const active = isActive(preset)
+          const isTransparent = preset.id === 'transparent'
           return (
             <div
               key={preset.id}
@@ -83,11 +90,11 @@ export function BackgroundPicker() {
                 aria-label={`${preset.label} background`}
                 aria-pressed={active}
                 style={{
-                  width: '28px',
-                  height: '28px',
+                  width: '32px',
+                  height: '32px',
                   borderRadius: '6px',
                   border: 'none',
-                  background: preset.background.value,
+                  background: isTransparent ? CHECKERBOARD : preset.background.value,
                   cursor: 'pointer',
                   outline: active ? '2px solid var(--color-app-accent)' : 'none',
                   outlineOffset: active ? '2px' : undefined,
@@ -128,9 +135,9 @@ export function BackgroundPicker() {
         <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>#</span>
         <input
           type="text"
-          value={background.type === 'gradient' ? '\u2014' : hexFromBackground(background)}
+          value={hexDisplayValue}
           onChange={handleHexInput}
-          readOnly={background.type === 'gradient'}
+          readOnly={background.type !== 'solid'}
           aria-label="Hex color value"
           style={{
             width: '80px',
@@ -160,7 +167,7 @@ export function BackgroundPicker() {
         />
       </div>
 
-      {/* Auto-match colors */}
+      {/* Match to image */}
       <div
         style={{
           display: 'flex',
@@ -177,7 +184,7 @@ export function BackgroundPicker() {
             cursor: 'pointer',
           }}
         >
-          Auto-match colors
+          Match to image
         </label>
         <Switch
           id="auto-color-toggle"
@@ -226,7 +233,7 @@ export function BackgroundPicker() {
             <input
               type="color"
               value={gradColor1}
-              onChange={(e) => { setGradColor1(e.target.value); }}
+              onChange={(e) => { setGradColor1(e.target.value) }}
               onBlur={applyCustomGradient}
               aria-label="Gradient start color"
               style={{
@@ -244,7 +251,7 @@ export function BackgroundPicker() {
             <input
               type="color"
               value={gradColor2}
-              onChange={(e) => { setGradColor2(e.target.value); }}
+              onChange={(e) => { setGradColor2(e.target.value) }}
               onBlur={applyCustomGradient}
               aria-label="Gradient end color"
               style={{

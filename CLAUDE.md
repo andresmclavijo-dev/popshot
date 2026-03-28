@@ -52,7 +52,7 @@ src/
 ## Design system tokens
 
 ### Colors
---color-bg-page: #EEEEED
+--color-bg-page: #E8E8E6
 --color-bg-panel: #F7F7F6
 --color-bg-card: #FFFFFF
 --color-bg-hover: #F0F0EE
@@ -107,6 +107,7 @@ Weights: 400 / 500 / 600 only
 - Breathing room: 20px between sections, 16px between controls
 - Background swatches have named labels below each swatch
 - Canvas size buttons show preset name + dimensions
+- Shadow type 'ambient' renamed to 'deep' throughout codebase
 
 ---
 
@@ -140,9 +141,9 @@ interface EditorState {
   background: { type: 'solid' | 'gradient' | 'transparent'; value: string }
   padding: number
   cornerRadius: number
-  shadow: 'none' | 'soft' | 'ambient'
+  shadow: 'none' | 'soft' | 'deep'
   frame: 'none' | 'macos-light' | 'macos-dark' | 'iphone'
-  aspectRatio: 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble' | 'behance'
+  aspectRatio: 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble' | 'behance' | 'og' | 'pinterest'
   autoColor: boolean
   proUnlocked: boolean
 }
@@ -172,6 +173,13 @@ interface EditorState {
 - [x] Keyboard shortcuts
 - [x] Behance aspect ratio preset
 - [x] Progressive disclosure (custom shadow, custom gradient)
+- [x] Canvas/panel contrast (#E8E8E6 canvas vs #F7F7F6 panel)
+- [x] Transparent background preset (checkerboard swatch)
+- [x] Shadow labels renamed (Ambient → Deep)
+- [x] Auto-color toggle renamed (Match to image)
+- [x] Export toast notifications
+- [x] Swatch size 32x32px
+- [x] Open Graph + Pinterest presets
 - [ ] Social presets
 - [ ] Pro gate
 
