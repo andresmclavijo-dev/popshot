@@ -14,6 +14,15 @@ const sectionLabelStyle: React.CSSProperties = {
   letterSpacing: '0.06em',
 }
 
+const zoneLabelStyle: React.CSSProperties = {
+  fontSize: '9px',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  color: 'var(--color-text-tertiary)',
+  padding: '12px 0 4px',
+}
+
 function ProBadge() {
   return (
     <Popover>
@@ -67,10 +76,10 @@ function ProBadge() {
           PRO FEATURE
         </span>
         <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
-          Unlock everything for $9
+          Make every screenshot stunning
         </span>
         <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-          No subscription. Yours forever.
+          $9 once. No subscription. Yours forever.
         </span>
         <button
           type="button"
@@ -90,7 +99,7 @@ function ProBadge() {
             outline: 'none',
           }}
         >
-          Upgrade to Pro &rarr;
+          Unlock Pro — $9 forever &rarr;
         </button>
       </PopoverContent>
     </Popover>
@@ -108,7 +117,7 @@ function Section({ label, children, isFirst = false, action }: {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        paddingTop: isFirst ? '16px' : '20px',
+        paddingTop: isFirst ? '8px' : '20px',
         paddingBottom: '20px',
       }}
     >
@@ -130,12 +139,7 @@ function Section({ label, children, isFirst = false, action }: {
 
 function LockedSection({ label }: { label: string }) {
   return (
-    <section
-      style={{
-        paddingTop: '20px',
-        paddingBottom: '20px',
-      }}
-    >
+    <section style={{ paddingTop: '20px', paddingBottom: '20px' }}>
       <div
         style={{
           display: 'flex',
@@ -147,13 +151,7 @@ function LockedSection({ label }: { label: string }) {
         <h3 style={sectionLabelStyle}>{label}</h3>
         <ProBadge />
       </div>
-      <div
-        style={{
-          fontSize: '12px',
-          color: 'var(--color-text-tertiary)',
-          padding: '10px 0',
-        }}
-      >
+      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', padding: '10px 0' }}>
         Available in Pro
       </div>
     </section>
@@ -175,24 +173,37 @@ export function Controls() {
         flexDirection: 'column',
       }}
     >
-      <Section label="Background" isFirst action={<ShuffleButton />}>
-        <BackgroundPicker />
-      </Section>
-      <Section label="Padding">
-        <PaddingControl />
-      </Section>
-      <Section label="Corner Radius">
-        <CornerRadiusControl />
-      </Section>
-      <Section label="Shadow">
-        <ShadowPicker />
-      </Section>
-      <Section label="Frame">
-        <FramePicker />
-      </Section>
-      <Section label="Canvas Size">
-        <AspectRatioControl />
-      </Section>
+      {/* IMAGE zone */}
+      <div style={{ background: 'rgba(108,71,255,0.02)', margin: '0 -16px', padding: '0 16px 8px' }}>
+        <div style={zoneLabelStyle}>IMAGE</div>
+        <Section label="Corner Radius" isFirst>
+          <CornerRadiusControl />
+        </Section>
+        <Section label="Shadow">
+          <ShadowPicker />
+        </Section>
+        <Section label="Frame">
+          <FramePicker />
+        </Section>
+      </div>
+
+      {/* Separator */}
+      <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: '0 -16px' }} />
+
+      {/* CANVAS zone */}
+      <div style={{ background: 'rgba(0,0,0,0.01)', margin: '0 -16px', padding: '0 16px 8px' }}>
+        <div style={zoneLabelStyle}>CANVAS</div>
+        <Section label="Background" isFirst action={<ShuffleButton />}>
+          <BackgroundPicker />
+        </Section>
+        <Section label="Padding">
+          <PaddingControl />
+        </Section>
+        <Section label="Canvas Size">
+          <AspectRatioControl />
+        </Section>
+      </div>
+
       <LockedSection label="Presets" />
       <LockedSection label="Watermark" />
     </aside>

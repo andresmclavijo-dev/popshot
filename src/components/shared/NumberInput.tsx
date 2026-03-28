@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 interface NumberInputProps {
   value: number
@@ -12,6 +12,7 @@ interface NumberInputProps {
 
 export function NumberInput({ value, onChange, min, max, step, label, unit }: NumberInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const [labelHovered, setLabelHovered] = useState(false)
 
   const clamp = useCallback(
     (v: number) => Math.max(min, Math.min(max, v)),
@@ -44,7 +45,30 @@ export function NumberInput({ value, onChange, min, max, step, label, unit }: Nu
     [onChange, clamp, value, step],
   )
 
-  const displayValue = unit ? `${value}` : `${value}`
+  const handleLabelMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      const startX = e.clientX
+      const startValue = value
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const delta = moveEvent.clientX - startX
+        const newValue = Math.round((startValue + delta) / step) * step
+        onChange(clamp(newValue))
+      }
+
+      const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+        document.body.style.cursor = ''
+      }
+
+      document.body.style.cursor = 'ew-resize'
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+    },
+    [value, step, onChange, clamp],
+  )
 
   return (
     <div
@@ -55,10 +79,19 @@ export function NumberInput({ value, onChange, min, max, step, label, unit }: Nu
       }}
     >
       <label
+        title="Drag to adjust"
+        onMouseDown={handleLabelMouseDown}
+        onMouseEnter={() => setLabelHovered(true)}
+        onMouseLeave={() => setLabelHovered(false)}
         style={{
           fontSize: '13px',
           color: 'var(--color-text-secondary)',
           flex: 1,
+          cursor: 'ew-resize',
+          userSelect: 'none',
+          borderBottom: labelHovered ? '1px dashed var(--color-app-border-strong)' : '1px dashed transparent',
+          paddingBottom: '1px',
+          transition: 'border-color 0.15s',
         }}
       >
         {label}
@@ -67,7 +100,7 @@ export function NumberInput({ value, onChange, min, max, step, label, unit }: Nu
         <input
           ref={inputRef}
           type="number"
-          value={displayValue}
+          value={value}
           onChange={handleChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
@@ -102,7 +135,6 @@ export function NumberInput({ value, onChange, min, max, step, label, unit }: Nu
           onFocus={(e) => {
             e.currentTarget.style.borderColor = 'var(--color-app-accent)'
           }}
-          onFocusCapture={() => {}}
           onBlurCapture={(e) => {
             e.currentTarget.style.borderColor = 'transparent'
           }}

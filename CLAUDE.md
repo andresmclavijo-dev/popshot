@@ -115,6 +115,13 @@ Weights: 400 / 500 / 600 only
 - Empty state shows 3 fan-arranged example thumbnails + clean upload zone with dashed border
 - Pro badge style: gradient pill #6C47FF→#9C47FF, white text, 9px
 - Shuffle picks random non-transparent bg preset + random non-none shadow combo
+- Panel has two zones: IMAGE (radius, shadow, frame) and CANVAS (bg, padding, size)
+- Swatch hover previews canvas, click commits
+- Shadow buttons show visual preview (52px height with preview + label)
+- Label scrubbing: ew-resize cursor, drag to adjust value
+- Drag states: 2px accent outline + rgba tint on canvas wrapper
+- All key controls have Tooltip with 600ms delay
+- Pro copy formula: outcome first, "forever" always included
 
 ---
 
@@ -204,6 +211,16 @@ interface EditorState {
 - [x] Three-stop hero gradients with varied angles
 - [x] Pixel-perfect macOS traffic lights (Apple HIG spec)
 - [x] Shuffle cross-fade + canvas pop animation
+- [x] Demo screenshot on first load (isDemoMode state)
+- [x] Swatch hover preview (hover to preview, click to commit)
+- [x] Shadow buttons with visual preview (tiny rect + actual shadow)
+- [x] Panel reorganized into IMAGE / CANVAS zones
+- [x] Label scrubbing on Padding and Corner Radius
+- [x] Drag-and-drop states (outline, tint, flash on drop)
+- [x] Tooltips with keyboard shortcuts (600ms delay)
+- [x] Pro upgrade copy rewrite ("forever" is the key word)
+- [x] Loading state during image processing
+- [x] Slider thumb CSS transition
 - [ ] Social presets
 - [ ] Pro gate (Lemon Squeezy)
 

@@ -44,8 +44,9 @@ function ExampleThumbnail({
   )
 }
 
-export function DropZone() {
+export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
   const { handleFile, isDragging, setIsDragging } = useImageUpload()
+  const dragging = isDragging || isDragOver
   const inputRef = useRef<HTMLInputElement>(null)
 
   const onDragOver = useCallback(
@@ -157,16 +158,20 @@ export function DropZone() {
           flexDirection: 'column',
           alignItems: 'center',
           gap: '8px',
-          border: `1.5px dashed ${isDragging ? 'var(--color-app-accent)' : 'var(--color-app-border)'}`,
+          border: `1.5px dashed ${dragging ? 'var(--color-app-accent)' : 'var(--color-app-border)'}`,
           borderRadius: '12px',
           padding: '24px 40px',
-          background: isDragging ? 'var(--color-app-accent-subtle)' : 'transparent',
+          background: dragging ? 'var(--color-app-accent-subtle)' : 'transparent',
           transition: 'border-color 0.15s, background 0.15s',
         }}
       >
         <Upload
           size={28}
-          style={{ color: 'var(--color-text-tertiary)' }}
+          style={{
+            color: 'var(--color-text-tertiary)',
+            transform: dragging ? 'scale(1.2)' : 'scale(1)',
+            transition: 'transform 0.2s ease',
+          }}
           aria-hidden="true"
         />
         <span

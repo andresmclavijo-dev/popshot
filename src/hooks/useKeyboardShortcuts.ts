@@ -11,14 +11,21 @@ function isInputFocused(): boolean {
 interface ShortcutHandlers {
   onExportOpen: () => void
   onCopyClipboard: () => void
+  onShuffle?: () => void
 }
 
-export function useKeyboardShortcuts({ onExportOpen, onCopyClipboard }: ShortcutHandlers) {
+export function useKeyboardShortcuts({ onExportOpen, onCopyClipboard, onShuffle }: ShortcutHandlers) {
   const reset = useEditorStore((s) => s.reset)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey
+
+      if (mod && e.shiftKey && (e.key === 'r' || e.key === 'R')) {
+        e.preventDefault()
+        onShuffle?.()
+        return
+      }
 
       if (mod && e.key === 'e') {
         e.preventDefault()
@@ -58,5 +65,5 @@ export function useKeyboardShortcuts({ onExportOpen, onCopyClipboard }: Shortcut
 
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [reset, onExportOpen, onCopyClipboard])
+  }, [reset, onExportOpen, onCopyClipboard, onShuffle])
 }

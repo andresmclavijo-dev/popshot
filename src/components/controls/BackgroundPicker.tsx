@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { Check, ChevronDown, Shuffle } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BACKGROUND_PRESETS, SHADOW_PRESETS } from '@/lib/presets'
 import { extractColorsFromImage } from '@/lib/colorExtract'
@@ -88,6 +89,7 @@ export function ShuffleButton() {
 export function BackgroundPicker() {
   const background = useEditorStore((s) => s.background)
   const setBackground = useEditorStore((s) => s.setBackground)
+  const setHoveredBackground = useEditorStore((s) => s.setHoveredBackground)
   const autoColor = useEditorStore((s) => s.autoColor)
   const setAutoColor = useEditorStore((s) => s.setAutoColor)
   const imageUrl = useEditorStore((s) => s.imageUrl)
@@ -153,37 +155,46 @@ export function BackgroundPicker() {
                 gap: '4px',
               }}
             >
-              <button
-                type="button"
-                onClick={() => setBackground(preset.background)}
-                aria-label={`${preset.label} background`}
-                aria-pressed={active}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '6px',
-                  border: 'none',
-                  background: isTransparent ? CHECKERBOARD : preset.background.value,
-                  cursor: 'pointer',
-                  outline: active ? '2px solid var(--color-app-accent)' : 'none',
-                  outlineOffset: active ? '2px' : undefined,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 0,
-                }}
-              >
-                {active && (
-                  <Check
-                    size={12}
-                    strokeWidth={3}
-                    style={{
-                      color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
-                    }}
-                    aria-hidden="true"
-                  />
-                )}
-              </button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => setBackground(preset.background)}
+                      onMouseEnter={() => setHoveredBackground(preset.background)}
+                      onMouseLeave={() => setHoveredBackground(null)}
+                      aria-label={`${preset.label} background`}
+                      aria-pressed={active}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        background: isTransparent ? CHECKERBOARD : preset.background.value,
+                        cursor: 'pointer',
+                        outline: active ? '2px solid var(--color-app-accent)' : 'none',
+                        outlineOffset: active ? '2px' : undefined,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 0,
+                      }}
+                    />
+                  }
+                >
+                  {active && (
+                    <Check
+                      size={12}
+                      strokeWidth={3}
+                      style={{
+                        color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
+                      }}
+                      aria-hidden="true"
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent>{preset.label}</TooltipContent>
+              </Tooltip>
               <span
                 style={{
                   fontSize: '10px',

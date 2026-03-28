@@ -2,14 +2,19 @@ import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { NumberInput } from '@/components/shared/NumberInput'
-import { SegmentedControl } from '@/components/shared/SegmentedControl'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import type { ShadowType } from '@/types'
 
-const SHADOW_OPTIONS: { id: ShadowType; label: string }[] = [
-  { id: 'none', label: 'None' },
-  { id: 'soft', label: 'Soft' },
-  { id: 'deep', label: 'Deep' },
+const SHADOW_OPTIONS: {
+  id: ShadowType
+  label: string
+  tooltip: string
+  previewShadow: string
+}[] = [
+  { id: 'none', label: 'None', tooltip: 'No shadow', previewShadow: 'none' },
+  { id: 'soft', label: 'Soft', tooltip: 'Soft shadow', previewShadow: '0 2px 6px rgba(0,0,0,0.15)' },
+  { id: 'deep', label: 'Deep', tooltip: 'Deep shadow', previewShadow: '0 2px 4px rgba(0,0,0,0.2), 0 8px 16px rgba(0,0,0,0.25)' },
 ]
 
 export function ShadowPicker() {
@@ -24,11 +29,77 @@ export function ShadowPicker() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <SegmentedControl
-        options={SHADOW_OPTIONS}
-        value={shadow}
-        onChange={setShadow}
-      />
+      <div style={{ display: 'flex' }}>
+        {SHADOW_OPTIONS.map((opt, i) => {
+          const active = shadow === opt.id
+          const isFirst = i === 0
+          const isLast = i === SHADOW_OPTIONS.length - 1
+
+          return (
+            <Tooltip key={opt.id}>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    onClick={() => setShadow(opt.id)}
+                    aria-pressed={active}
+                    style={{
+                      flex: 1,
+                      height: '52px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      fontFamily: 'inherit',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      transition: 'all 0.15s',
+                      borderRadius: isFirst
+                        ? 'var(--radius-sm) 0 0 var(--radius-sm)'
+                        : isLast
+                          ? '0 var(--radius-sm) var(--radius-sm) 0'
+                          : '0',
+                      border: active ? '1px solid #6C47FF' : '1px solid var(--color-app-border)',
+                      borderLeft: !isFirst && !active ? 'none' : undefined,
+                      marginLeft: !isFirst && !active ? '-1px' : undefined,
+                      background: active ? '#6C47FF' : 'transparent',
+                      color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+                      position: 'relative',
+                      zIndex: active ? 1 : 0,
+                    }}
+                  />
+                }
+              >
+                {/* Shadow preview */}
+                <div
+                  style={{
+                    width: '32px',
+                    height: '20px',
+                    background: active ? 'rgba(255,255,255,0.15)' : '#F0F0EE',
+                    borderRadius: '3px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '12px',
+                      height: '8px',
+                      background: '#FFFFFF',
+                      borderRadius: '2px',
+                      boxShadow: opt.previewShadow,
+                    }}
+                  />
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: 500 }}>{opt.label}</span>
+              </TooltipTrigger>
+              <TooltipContent>{opt.tooltip}</TooltipContent>
+            </Tooltip>
+          )
+        })}
+      </div>
 
       <button
         type="button"
