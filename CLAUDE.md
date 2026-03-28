@@ -152,7 +152,9 @@ interface EditorState {
 - [x] Frame picker
 - [x] Aspect ratio presets
 - [x] Auto color extraction
+- [x] Auto-color toggle
 - [x] PNG export
+- [x] Copy to clipboard export
 - [ ] Social presets
 - [ ] Pro gate
 

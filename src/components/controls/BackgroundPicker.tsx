@@ -5,6 +5,8 @@ import { BACKGROUND_PRESETS } from '@/lib/presets'
 import { extractColorsFromImage } from '@/lib/colorExtract'
 import type { Background } from '@/types'
 
+const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach'])
+
 export function BackgroundPicker() {
   const background = useEditorStore((s) => s.background)
   const setBackground = useEditorStore((s) => s.setBackground)
@@ -51,20 +53,17 @@ export function BackgroundPicker() {
                 width: '100%',
                 aspectRatio: '1',
                 borderRadius: 'var(--radius-md)',
-                border: active
-                  ? '2px solid var(--color-app-accent)'
-                  : '2px solid transparent',
-                boxShadow: active
-                  ? 'none'
-                  : 'inset 0 0 0 1px var(--color-app-border)',
+                border: '2px solid transparent',
                 background: preset.background.value,
                 cursor: 'pointer',
-                outline: 'none',
-                transition: 'border-color 0.15s',
+                outline: active ? '2px solid #6C47FF' : 'none',
+                outlineOffset: active ? '2px' : undefined,
+                transition: 'outline 0.15s',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 position: 'relative',
+                boxShadow: !active ? 'inset 0 0 0 1px var(--color-app-border)' : 'none',
               }}
             >
               {active && (
@@ -72,8 +71,8 @@ export function BackgroundPicker() {
                   size={14}
                   strokeWidth={3}
                   style={{
-                    color: preset.id === 'pure-white' || preset.id === 'soft-gray' || preset.id === 'peach'
-                      ? 'var(--color-app-accent)'
+                    color: LIGHT_SWATCHES.has(preset.id)
+                      ? '#6C47FF'
                       : '#FFFFFF',
                   }}
                   aria-hidden="true"
@@ -87,7 +86,7 @@ export function BackgroundPicker() {
         <label
           htmlFor="custom-color"
           style={{
-            fontSize: '12px',
+            fontSize: '13px',
             color: 'var(--color-text-secondary)',
           }}
         >
@@ -119,7 +118,7 @@ export function BackgroundPicker() {
         <label
           htmlFor="auto-color-toggle"
           style={{
-            fontSize: '12px',
+            fontSize: '13px',
             color: 'var(--color-text-secondary)',
             cursor: 'pointer',
           }}
