@@ -66,63 +66,7 @@ function TopBarActions() {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      {/* Copy — primary filled */}
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <button
-              type="button"
-              onClick={handleCopy}
-              disabled={disabled}
-              style={{
-                background: '#6C47FF',
-                color: '#FFFFFF',
-                fontSize: '13px',
-                fontWeight: 600,
-                fontFamily: 'inherit',
-                borderRadius: 'var(--radius-md)',
-                padding: '0 var(--space-4)',
-                height: '36px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                border: 'none',
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                opacity: disabled ? 0.5 : 1,
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                outline: 'none',
-              }}
-              onMouseEnter={(e) => {
-                if (!disabled) {
-                  e.currentTarget.style.transform = 'scale(1.02)'
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(108,71,255,0.3)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none'
-                e.currentTarget.style.boxShadow = 'none'
-              }}
-              onMouseDown={(e) => { if (!disabled) e.currentTarget.style.transform = 'scale(0.97)' }}
-              onMouseUp={(e) => { if (!disabled) e.currentTarget.style.transform = 'scale(1.02)' }}
-            />
-          }
-        >
-          {isExporting ? (
-            <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} aria-hidden="true" />
-          ) : copied ? (
-            <Check size={16} aria-hidden="true" />
-          ) : (
-            <Copy size={16} aria-hidden="true" />
-          )}
-          {copied ? 'Copied!' : 'Copy'}
-          {!copied && !isExporting && (
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', marginLeft: '2px' }}>⌘C</span>
-          )}
-        </TooltipTrigger>
-        <TooltipContent>Copy to clipboard · ⌘C</TooltipContent>
-      </Tooltip>
-
-      {/* Export — secondary outline */}
+      {/* Export — secondary ghost */}
       <Tooltip>
         <TooltipTrigger
           render={
@@ -133,32 +77,42 @@ function TopBarActions() {
                   render={<Button />}
                   style={{
                     background: 'transparent',
-                    color: '#6C47FF',
+                    color: 'var(--color-text-secondary)',
                     fontSize: '13px',
-                    fontWeight: 600,
+                    fontWeight: 500,
                     borderRadius: 'var(--radius-md)',
-                    padding: '0 var(--space-4)',
+                    padding: '0 var(--space-3)',
                     height: '36px',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    border: '1px solid #6C47FF',
+                    border: '1px solid var(--color-app-border)',
                     cursor: disabled ? 'not-allowed' : 'pointer',
-                    opacity: disabled ? 0.5 : 1,
-                    transition: 'background 0.15s ease',
+                    opacity: disabled ? 0.4 : 1,
+                    transition: 'background 0.15s ease, border-color 0.15s ease',
                     outline: 'none',
                     fontFamily: 'inherit',
                   }}
                   onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    if (!disabled) e.currentTarget.style.background = 'var(--color-app-accent-subtle)'
+                    if (!disabled) {
+                      e.currentTarget.style.background = 'var(--color-bg-hover)'
+                      e.currentTarget.style.borderColor = 'var(--color-app-border-strong)'
+                    }
                   }}
                   onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.borderColor = 'var(--color-app-border)'
+                  }}
+                  onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
+                    e.currentTarget.style.boxShadow = '0 0 0 2px #FFFFFF, 0 0 0 4px #6C47FF'
+                  }}
+                  onBlur={(e: React.FocusEvent<HTMLButtonElement>) => {
+                    e.currentTarget.style.boxShadow = 'none'
                   }}
                 >
-                  <ArrowDownToLine size={16} aria-hidden="true" />
+                  <ArrowDownToLine size={15} aria-hidden="true" />
                   Export
-                  <span style={{ fontSize: '11px', color: 'rgba(108,71,255,0.5)', marginLeft: '2px' }}>⌘E</span>
+                  <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginLeft: '2px' }}>&#8984;E</span>
                 </PopoverTrigger>
                 <PopoverContent
                   align="end"
@@ -195,7 +149,70 @@ function TopBarActions() {
             </div>
           }
         />
-        <TooltipContent>Download PNG · ⌘E</TooltipContent>
+        <TooltipContent>Download PNG · &#8984;E</TooltipContent>
+      </Tooltip>
+
+      {/* Copy — primary filled */}
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <button
+              type="button"
+              onClick={handleCopy}
+              disabled={disabled}
+              style={{
+                background: '#6C47FF',
+                color: '#FFFFFF',
+                fontSize: '13px',
+                fontWeight: 600,
+                fontFamily: 'inherit',
+                borderRadius: 'var(--radius-md)',
+                padding: '0 var(--space-4)',
+                height: '36px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                border: 'none',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                opacity: disabled ? 0.4 : 1,
+                transition: 'transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease',
+                outline: 'none',
+              }}
+              onMouseEnter={(e) => {
+                if (!disabled) {
+                  e.currentTarget.style.background = '#5835EE'
+                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(108,71,255,0.35)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#6C47FF'
+                e.currentTarget.style.transform = 'none'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+              onMouseDown={(e) => { if (!disabled) e.currentTarget.style.transform = 'scale(0.97)' }}
+              onMouseUp={(e) => { if (!disabled) e.currentTarget.style.transform = 'none' }}
+              onFocus={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 0 2px #FFFFFF, 0 0 0 4px #6C47FF'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+            />
+          }
+        >
+          {isExporting ? (
+            <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} aria-hidden="true" />
+          ) : copied ? (
+            <Check size={15} aria-hidden="true" />
+          ) : (
+            <Copy size={15} aria-hidden="true" />
+          )}
+          {copied ? 'Copied!' : 'Copy'}
+          {!copied && !isExporting && (
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginLeft: '2px' }}>&#8984;C</span>
+          )}
+        </TooltipTrigger>
+        <TooltipContent>Copy to clipboard · &#8984;C</TooltipContent>
       </Tooltip>
     </div>
   )

@@ -138,112 +138,118 @@ export function BackgroundPicker() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '8px 6px',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: '6px',
         }}
       >
         {BACKGROUND_PRESETS.map((preset) => {
           const active = isActive(preset)
           const isTransparent = preset.id === 'transparent'
           return (
-            <div
-              key={preset.id}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-              }}
-            >
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <button
-                      type="button"
-                      onClick={() => setBackground(preset.background)}
-                      onMouseEnter={() => setHoveredBackground(preset.background)}
-                      onMouseLeave={() => setHoveredBackground(null)}
-                      aria-label={`${preset.label} background`}
-                      aria-pressed={active}
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '6px',
-                        border: 'none',
-                        background: isTransparent ? CHECKERBOARD : preset.background.value,
-                        cursor: 'pointer',
-                        outline: active ? '2px solid var(--color-app-accent)' : 'none',
-                        outlineOffset: active ? '2px' : undefined,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: 0,
-                      }}
-                    />
-                  }
-                >
-                  {active && (
-                    <Check
-                      size={12}
-                      strokeWidth={3}
-                      style={{
-                        color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
-                      }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent>{preset.label}</TooltipContent>
-              </Tooltip>
-              <span
-                style={{
-                  fontSize: '10px',
-                  color: 'var(--color-text-tertiary)',
-                  textAlign: 'center',
-                  lineHeight: 1,
-                }}
+            <Tooltip key={preset.id}>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    onClick={() => setBackground(preset.background)}
+                    onMouseEnter={(e) => {
+                      setHoveredBackground(preset.background)
+                      if (!active) {
+                        e.currentTarget.style.transform = 'scale(1.1)'
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      setHoveredBackground(null)
+                      e.currentTarget.style.transform = 'none'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px #6C47FF'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
+                    aria-label={`${preset.label} background`}
+                    aria-pressed={active}
+                    style={{
+                      width: '100%',
+                      aspectRatio: '1',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: isTransparent ? CHECKERBOARD : preset.background.value,
+                      cursor: 'pointer',
+                      outline: active ? '2px solid var(--color-app-accent)' : 'none',
+                      outlineOffset: active ? '2px' : undefined,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: 0,
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                    }}
+                  />
+                }
               >
-                {preset.label}
-              </span>
-            </div>
+                {active && (
+                  <Check
+                    size={14}
+                    strokeWidth={3}
+                    style={{
+                      color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
+                      filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent>{preset.label}</TooltipContent>
+            </Tooltip>
           )
         })}
       </div>
 
       {/* Hex input row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>#</span>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px 10px',
+          background: 'var(--color-bg-card)',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid var(--color-app-border)',
+        }}
+      >
+        <div
+          aria-hidden="true"
+          style={{
+            width: '22px',
+            height: '22px',
+            borderRadius: '5px',
+            flexShrink: 0,
+            background: background.type === 'transparent' ? CHECKERBOARD : background.value,
+            border: '1px solid rgba(0,0,0,0.08)',
+          }}
+        />
+        <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>#</span>
         <input
           type="text"
           value={hexDisplayValue}
           onChange={handleHexInput}
           readOnly={background.type !== 'solid'}
+          placeholder="Custom"
           aria-label="Hex color value"
           style={{
-            width: '80px',
-            height: '30px',
+            width: '100%',
+            height: '22px',
             fontSize: '13px',
             fontFamily: 'inherit',
             color: 'var(--color-text-primary)',
-            background: 'var(--color-bg-card)',
-            border: '1px solid transparent',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0 8px',
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
             outline: 'none',
-            transition: 'border-color 0.15s',
           }}
-          onMouseEnter={(e) => {
-            if (document.activeElement !== e.currentTarget) {
-              e.currentTarget.style.borderColor = 'var(--color-app-border)'
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (document.activeElement !== e.currentTarget) {
-              e.currentTarget.style.borderColor = 'transparent'
-            }
-          }}
-          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-app-accent)' }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = 'transparent' }}
         />
       </div>
 
@@ -285,11 +291,19 @@ export function BackgroundPicker() {
           fontSize: '12px',
           color: 'var(--color-app-accent)',
           fontFamily: 'inherit',
-          padding: 0,
+          padding: '4px 0',
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
           outline: 'none',
+          borderRadius: '4px',
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.outline = '2px solid #6C47FF'
+          e.currentTarget.style.outlineOffset = '2px'
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.outline = 'none'
         }}
         aria-expanded={gradientOpen}
       >

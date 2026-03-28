@@ -29,11 +29,9 @@ export function ShadowPicker() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <div style={{ display: 'flex' }}>
-        {SHADOW_OPTIONS.map((opt, i) => {
+      <div style={{ display: 'flex', gap: '6px' }}>
+        {SHADOW_OPTIONS.map((opt) => {
           const active = shadow === opt.id
-          const isFirst = i === 0
-          const isLast = i === SHADOW_OPTIONS.length - 1
 
           return (
             <Tooltip key={opt.id}>
@@ -45,28 +43,42 @@ export function ShadowPicker() {
                     aria-pressed={active}
                     style={{
                       flex: 1,
-                      height: '52px',
+                      height: '56px',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '4px',
+                      gap: '6px',
                       fontFamily: 'inherit',
                       cursor: 'pointer',
                       outline: 'none',
-                      transition: 'all 0.15s',
-                      borderRadius: isFirst
-                        ? 'var(--radius-sm) 0 0 var(--radius-sm)'
-                        : isLast
-                          ? '0 var(--radius-sm) var(--radius-sm) 0'
-                          : '0',
-                      border: active ? '1px solid #6C47FF' : '1px solid var(--color-app-border)',
-                      borderLeft: !isFirst && !active ? 'none' : undefined,
-                      marginLeft: !isFirst && !active ? '-1px' : undefined,
-                      background: active ? '#6C47FF' : 'transparent',
-                      color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+                      transition: 'all 0.15s ease',
+                      borderRadius: '8px',
+                      border: active ? '1.5px solid #6C47FF' : '1px solid var(--color-app-border)',
+                      background: active ? 'var(--color-app-accent-subtle)' : 'transparent',
+                      color: active ? '#6C47FF' : 'var(--color-text-secondary)',
                       position: 'relative',
-                      zIndex: active ? 1 : 0,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!active) {
+                        e.currentTarget.style.borderColor = 'var(--color-app-border-strong)'
+                        e.currentTarget.style.background = 'var(--color-bg-hover)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!active) {
+                        e.currentTarget.style.borderColor = 'var(--color-app-border)'
+                        e.currentTarget.style.background = 'transparent'
+                      }
+                      e.currentTarget.style.transform = 'none'
+                    }}
+                    onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.96)' }}
+                    onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px #6C47FF'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.boxShadow = 'none'
                     }}
                   />
                 }
@@ -74,26 +86,28 @@ export function ShadowPicker() {
                 {/* Shadow preview */}
                 <div
                   style={{
-                    width: '32px',
-                    height: '20px',
-                    background: active ? 'rgba(255,255,255,0.15)' : '#F0F0EE',
-                    borderRadius: '3px',
+                    width: '36px',
+                    height: '22px',
+                    background: active ? '#FFFFFF' : '#F0F0EE',
+                    borderRadius: '4px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    transition: 'background 0.15s',
                   }}
                 >
                   <div
                     style={{
-                      width: '12px',
-                      height: '8px',
-                      background: '#FFFFFF',
+                      width: '14px',
+                      height: '9px',
+                      background: active ? '#6C47FF' : '#D0D0CE',
                       borderRadius: '2px',
                       boxShadow: opt.previewShadow,
+                      transition: 'background 0.15s',
                     }}
                   />
                 </div>
-                <span style={{ fontSize: '11px', fontWeight: 500 }}>{opt.label}</span>
+                <span style={{ fontSize: '11px', fontWeight: active ? 600 : 500 }}>{opt.label}</span>
               </TooltipTrigger>
               <TooltipContent>{opt.tooltip}</TooltipContent>
             </Tooltip>
@@ -111,11 +125,19 @@ export function ShadowPicker() {
           fontSize: '12px',
           color: 'var(--color-app-accent)',
           fontFamily: 'inherit',
-          padding: 0,
+          padding: '4px 0',
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
           outline: 'none',
+          borderRadius: '4px',
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.outline = '2px solid #6C47FF'
+          e.currentTarget.style.outlineOffset = '2px'
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.outline = 'none'
         }}
         aria-expanded={customOpen}
       >

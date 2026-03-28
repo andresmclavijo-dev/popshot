@@ -8,19 +8,19 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 const sectionLabelStyle: React.CSSProperties = {
   fontSize: '11px',
-  fontWeight: 500,
-  color: 'var(--color-text-tertiary)',
+  fontWeight: 600,
+  color: 'var(--color-text-secondary)',
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
 }
 
 const zoneLabelStyle: React.CSSProperties = {
-  fontSize: '9px',
+  fontSize: '10px',
   fontWeight: 600,
   textTransform: 'uppercase',
-  letterSpacing: '0.1em',
+  letterSpacing: '0.08em',
   color: 'var(--color-text-tertiary)',
-  padding: '12px 0 4px',
+  padding: '14px 0 6px',
 }
 
 function ProBadge() {
@@ -174,8 +174,8 @@ export function Controls() {
       }}
     >
       {/* IMAGE zone */}
-      <div style={{ background: 'rgba(108,71,255,0.02)', margin: '0 -16px', padding: '0 16px 8px' }}>
-        <div style={zoneLabelStyle}>IMAGE</div>
+      <div style={{ margin: '0 -16px', padding: '0 16px 4px' }}>
+        <div style={zoneLabelStyle}>Image</div>
         <Section label="Corner Radius" isFirst>
           <CornerRadiusControl />
         </Section>
@@ -188,11 +188,13 @@ export function Controls() {
       </div>
 
       {/* Separator */}
-      <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: '0 -16px' }} />
+      <div style={{ margin: '0 -16px', padding: '0 16px' }}>
+        <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: 0 }} />
+      </div>
 
       {/* CANVAS zone */}
-      <div style={{ background: 'rgba(0,0,0,0.01)', margin: '0 -16px', padding: '0 16px 8px' }}>
-        <div style={zoneLabelStyle}>CANVAS</div>
+      <div style={{ margin: '0 -16px', padding: '0 16px 4px' }}>
+        <div style={zoneLabelStyle}>Canvas</div>
         <Section label="Background" isFirst action={<ShuffleButton />}>
           <BackgroundPicker />
         </Section>
@@ -202,6 +204,11 @@ export function Controls() {
         <Section label="Canvas Size">
           <AspectRatioControl />
         </Section>
+      </div>
+
+      {/* Separator */}
+      <div style={{ margin: '0 -16px', padding: '0 16px' }}>
+        <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: 0 }} />
       </div>
 
       <LockedSection label="Presets" />

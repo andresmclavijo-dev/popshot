@@ -31,16 +31,37 @@ export function FramePicker() {
               style={{
                 height: '30px',
                 fontSize: '12px',
-                fontWeight: 500,
+                fontWeight: active ? 600 : 500,
                 fontFamily: 'inherit',
                 cursor: 'pointer',
                 outline: 'none',
-                transition: 'all 0.15s',
-                borderRadius: 'var(--radius-sm)',
-                border: active ? '1px solid #6C47FF' : '1px solid var(--color-app-border)',
-                background: active ? '#6C47FF' : 'transparent',
-                color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+                transition: 'all 0.15s ease',
+                borderRadius: '6px',
+                border: active ? '1.5px solid #6C47FF' : '1px solid var(--color-app-border)',
+                background: active ? 'var(--color-app-accent-subtle)' : 'transparent',
+                color: active ? '#6C47FF' : 'var(--color-text-secondary)',
                 padding: '0 16px',
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.borderColor = 'var(--color-app-border-strong)'
+                  e.currentTarget.style.background = 'var(--color-bg-hover)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  e.currentTarget.style.borderColor = 'var(--color-app-border)'
+                  e.currentTarget.style.background = 'transparent'
+                }
+                e.currentTarget.style.transform = 'none'
+              }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.96)' }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
+              onFocus={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px #6C47FF'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.boxShadow = 'none'
               }}
             >
               {opt.label}
