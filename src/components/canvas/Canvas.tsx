@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { SHADOW_PRESETS, ASPECT_RATIO_PRESETS } from '@/lib/presets'
+import { isBackgroundDark } from '@/lib/utils'
 import { DropZone } from './DropZone'
 import { FrameOverlay } from './FrameOverlay'
 import { CanvasLoading } from './CanvasLoading'
@@ -20,6 +21,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const reset = useEditorStore((s) => s.reset)
   const lastShuffle = useEditorStore((s) => s.lastShuffle)
   const isDemoMode = useEditorStore((s) => s.isDemoMode)
+  const proUnlocked = useEditorStore((s) => s.proUnlocked)
 
   const { handleFile } = useImageUpload()
   const [popKey, setPopKey] = useState(0)
@@ -122,6 +124,11 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
         <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
           <div style={{ position: 'relative' }}>
             <FrameOverlay frame={frame} />
+            {/* IMPORTANT: All images must be same-origin or object URLs.
+                Never load images from external CDNs onto the export canvas.
+                Demo image loads from /public (same-origin ✓)
+                User uploads create object URLs (same-origin ✓)
+                If adding remote images in future: convert to base64 first. */}
             <img
               src={imageUrl}
               alt="Screenshot preview"
@@ -134,6 +141,26 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
               }}
             />
           </div>
+          {/* Watermark — free users only */}
+          {!proUnlocked && (
+            <span
+              style={{
+                position: 'absolute',
+                bottom: '12px',
+                right: '12px',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                fontSize: '11px',
+                fontWeight: 500,
+                opacity: 0.5,
+                color: isBackgroundDark(displayBg.value) ? '#FFFFFF' : '#1A1A18',
+                letterSpacing: '0.02em',
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}
+            >
+              popshot.app
+            </span>
+          )}
         </div>
         <Tooltip>
           <TooltipTrigger

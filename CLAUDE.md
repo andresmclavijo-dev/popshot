@@ -9,6 +9,15 @@ sentence case labels, React 300-line limit, 3-layer CSS architecture,
 no arbitrary Tailwind — all apply from global.
 Do not re-state those rules here.
 
+## Monetization notes
+- Watermark: bottom-right, 11px system-ui, 0.5 opacity, auto light/dark
+- Watermark = #1 Pro benefit (removal unlocks first)
+- Pro price: $19 one-time (show ~~$29~~ as launch framing)
+- 2x export is free — never gate resolution
+- Lemon Squeezy variant ID: VARIANT_ID_PLACEHOLDER (update before launch)
+- localStorage key: 'popshot_pro' = 'true'
+- Export gate shown once (localStorage 'hasSeenExportGate')
+
 ## Global rule adaptations for Popshot
 - Background transition: 200ms var(--ease-out) — not 600ms
 - Toast dismiss: 2000ms — global standard applies
@@ -70,7 +79,7 @@ The dev tool is a separate future product — not this repo.
 - "Calm over clever" motion — no bounce, no elastic, no spring
 - Swatch hover previews canvas, click commits (local state only)
 - Pro copy: lead with outcome — "Make every screenshot stunning"
-- Pro CTA: "Get Popshot Pro" — "$9 · one-time · no subscription" below
+- Pro CTA: "Get Popshot Pro" — "$19 · one-time · no subscription" below
 - Toast copy: "Saved · 1x" / "Saved · 2x" / "Image copied"
 - Export buttons: "Copy image" (primary filled) + "Save PNG" (outline)
 - Section labels: sentence case — "Background" not "BACKGROUND"
@@ -149,8 +158,16 @@ The dev tool is a separate future product — not this repo.
 - [x] hoveredBackground in local state (not Zustand)
 - [x] lastShuffle timestamp pattern with @keyframes canvasPop
 - [x] Canvas decomposed (CanvasLoading extracted)
+- [x] Price updated to $19 throughout UI (~~$29~~ launch framing)
+- [x] 2x export is free for all users
+- [x] 'Made with Popshot' watermark on free exports (system-ui font)
+- [x] Export gate modal (first export shows watermark vs no-watermark)
+- [x] Lemon Squeezy overlay checkout wired (localStorage flow)
+- [x] Jordan fixes: pixelRatio 2, double rAF, URL cleanup, CORS note
+- [x] Error toasts: export fail, wrong type, file too large (4000ms)
+- [x] Meta tags + favicon in index.html
 - [ ] Social presets
-- [ ] Pro gate (Lemon Squeezy)
+- [ ] Pro gate (Lemon Squeezy — variant ID needed)
 
 ---
 

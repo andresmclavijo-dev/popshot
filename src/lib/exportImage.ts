@@ -6,31 +6,28 @@ function getCanvasNode(): HTMLElement {
   return node
 }
 
+async function waitForDomSettle(): Promise<void> {
+  await new Promise<void>(resolve =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  )
+}
+
 export async function exportAsPng(scale: 1 | 2): Promise<void> {
   const node = getCanvasNode()
-  const pixelRatio = scale * window.devicePixelRatio
-  try {
-    const dataUrl = await toPng(node, { pixelRatio })
-    const link = document.createElement('a')
-    link.download = `popshot-${Date.now()}.png`
-    link.href = dataUrl
-    link.click()
-  } catch (error) {
-    console.error('Export failed:', error)
-    throw error
-  }
+  await waitForDomSettle()
+  const dataUrl = await toPng(node, { pixelRatio: scale * 2 })
+  const link = document.createElement('a')
+  link.download = `popshot-${Date.now()}.png`
+  link.href = dataUrl
+  link.click()
 }
 
 export async function copyToClipboard(): Promise<void> {
   const node = getCanvasNode()
-  try {
-    const blob = await toBlob(node, { pixelRatio: window.devicePixelRatio * 2 })
-    if (!blob) throw new Error('Failed to create image blob')
-    await navigator.clipboard.write([
-      new ClipboardItem({ 'image/png': blob }),
-    ])
-  } catch (error) {
-    console.error('Copy to clipboard failed:', error)
-    throw error
-  }
+  await waitForDomSettle()
+  const blob = await toBlob(node, { pixelRatio: 2 })
+  if (!blob) throw new Error('Failed to create image blob')
+  await navigator.clipboard.write([
+    new ClipboardItem({ 'image/png': blob }),
+  ])
 }

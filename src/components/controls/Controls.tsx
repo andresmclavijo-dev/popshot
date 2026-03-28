@@ -5,6 +5,7 @@ import { ShadowPicker } from './ShadowPicker'
 import { FramePicker } from './FramePicker'
 import { AspectRatioControl } from './AspectRatioControl'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { openCheckout } from '@/lib/lemonSqueezy'
 import type { Background } from '@/types'
 
 const sectionLabelStyle: React.CSSProperties = {
@@ -78,12 +79,17 @@ function ProBadge() {
         <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
           Make every screenshot stunning
         </span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', textDecoration: 'line-through' }}>$29</span>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>$19</span>
+          <span style={{ fontSize: '10px', color: 'var(--color-app-accent)', fontWeight: 500 }}>Launch price</span>
+        </div>
         <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-          $9 once. No subscription. Yours forever.
+          One-time. No subscription. Yours forever.
         </span>
         <button
           type="button"
-          onClick={() => console.log('open payment modal — Lemon Squeezy coming soon')}
+          onClick={() => openCheckout()}
           style={{
             width: '100%',
             height: '30px',
@@ -101,7 +107,7 @@ function ProBadge() {
           Get Popshot Pro
         </button>
         <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'center' }}>
-          $9 · one-time · no subscription
+          $19 · one-time · no subscription
         </span>
       </PopoverContent>
     </Popover>

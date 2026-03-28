@@ -1,28 +1,39 @@
 import { useEffect, useState } from 'react'
 
-let showToastGlobal: ((message: string) => void) | null = null
+type ToastVariant = 'success' | 'error'
 
-export function showToast(message: string) {
-  showToastGlobal?.(message)
+interface ToastData {
+  message: string
+  variant: ToastVariant
+  id: number
+}
+
+let showToastGlobal: ((message: string, variant?: ToastVariant) => void) | null = null
+
+export function showToast(message: string, variant: ToastVariant = 'success') {
+  showToastGlobal?.(message, variant)
 }
 
 export function ToastProvider() {
-  const [toast, setToast] = useState<{ message: string; id: number } | null>(null)
+  const [toast, setToast] = useState<ToastData | null>(null)
 
   useEffect(() => {
-    showToastGlobal = (message: string) => {
-      setToast({ message, id: Date.now() })
+    showToastGlobal = (message: string, variant: ToastVariant = 'success') => {
+      setToast({ message, variant, id: Date.now() })
     }
     return () => { showToastGlobal = null }
   }, [])
 
   useEffect(() => {
     if (!toast) return
-    const timer = setTimeout(() => setToast(null), 2000)
+    const duration = toast.variant === 'error' ? 4000 : 2000
+    const timer = setTimeout(() => setToast(null), duration)
     return () => clearTimeout(timer)
   }, [toast])
 
   if (!toast) return null
+
+  const isError = toast.variant === 'error'
 
   return (
     <div
@@ -33,7 +44,7 @@ export function ToastProvider() {
         position: 'fixed',
         bottom: '24px',
         right: '24px',
-        background: 'var(--color-text-primary)',
+        background: isError ? 'var(--color-danger)' : 'var(--color-text-primary)',
         color: '#FFFFFF',
         fontSize: '13px',
         fontFamily: 'var(--font-sans)',
@@ -47,10 +58,12 @@ export function ToastProvider() {
         gap: '6px',
       }}
     >
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <circle cx="7" cy="7" r="7" fill="#16A34A" />
-        <path d="M4 7l2 2 4-4" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      {!isError && (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="7" fill="#16A34A" />
+          <path d="M4 7l2 2 4-4" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
       {toast.message}
     </div>
   )
