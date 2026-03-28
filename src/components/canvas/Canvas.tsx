@@ -30,35 +30,28 @@ export function Canvas() {
       : {}),
   }
 
+  const workspaceStyle: React.CSSProperties = {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#E4E4E2',
+    backgroundImage: 'radial-gradient(circle, #C8C8C4 1px, transparent 1px)',
+    backgroundSize: '20px 20px',
+    overflow: 'auto',
+    padding: 'var(--space-8)',
+  }
+
   if (!imageUrl) {
     return (
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#E8E8E6',
-          padding: 'var(--space-8)',
-        }}
-      >
+      <div style={workspaceStyle}>
         <DropZone />
       </div>
     )
   }
 
   return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--color-bg-page)',
-        overflow: 'auto',
-        padding: 'var(--space-8)',
-      }}
-    >
+    <div style={workspaceStyle}>
       <div id="export-canvas" style={canvasStyle}>
         <div style={{ position: 'relative' }}>
           <FrameOverlay frame={frame} />

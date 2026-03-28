@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, Shuffle } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { useEditorStore } from '@/store/useEditorStore'
-import { BACKGROUND_PRESETS } from '@/lib/presets'
+import { BACKGROUND_PRESETS, SHADOW_PRESETS } from '@/lib/presets'
 import { extractColorsFromImage } from '@/lib/colorExtract'
 import type { Background } from '@/types'
 
@@ -11,9 +11,76 @@ const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach', 'transparent
 
 const CHECKERBOARD = 'repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 0 0 / 8px 8px'
 
+const SHUFFLEABLE_PRESETS = BACKGROUND_PRESETS.filter((p) => p.id !== 'transparent')
+const SHUFFLEABLE_SHADOWS = SHADOW_PRESETS.filter((p) => p.id !== 'none')
+
+const ProBadge = () => (
+  <span
+    style={{
+      fontSize: '9px',
+      fontWeight: 600,
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      background: 'linear-gradient(135deg, #6C47FF, #9C47FF)',
+      color: '#FFFFFF',
+      padding: '2px 6px',
+      borderRadius: '9999px',
+      display: 'inline-block',
+      lineHeight: 1.4,
+    }}
+  >
+    PRO
+  </span>
+)
+
 function hexFromBackground(bg: Background): string {
   if (bg.type === 'solid') return bg.value.replace('#', '')
   return ''
+}
+
+export function ShuffleButton() {
+  const setBackground = useEditorStore((s) => s.setBackground)
+  const setShadow = useEditorStore((s) => s.setShadow)
+  const [angle, setAngle] = useState(0)
+
+  const handleShuffle = () => {
+    const bg = SHUFFLEABLE_PRESETS[Math.floor(Math.random() * SHUFFLEABLE_PRESETS.length)]
+    const sh = SHUFFLEABLE_SHADOWS[Math.floor(Math.random() * SHUFFLEABLE_SHADOWS.length)]
+    setBackground(bg.background)
+    setShadow(sh.id)
+    setAngle((a) => a + 180)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleShuffle}
+      aria-label="Surprise me"
+      title="Surprise me"
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: '2px',
+        color: 'var(--color-text-tertiary)',
+        display: 'flex',
+        alignItems: 'center',
+        outline: 'none',
+        lineHeight: 0,
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-tertiary)' }}
+    >
+      <Shuffle
+        size={14}
+        style={{
+          transform: `rotate(${angle}deg)`,
+          transition: 'transform 0.3s ease',
+        }}
+        aria-hidden="true"
+      />
+    </button>
+  )
 }
 
 export function BackgroundPicker() {
@@ -208,17 +275,19 @@ export function BackgroundPicker() {
           padding: 0,
           display: 'flex',
           alignItems: 'center',
-          gap: '4px',
+          gap: '6px',
           outline: 'none',
         }}
         aria-expanded={gradientOpen}
       >
         Custom gradient
+        <ProBadge />
         <ChevronDown
           size={12}
           style={{
             transform: gradientOpen ? 'rotate(180deg)' : 'none',
             transition: 'transform 0.15s',
+            marginLeft: 'auto',
           }}
           aria-hidden="true"
         />

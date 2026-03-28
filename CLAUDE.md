@@ -108,6 +108,10 @@ Weights: 400 / 500 / 600 only
 - Background swatches have named labels below each swatch
 - Canvas size buttons show preset name + dimensions
 - Shadow type 'ambient' renamed to 'deep' throughout codebase
+- No border dividers between panel sections — padding-top only for breathing room
+- Empty state shows 3 fan-arranged example thumbnails + clean upload zone with dashed border
+- Pro badge style: gradient pill #6C47FF→#9C47FF, white text, 9px
+- Shuffle picks random non-transparent bg preset + random non-none shadow combo
 
 ---
 
@@ -180,8 +184,17 @@ interface EditorState {
 - [x] Export toast notifications
 - [x] Swatch size 32x32px
 - [x] Open Graph + Pinterest presets
+- [x] Canvas dot grid background (#E4E4E2 + radial-gradient dots)
+- [x] Export button hero treatment (36px, ArrowDownToLine icon, ⌘E hint, hover lift + purple shadow)
+- [x] Removed panel section border dividers
+- [x] Renamed all presets to evocative labels (Paper, Concrete, Deep Sea, Dusk, Nordic, Warm, Moss, Blush)
+- [x] Top bar logo mark (20px violet rounded square with P) + stronger border + weight 700
+- [x] Empty state with 3 fan-arranged example thumbnails + clean upload zone
+- [x] Shuffle/randomize button in Background section header
+- [x] Pro badges (gradient pill) on Custom Gradient, Presets section, Watermark section
+- [x] Upgrade prompt at bottom of panel ($9 once CTA)
 - [ ] Social presets
-- [ ] Pro gate
+- [ ] Pro gate (Lemon Squeezy)
 
 ---
 

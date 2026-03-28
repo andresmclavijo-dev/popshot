@@ -21,15 +21,15 @@ export interface AspectRatioPreset {
 
 export const BACKGROUND_PRESETS: BackgroundPreset[] = [
   { id: 'transparent', label: 'None', background: { type: 'transparent', value: 'transparent' } },
-  { id: 'pure-white', label: 'White', background: { type: 'solid', value: '#FFFFFF' } },
-  { id: 'soft-gray', label: 'Stone', background: { type: 'solid', value: '#EEEEED' } },
+  { id: 'pure-white', label: 'Paper', background: { type: 'solid', value: '#FFFFFF' } },
+  { id: 'soft-gray', label: 'Concrete', background: { type: 'solid', value: '#EEEEED' } },
   { id: 'midnight', label: 'Midnight', background: { type: 'solid', value: '#1A1A18' } },
-  { id: 'ocean', label: 'Ocean', background: { type: 'gradient', value: 'linear-gradient(135deg, #667eea, #764ba2)' } },
-  { id: 'sunset', label: 'Sunset', background: { type: 'gradient', value: 'linear-gradient(135deg, #f093fb, #f5576c)' } },
-  { id: 'aurora', label: 'Aurora', background: { type: 'gradient', value: 'linear-gradient(135deg, #4facfe, #00f2fe)' } },
-  { id: 'peach', label: 'Peach', background: { type: 'gradient', value: 'linear-gradient(135deg, #ffecd2, #fcb69f)' } },
-  { id: 'forest', label: 'Forest', background: { type: 'gradient', value: 'linear-gradient(135deg, #134e5e, #71b280)' } },
-  { id: 'rose', label: 'Rose', background: { type: 'gradient', value: 'linear-gradient(135deg, #f8b4c8, #ee82a2)' } },
+  { id: 'ocean', label: 'Deep Sea', background: { type: 'gradient', value: 'linear-gradient(135deg, #667eea, #764ba2)' } },
+  { id: 'sunset', label: 'Dusk', background: { type: 'gradient', value: 'linear-gradient(135deg, #f093fb, #f5576c)' } },
+  { id: 'aurora', label: 'Nordic', background: { type: 'gradient', value: 'linear-gradient(135deg, #4facfe, #00f2fe)' } },
+  { id: 'peach', label: 'Warm', background: { type: 'gradient', value: 'linear-gradient(135deg, #ffecd2, #fcb69f)' } },
+  { id: 'forest', label: 'Moss', background: { type: 'gradient', value: 'linear-gradient(135deg, #134e5e, #71b280)' } },
+  { id: 'rose', label: 'Blush', background: { type: 'gradient', value: 'linear-gradient(135deg, #f8b4c8, #ee82a2)' } },
 ]
 
 export const SHADOW_PRESETS: ShadowPreset[] = [

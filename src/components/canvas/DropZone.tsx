@@ -2,6 +2,48 @@ import { useCallback, useEffect, useRef } from 'react'
 import { Upload } from 'lucide-react'
 import { useImageUpload } from '@/hooks/useImageUpload'
 
+function ExampleThumbnail({
+  gradient,
+  rotate,
+  zIndex,
+  offsetX,
+}: {
+  gradient: string
+  rotate: number
+  zIndex: number
+  offsetX: number
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        width: '120px',
+        height: '80px',
+        borderRadius: '8px',
+        background: gradient,
+        transform: `translateX(${offsetX}px) rotate(${rotate}deg)`,
+        boxShadow: zIndex > 1
+          ? '0 6px 20px rgba(0,0,0,0.22)'
+          : '0 4px 12px rgba(0,0,0,0.14)',
+        zIndex,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        style={{
+          width: '68%',
+          height: '55%',
+          background: 'rgba(255,255,255,0.92)',
+          borderRadius: '4px',
+        }}
+      />
+    </div>
+  )
+}
+
 export function DropZone() {
   const { handleFile, isDragging, setIsDragging } = useImageUpload()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -62,47 +104,90 @@ export function DropZone() {
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
+      aria-label="Upload screenshot"
       style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 'var(--space-4)',
-        width: '100%',
-        maxWidth: '480px',
-        padding: 'var(--space-12) var(--space-8)',
-        border: `2px dashed ${isDragging ? 'var(--color-app-accent)' : 'var(--color-app-border-strong)'}`,
-        borderRadius: 'var(--radius-xl)',
-        background: isDragging ? 'var(--color-app-accent-subtle)' : 'var(--color-bg-card)',
+        gap: '32px',
+        background: 'none',
+        border: 'none',
         cursor: 'pointer',
-        transition: 'border-color 0.15s, background 0.15s',
         outline: 'none',
         fontFamily: 'inherit',
+        padding: 'var(--space-8)',
       }}
-      aria-label="Upload screenshot"
     >
-      <Upload
-        size={32}
-        style={{ color: 'var(--color-text-tertiary)' }}
-        aria-hidden="true"
-      />
-      <span
+      {/* Fan thumbnails */}
+      <div
         style={{
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'var(--color-text-secondary)',
+          position: 'relative',
+          width: '240px',
+          height: '100px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        Drop, paste or click to upload
-      </span>
-      <span
+        <ExampleThumbnail
+          gradient="linear-gradient(135deg, #667eea, #764ba2)"
+          rotate={-3}
+          zIndex={1}
+          offsetX={-56}
+        />
+        <ExampleThumbnail
+          gradient="linear-gradient(135deg, #f093fb, #f5576c)"
+          rotate={0}
+          zIndex={3}
+          offsetX={0}
+        />
+        <ExampleThumbnail
+          gradient="linear-gradient(135deg, #4facfe, #00f2fe)"
+          rotate={3}
+          zIndex={1}
+          offsetX={56}
+        />
+      </div>
+
+      {/* Upload zone */}
+      <div
         style={{
-          fontSize: '12px',
-          color: 'var(--color-text-tertiary)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '8px',
+          border: `1.5px dashed ${isDragging ? 'var(--color-app-accent)' : 'var(--color-app-border)'}`,
+          borderRadius: '12px',
+          padding: '24px 40px',
+          background: isDragging ? 'var(--color-app-accent-subtle)' : 'transparent',
+          transition: 'border-color 0.15s, background 0.15s',
         }}
       >
-        PNG, JPG, WebP
-      </span>
+        <Upload
+          size={28}
+          style={{ color: 'var(--color-text-tertiary)' }}
+          aria-hidden="true"
+        />
+        <span
+          style={{
+            fontSize: '16px',
+            fontWeight: 500,
+            color: 'var(--color-text-primary)',
+          }}
+        >
+          Drop your screenshot
+        </span>
+        <span
+          style={{
+            fontSize: '13px',
+            color: 'var(--color-text-tertiary)',
+          }}
+        >
+          or paste with ⌘V
+        </span>
+      </div>
+
       <input
         ref={inputRef}
         type="file"
