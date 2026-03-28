@@ -145,7 +145,7 @@ export function App() {
             color: 'var(--color-text-primary)',
           }}
         >
-          Screenshoot
+          Popshot
         </span>
         <ExportButton />
       </header>

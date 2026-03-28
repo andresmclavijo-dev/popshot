@@ -1,4 +1,4 @@
-# CLAUDE.md — Screenshoot App
+# CLAUDE.md — Popshot
 
 ## What this is
 A web-based screenshot beautifier. Users paste/drag a screenshot,
@@ -15,6 +15,7 @@ Stack is fully client-side. No backend, no auth, no database in v1.
 - html-to-image (PNG export)
 - colorthief (auto color extraction)
 - Lemon Squeezy (payments, future)
+- Domain: popshot.app (purchased March 28, 2026)
 
 ---
 

@@ -11,7 +11,7 @@ export async function exportAsPng(scale: 1 | 2): Promise<void> {
   try {
     const dataUrl = await toPng(node, { pixelRatio: scale })
     const link = document.createElement('a')
-    link.download = `screenshoot-${Date.now()}.png`
+    link.download = `popshot-${Date.now()}.png`
     link.href = dataUrl
     link.click()
   } catch (error) {
