@@ -141,18 +141,18 @@ interface EditorState {
 ## What's been built
 (Update after every session)
 
-- [ ] Project scaffold
-- [ ] Tailwind + shadcn configured
-- [ ] Zustand store
-- [ ] Dropzone
-- [ ] Canvas preview
-- [ ] Background picker
-- [ ] Padding + radius sliders
-- [ ] Shadow picker
-- [ ] Frame picker
-- [ ] Aspect ratio presets
-- [ ] Auto color extraction
-- [ ] PNG export
+- [x] Project scaffold
+- [x] Tailwind + shadcn configured
+- [x] Zustand store
+- [x] Dropzone
+- [x] Canvas preview
+- [x] Background picker
+- [x] Padding + radius sliders
+- [x] Shadow picker
+- [x] Frame picker
+- [x] Aspect ratio presets
+- [x] Auto color extraction
+- [x] PNG export
 - [ ] Social presets
 - [ ] Pro gate
 

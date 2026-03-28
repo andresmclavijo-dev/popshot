@@ -1,0 +1,35 @@
+export type BackgroundType = 'solid' | 'gradient' | 'transparent'
+export type ShadowType = 'none' | 'soft' | 'ambient'
+export type FrameType = 'none' | 'macos-light' | 'macos-dark' | 'iphone'
+export type AspectRatioType = 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble'
+
+export interface Background {
+  type: BackgroundType
+  value: string
+}
+
+export interface EditorState {
+  imageFile: File | null
+  imageUrl: string | null
+  background: Background
+  padding: number
+  cornerRadius: number
+  shadow: ShadowType
+  frame: FrameType
+  aspectRatio: AspectRatioType
+  autoColor: boolean
+  proUnlocked: boolean
+}
+
+export interface EditorActions {
+  setImage: (file: File, url: string) => void
+  setBackground: (bg: Background) => void
+  setPadding: (v: number) => void
+  setCornerRadius: (v: number) => void
+  setShadow: (v: ShadowType) => void
+  setFrame: (v: FrameType) => void
+  setAspectRatio: (v: AspectRatioType) => void
+  setAutoColor: (v: boolean) => void
+  setProUnlocked: (v: boolean) => void
+  reset: () => void
+}
