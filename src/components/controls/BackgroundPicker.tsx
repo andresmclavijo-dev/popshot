@@ -58,8 +58,8 @@ export function ShuffleButton() {
     <button
       type="button"
       onClick={handleShuffle}
-      aria-label="Surprise me"
-      title="Surprise me"
+      aria-label="Shuffle background"
+      title="Shuffle background"
       style={{
         background: 'none',
         border: 'none',

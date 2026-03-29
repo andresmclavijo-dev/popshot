@@ -195,9 +195,11 @@ body {
   to { transform: rotate(360deg); }
 }
 
-@keyframes iconPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
 }
 
 @keyframes canvasPop {

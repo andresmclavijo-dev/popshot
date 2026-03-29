@@ -209,6 +209,15 @@ The dev tool is a separate future product — not this repo.
 - [x] All transitions use var(--ease-out), no plain ease keyword
 - [x] Background transition 200ms confirmed
 - [x] Toast: bottom-right, 2000ms success, 4000ms error
+- [x] html lang="en", canonical URL, apple-touch-icon
+- [x] SoftwareApplication JSON-LD structured data
+- [x] robots.txt + sitemap.xml
+- [x] OG image placeholder (1200x630)
+- [x] aria-labels on all icon-only buttons
+- [x] aria-labels + aria-pressed on swatch buttons
+- [x] aria-labels on locked preset thumbnails
+- [x] aria-modal + aria-labelledby on export gate dialog
+- [x] iconPulse wrapped in prefers-reduced-motion: no-preference
 - [ ] Social presets
 - [ ] Pro gate (Lemon Squeezy — variant ID needed)
 

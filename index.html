@@ -2,10 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Popshot — Beautiful screenshots, pay once</title>
     <meta name="description" content="Make your screenshots pop. Auto-matched backgrounds, device frames, ambient shadows. Export at 2x. $19 once — no subscription ever." />
+    <link rel="canonical" href="https://popshot.app" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="Popshot — Beautiful screenshots, pay once" />
@@ -19,6 +21,31 @@
     <meta name="twitter:title" content="Popshot — Beautiful screenshots, pay once" />
     <meta name="twitter:description" content="Auto-matched backgrounds, device frames, ambient shadows. $19, no subscription." />
     <meta name="twitter:image" content="https://popshot.app/og-image.png" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Popshot",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web",
+      "description": "Make your screenshots pop. Auto-matched backgrounds, device frames, ambient shadows. Export at 2x. $19 once — no subscription.",
+      "url": "https://popshot.app",
+      "offers": {
+        "@type": "Offer",
+        "price": "19",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "19",
+          "priceCurrency": "USD",
+          "name": "Lifetime license"
+        }
+      },
+      "screenshot": "https://popshot.app/og-image.png"
+    }
+    </script>
 
     <!-- Lemon Squeezy overlay checkout -->
     <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
