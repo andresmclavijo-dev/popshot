@@ -26,6 +26,12 @@ Do not re-state those rules here.
 - No server-side code — fully client-side, no API routes needed
 - hoveredBackground MUST be local useState in BackgroundPicker
   NOT in Zustand store — hover state is UI-only, not shared state
+- imageUrl stored as base64 data URL (not blob:) for html-to-image
+  compatibility — blob: URLs fail silently in html-to-image exports
+- Export uses JPEG (quality 0.92) for downloads, PNG for clipboard
+  and transparent backgrounds only
+- Max export pixelRatio capped to 2x of 1920px width — prevents
+  12MB+ files from 4K screenshots
 
 ## Stack
 - React 18 + Vite + TypeScript

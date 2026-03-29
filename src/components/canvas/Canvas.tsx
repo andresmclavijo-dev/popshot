@@ -125,14 +125,10 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
         <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
           <div style={{ position: 'relative' }}>
             <FrameOverlay frame={frame} />
-            {/* IMPORTANT: All images must be same-origin or object URLs.
-                Never load images from external CDNs onto the export canvas.
-                Demo image loads from /public (same-origin ✓)
-                User uploads create object URLs (same-origin ✓)
-                If adding remote images in future: convert to base64 first. */}
+            {/* imageUrl is base64 data URL — html-to-image captures this correctly.
+                Never use blob: URLs — they fail silently in html-to-image exports. */}
             <img
               src={imageUrl}
-              crossOrigin="anonymous"
               alt="Screenshot preview"
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageLoaded(false)}

@@ -28,19 +28,24 @@ export function useImageUpload() {
 
       setIsLoading(true)
 
-      // Clean up previous object URL
-      const prevUrl = useEditorStore.getState().imageUrl
-      if (prevUrl && prevUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(prevUrl)
-      }
+      // Convert to base64 — html-to-image can capture data URLs but not blob: URLs
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
 
-      const url = URL.createObjectURL(file)
-      setImage(file, url)
+      setImage(file, base64)
       setDemoMode(isDemo)
 
       if (autoColor) {
-        const bg = await extractColorsFromImage(url)
-        setBackground(bg)
+        try {
+          const bg = await extractColorsFromImage(base64)
+          setBackground(bg)
+        } catch {
+          // Keep default gradient
+        }
       }
       setIsLoading(false)
     },
