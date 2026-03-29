@@ -62,6 +62,13 @@ Do not re-state those rules here.
 --color-accent: #7C5DFA (PRIMARY BUTTONS ONLY)
 
 ### Typography
+Font: Satoshi (Fontshare CDN)
+Fallback: 'DM Sans', system-ui, -apple-system, sans-serif
+Weights loaded: 300, 400, 500, 700, 900 (variable)
+Base letter-spacing: -0.01em on body
+Heading letter-spacing: -0.02em to -0.03em
+Font smoothing: -webkit-font-smoothing: antialiased
+
 - Section headers: 13px/600 sentence case, #222222
 - Control labels: 13px/400, #717171
 - Input values: 13px/500, #222222
@@ -218,6 +225,7 @@ The dev tool is a separate future product — not this repo.
 - [x] aria-labels on locked preset thumbnails
 - [x] aria-modal + aria-labelledby on export gate dialog
 - [x] iconPulse wrapped in prefers-reduced-motion: no-preference
+- [x] Font swap: Inter → Satoshi (Fontshare CDN), letter-spacing refinements
 - [ ] Social presets
 - [ ] Pro gate (Lemon Squeezy — variant ID needed)
 
