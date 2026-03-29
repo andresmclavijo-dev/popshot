@@ -133,7 +133,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
             <img
               ref={imgRef}
               src={imageUrl}
-              crossOrigin="anonymous"
               alt="Screenshot preview"
               onLoad={(e) => {
                 const img = e.target as HTMLImageElement

@@ -20,23 +20,6 @@ async function waitForImageReady(node: HTMLElement): Promise<void> {
   })
 }
 
-/** If src is a blob: URL, convert to data URL via canvas drawImage */
-async function ensureDataUrl(node: HTMLElement): Promise<void> {
-  const img = node.querySelector('img') as HTMLImageElement | null
-  if (!img || !img.src.startsWith('blob:')) return
-  try {
-    const canvas = document.createElement('canvas')
-    canvas.width = img.naturalWidth
-    canvas.height = img.naturalHeight
-    const ctx = canvas.getContext('2d')
-    ctx?.drawImage(img, 0, 0)
-    img.src = canvas.toDataURL('image/png')
-    await new Promise(resolve => setTimeout(resolve, 50))
-  } catch {
-    // Keep original — export may still fail but worth trying
-  }
-}
-
 /** Cap pixelRatio so exports stay reasonable (max 2x of 1920px) */
 function getPixelRatio(node: HTMLElement, baseRatio: number): number {
   const w = node.offsetWidth
@@ -48,12 +31,14 @@ function getPixelRatio(node: HTMLElement, baseRatio: number): number {
 const COMMON_OPTIONS = {
   cacheBust: true,
   skipFonts: true,
-  filter: (node: Element) => !node.hasAttribute?.('data-export-ignore'),
+  filter: (node: HTMLElement) => {
+    if (node.nodeType !== 1) return true // text nodes, comments — keep
+    return !node.hasAttribute('data-export-ignore')
+  },
 }
 
 async function prepareForExport(node: HTMLElement) {
   await waitForImageReady(node)
-  await ensureDataUrl(node)
 
   // Log image state for debugging
   const imgs = node.querySelectorAll('img')
