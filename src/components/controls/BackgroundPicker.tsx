@@ -228,49 +228,53 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
         })}
       </div>
 
-      {/* Hex input row */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 12px',
-          background: 'var(--color-bg-input)',
-          borderRadius: 'var(--radius-input)',
-          border: '1px solid var(--color-border-input)',
-        }}
-      >
+      {/* Hex input */}
+      <div style={{ marginTop: '14px' }}>
+        <span style={{ fontSize: '12px', color: '#717171', fontWeight: 500, display: 'block', marginBottom: '6px' }}>
+          Custom color
+        </span>
         <div
-          aria-hidden="true"
           style={{
-            width: '22px',
-            height: '22px',
-            borderRadius: '5px',
-            flexShrink: 0,
-            background: background.type === 'transparent' ? CHECKERBOARD : background.value,
-            border: '1px solid rgba(0,0,0,0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            border: '1px solid var(--color-border-input)',
+            borderRadius: 'var(--radius-input)',
+            padding: '0 12px',
+            height: '36px',
+            background: '#FFFFFF',
           }}
-        />
-        <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>#</span>
-        <input
-          type="text"
-          value={hexDisplayValue}
-          onChange={handleHexInput}
-          readOnly={background.type !== 'solid'}
-          placeholder="Custom"
-          aria-label="Hex color value"
-          style={{
-            width: '100%',
-            height: '22px',
-            fontSize: '13px',
-            fontFamily: 'inherit',
-            color: 'var(--color-text-primary)',
-            background: 'transparent',
-            border: 'none',
-            padding: 0,
-            outline: 'none',
-          }}
-        />
+        >
+          <div
+            aria-hidden="true"
+            style={{
+              width: '14px',
+              height: '14px',
+              borderRadius: '50%',
+              flexShrink: 0,
+              background: background.type === 'transparent' ? CHECKERBOARD : background.value,
+              border: '1px solid rgba(0,0,0,0.1)',
+            }}
+          />
+          <span style={{ fontSize: '13px', color: '#717171' }}>#</span>
+          <input
+            type="text"
+            value={hexDisplayValue}
+            onChange={handleHexInput}
+            readOnly={background.type !== 'solid'}
+            placeholder="RRGGBB"
+            aria-label="Hex color value"
+            style={{
+              flex: 1,
+              border: 'none',
+              outline: 'none',
+              fontSize: '13px',
+              fontFamily: 'monospace',
+              color: '#222222',
+              background: 'transparent',
+            }}
+          />
+        </div>
       </div>
 
       {/* Match to image */}
@@ -310,16 +314,20 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: '12px',
-          color: 'var(--color-text-secondary)',
+          fontSize: '13px',
+          fontWeight: 500,
+          color: '#717171',
           fontFamily: 'inherit',
-          padding: '4px 0',
+          padding: '8px 0 4px',
           display: 'flex',
           alignItems: 'center',
-          gap: '6px',
+          gap: '4px',
           outline: 'none',
           borderRadius: '4px',
+          transition: 'color 100ms var(--ease-out)',
         }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = '#222222' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = '#717171' }}
         onFocus={(e) => {
           e.currentTarget.style.outline = '2px solid var(--color-border-focus)'
           e.currentTarget.style.outlineOffset = '2px'
@@ -329,17 +337,16 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
         }}
         aria-expanded={gradientOpen}
       >
-        Edit gradient
-        <ProBadge />
         <ChevronDown
-          size={12}
+          size={14}
           style={{
             transform: gradientOpen ? 'rotate(180deg)' : 'none',
-            transition: 'transform 0.15s',
-            marginLeft: 'auto',
+            transition: 'transform 150ms var(--ease-out)',
           }}
           aria-hidden="true"
         />
+        {gradientOpen ? 'Hide gradient' : 'Edit gradient'}
+        <ProBadge />
       </button>
 
       {gradientOpen && (

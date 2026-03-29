@@ -89,16 +89,20 @@ export function ShadowPicker() {
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: '12px',
-          color: 'var(--color-text-secondary)',
+          fontSize: '13px',
+          fontWeight: 500,
+          color: '#717171',
           fontFamily: 'inherit',
-          padding: '4px 0',
+          padding: '8px 0 4px',
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
           outline: 'none',
           borderRadius: '4px',
+          transition: 'color 100ms var(--ease-out)',
         }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = '#222222' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = '#717171' }}
         onFocus={(e) => {
           e.currentTarget.style.outline = '2px solid var(--color-border-focus)'
           e.currentTarget.style.outlineOffset = '2px'
@@ -108,15 +112,15 @@ export function ShadowPicker() {
         }}
         aria-expanded={customOpen}
       >
-        Edit shadow
         <ChevronDown
-          size={12}
+          size={14}
           style={{
             transform: customOpen ? 'rotate(180deg)' : 'none',
             transition: 'transform 150ms var(--ease-out)',
           }}
           aria-hidden="true"
         />
+        {customOpen ? 'Hide shadow' : 'Edit shadow'}
       </button>
 
       {customOpen && (

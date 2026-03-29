@@ -147,7 +147,7 @@ function TopBarActions() {
               </div>
             }
           />
-          <TooltipContent>Download PNG · &#8984;E</TooltipContent>
+          <TooltipContent>{disabled ? 'Drop a screenshot first' : 'Download PNG · ⌘E'}</TooltipContent>
         </Tooltip>
 
         {/* Copy image — primary filled */}
@@ -203,7 +203,7 @@ function TopBarActions() {
               <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginLeft: '2px' }}>&#8984;C</span>
             )}
           </TooltipTrigger>
-          <TooltipContent>Copy to clipboard · &#8984;C</TooltipContent>
+          <TooltipContent>{disabled ? 'Drop a screenshot first' : 'Copy to clipboard · ⌘C'}</TooltipContent>
         </Tooltip>
       </div>
 

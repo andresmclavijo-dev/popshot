@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { BackgroundPicker, ShuffleButton } from './BackgroundPicker'
 import { PaddingControl } from './PaddingControl'
 import { CornerRadiusControl } from './CornerRadiusControl'
@@ -91,19 +92,27 @@ function ProBadge() {
 }
 
 export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (panelRef.current) panelRef.current.scrollTop = 0
+  }, [])
+
   return (
     <aside
       style={{
         width: '300px',
         minWidth: '300px',
         height: '100%',
-        overflowY: 'auto',
         background: 'var(--color-bg-panel)',
         borderLeft: '1px solid var(--color-border)',
         padding: 0,
         boxShadow: 'var(--shadow-sidebar)',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      <div ref={panelRef} style={{ height: '100%', overflowY: 'auto' }}>
       <div style={{ paddingBottom: '48px' }}>
         <SectionHeader label="Corner radius" />
         <div style={{ padding: '0 24px 20px' }}>
@@ -145,6 +154,17 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
           Available in Pro
         </div>
       </div>
+      </div>
+      {/* Bottom fade indicator */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '48px',
+        background: 'linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)',
+        pointerEvents: 'none',
+      }} />
     </aside>
   )
 }
