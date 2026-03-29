@@ -20,7 +20,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const aspectRatio = useEditorStore((s) => s.aspectRatio)
   const reset = useEditorStore((s) => s.reset)
   const lastShuffle = useEditorStore((s) => s.lastShuffle)
-  const isDemoMode = useEditorStore((s) => s.isDemoMode)
   const proUnlocked = useEditorStore((s) => s.proUnlocked)
 
   const { handleFile } = useImageUpload()
@@ -105,27 +104,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   return (
     <div style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <CanvasLoading />
-      {isDemoMode && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '12px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'rgba(255,255,255,0.8)',
-            backdropFilter: 'blur(8px)',
-            borderRadius: 'var(--radius-full)',
-            padding: '6px 14px',
-            fontSize: '12px',
-            color: 'var(--color-text-tertiary)',
-            zIndex: 30,
-            pointerEvents: 'none',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Drop, paste, or click to use your screenshot
-        </div>
-      )}
       <div style={{ position: 'relative', display: 'inline-flex' }}>
         <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
           <div style={{ position: 'relative' }}>
@@ -154,25 +132,32 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
               }}
             />
           </div>
-          {/* Watermark — free users only */}
-          {!proUnlocked && (
-            <span
+          {/* Watermark — free users only, only when image loaded */}
+          {!proUnlocked && imageUrl && (
+            <div
               style={{
                 position: 'absolute',
-                bottom: '12px',
-                right: '12px',
+                bottom: '14px',
+                right: '16px',
                 fontFamily: 'system-ui, -apple-system, sans-serif',
-                fontSize: '11px',
+                fontSize: '13px',
                 fontWeight: 500,
-                opacity: 0.5,
+                letterSpacing: '0.01em',
+                opacity: 0.55,
                 color: isBackgroundDark(displayBg.value) ? '#FFFFFF' : '#1A1A18',
-                letterSpacing: '0.02em',
                 pointerEvents: 'none',
                 userSelect: 'none',
+                WebkitUserSelect: 'none',
+                cursor: 'default',
+                lineHeight: 1,
+                zIndex: 10,
               }}
+              contentEditable={false}
+              suppressContentEditableWarning
+              aria-hidden="true"
             >
               popshot.app
-            </span>
+            </div>
           )}
         </div>
         <Tooltip>

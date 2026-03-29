@@ -8,7 +8,6 @@ import { Controls } from '@/components/controls/Controls'
 import { ToastProvider, showToast } from '@/components/shared/Toast'
 import { ExportGate } from '@/components/shared/ExportGate'
 import { useExport } from '@/hooks/useExport'
-import { useImageUpload } from '@/hooks/useImageUpload'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEditorStore } from '@/store/useEditorStore'
 import { checkUpgradeSuccess, isProUnlocked } from '@/lib/lemonSqueezy'
@@ -147,7 +146,7 @@ function TopBarActions() {
               </div>
             }
           />
-          <TooltipContent>{disabled ? 'Drop a screenshot first' : 'Download PNG · ⌘E'}</TooltipContent>
+          <TooltipContent side="bottom" sideOffset={8}>{disabled ? 'Drop a screenshot first' : 'Save as PNG · ⌘E'}</TooltipContent>
         </Tooltip>
 
         {/* Copy image — primary filled */}
@@ -203,7 +202,7 @@ function TopBarActions() {
               <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginLeft: '2px' }}>&#8984;C</span>
             )}
           </TooltipTrigger>
-          <TooltipContent>{disabled ? 'Drop a screenshot first' : 'Copy to clipboard · ⌘C'}</TooltipContent>
+          <TooltipContent side="bottom" sideOffset={8}>{disabled ? 'Drop a screenshot first' : 'Copy to clipboard · ⌘C'}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -216,27 +215,7 @@ function TopBarActions() {
   )
 }
 
-function DemoLoader() {
-  const { handleFile } = useImageUpload()
-  const imageUrl = useEditorStore((s) => s.imageUrl)
-
-  useEffect(() => {
-    if (imageUrl) return
-    fetch('/demo.png')
-      .then((res) => {
-        if (!res.ok) return
-        return res.blob()
-      })
-      .then((blob) => {
-        if (!blob) return
-        const file = new File([blob], 'demo.png', { type: 'image/png' })
-        handleFile(file, true)
-      })
-      .catch(() => {})
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  return null
-}
+// Demo auto-load removed — empty state shows on first visit
 
 export function App() {
   const [hoveredBackground, setHoveredBackground] = useState<Background | null>(null)
@@ -261,7 +240,6 @@ export function App() {
           overflow: 'hidden',
         }}
       >
-        <DemoLoader />
         <header
           style={{
             height: '64px',
