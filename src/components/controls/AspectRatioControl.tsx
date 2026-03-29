@@ -1,6 +1,5 @@
 import { useEditorStore } from '@/store/useEditorStore'
 import { ASPECT_RATIO_PRESETS } from '@/lib/presets'
-import type { AspectRatioType } from '@/types'
 
 export function AspectRatioControl() {
   const aspectRatio = useEditorStore((s) => s.aspectRatio)
