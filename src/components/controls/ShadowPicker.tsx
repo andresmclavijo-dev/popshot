@@ -2,19 +2,19 @@ import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { NumberInput } from '@/components/shared/NumberInput'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import type { ShadowType } from '@/types'
 
 const SHADOW_OPTIONS: {
   id: ShadowType
   label: string
-  tooltip: string
+  previewBg: string
   previewShadow: string
+  span?: number
 }[] = [
-  { id: 'none', label: 'None', tooltip: 'No shadow', previewShadow: 'none' },
-  { id: 'soft', label: 'Soft', tooltip: 'Soft shadow', previewShadow: '0 2px 6px rgba(0,0,0,0.15)' },
-  { id: 'deep', label: 'Deep', tooltip: 'Deep shadow', previewShadow: '0 2px 4px rgba(0,0,0,0.2), 0 8px 16px rgba(0,0,0,0.25)' },
+  { id: 'none', label: 'None', previewBg: '#E5E5E5', previewShadow: 'none' },
+  { id: 'soft', label: 'Soft', previewBg: '#E0E0E0', previewShadow: '0 4px 12px rgba(0,0,0,0.15)' },
+  { id: 'deep', label: 'Deep', previewBg: '#D0D0D0', previewShadow: '0 16px 40px rgba(0,0,0,0.35)', span: 2 },
 ]
 
 export function ShadowPicker() {
@@ -29,81 +29,55 @@ export function ShadowPicker() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <div style={{ display: 'flex', gap: '6px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         {SHADOW_OPTIONS.map((opt) => {
           const active = shadow === opt.id
-
           return (
-            <Tooltip key={opt.id}>
-              <TooltipTrigger
-                render={
-                  <button
-                    type="button"
-                    onClick={() => setShadow(opt.id)}
-                    aria-pressed={active}
-                    style={{
-                      flex: 1,
-                      height: '56px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      fontFamily: 'inherit',
-                      cursor: 'pointer',
-                      outline: 'none',
-                      transition: 'border 100ms var(--ease-out)',
-                      borderRadius: '12px',
-                      border: active ? '2px solid var(--color-border-selected)' : '1px solid var(--color-border-input)',
-                      background: 'transparent',
-                      color: 'var(--color-text-primary)',
-                      position: 'relative',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active) e.currentTarget.style.borderColor = '#B0B0B0'
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!active) e.currentTarget.style.borderColor = 'var(--color-border-input)'
-                      e.currentTarget.style.transform = 'none'
-                    }}
-                    onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
-                    onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px var(--color-border-focus)'
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.boxShadow = 'none'
-                    }}
-                  />
-                }
-              >
-                {/* Shadow preview */}
-                <div
-                  style={{
-                    width: '36px',
-                    height: '22px',
-                    background: '#F5F5F5',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '14px',
-                      height: '9px',
-                      background: active ? '#222222' : '#D0D0CE',
-                      borderRadius: '2px',
-                      boxShadow: opt.previewShadow,
-                      transition: 'background 100ms var(--ease-out)',
-                    }}
-                  />
-                </div>
-                <span style={{ fontSize: '11px', fontWeight: active ? 600 : 500 }}>{opt.label}</span>
-              </TooltipTrigger>
-              <TooltipContent>{opt.tooltip}</TooltipContent>
-            </Tooltip>
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => setShadow(opt.id)}
+              aria-pressed={active}
+              aria-label={`${opt.label} shadow`}
+              style={{
+                border: active ? '2px solid #222222' : '1px solid #DDDDDD',
+                borderRadius: '12px',
+                background: '#FFFFFF',
+                padding: '16px 12px 12px',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '10px',
+                minHeight: '80px',
+                gridColumn: opt.span ? `span ${opt.span}` : undefined,
+                transition: 'border 100ms var(--ease-out)',
+                outline: 'none',
+                fontFamily: 'inherit',
+              }}
+              onMouseEnter={(e) => { if (!active) e.currentTarget.style.borderColor = '#B0B0B0' }}
+              onMouseLeave={(e) => {
+                if (!active) e.currentTarget.style.borderColor = '#DDDDDD'
+                e.currentTarget.style.transform = 'none'
+              }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
+            >
+              <div style={{
+                width: '40px',
+                height: '24px',
+                background: opt.previewBg,
+                borderRadius: '4px',
+                boxShadow: opt.previewShadow,
+              }} />
+              <span style={{
+                fontSize: '12px',
+                fontWeight: active ? 600 : 500,
+                color: '#222222',
+              }}>
+                {opt.label}
+              </span>
+            </button>
           )
         })}
       </div>
@@ -139,7 +113,7 @@ export function ShadowPicker() {
           size={12}
           style={{
             transform: customOpen ? 'rotate(180deg)' : 'none',
-            transition: 'transform 0.15s',
+            transition: 'transform 150ms var(--ease-out)',
           }}
           aria-hidden="true"
         />

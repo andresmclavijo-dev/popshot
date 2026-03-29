@@ -80,6 +80,14 @@ Applies to: swatches, shadow buttons, frame buttons, canvas size buttons.
 - Top bar: 64px height, white background
 - TooltipProvider at App.tsx root, delayDuration=600
 
+### Component patterns
+- Toggle: 44x24px, dark (#222222) when checked, NOT accent
+- Shadow picker: 2-column grid, 80px min height cards, Deep spans full row
+- Frame picker: 2-column grid, 72px min height cards with SVG frame icons
+- Canvas size: 2-column grid, label 13px/500, dims 10px/400 #717171
+- Background swatches: 4 per row, black ring on active
+- All option cards: 1px #DDDDDD border → 2px #222222 when active
+
 ## ICP — locked
 Indie makers + product designers. Forever.
 No developer features. No code snippet beautification.
