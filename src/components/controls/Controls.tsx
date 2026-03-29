@@ -17,12 +17,14 @@ const sectionLabelStyle: React.CSSProperties = {
 }
 
 const zoneLabelStyle: React.CSSProperties = {
-  fontSize: '10px',
+  fontSize: '9px',
   fontWeight: 600,
   textTransform: 'uppercase',
-  letterSpacing: '0.08em',
+  letterSpacing: '0.1em',
   color: 'var(--color-text-tertiary)',
-  padding: '14px 0 6px',
+  padding: '0 16px',
+  marginBottom: '6px',
+  marginTop: '12px',
 }
 
 function ProBadge() {
@@ -182,7 +184,12 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
       }}
     >
       {/* Image zone */}
-      <div style={{ margin: '0 -16px', padding: '0 16px 4px' }}>
+      <div style={{
+        background: 'rgba(108, 71, 255, 0.025)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '12px 16px',
+        margin: '4px -16px',
+      }}>
         <div style={zoneLabelStyle}>Image</div>
         <Section label="Corner radius" isFirst>
           <CornerRadiusControl />
@@ -195,12 +202,13 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
         </Section>
       </div>
 
-      <div style={{ margin: '0 -16px', padding: '0 16px' }}>
-        <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: 0 }} />
-      </div>
-
       {/* Canvas zone */}
-      <div style={{ margin: '0 -16px', padding: '0 16px 4px' }}>
+      <div style={{
+        background: 'rgba(0, 0, 0, 0.015)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '12px 16px',
+        margin: '4px -16px',
+      }}>
         <div style={zoneLabelStyle}>Canvas</div>
         <Section label="Background" isFirst action={<ShuffleButton />}>
           <BackgroundPicker onHoverBackground={onHoverBackground} />
@@ -211,10 +219,6 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
         <Section label="Canvas size">
           <AspectRatioControl />
         </Section>
-      </div>
-
-      <div style={{ margin: '0 -16px', padding: '0 16px' }}>
-        <hr style={{ border: 'none', borderTop: '1px solid var(--color-app-border)', margin: 0 }} />
       </div>
 
       <LockedSection label="Presets" />

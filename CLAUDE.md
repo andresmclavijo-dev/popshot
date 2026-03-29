@@ -166,6 +166,10 @@ The dev tool is a separate future product — not this repo.
 - [x] Jordan fixes: pixelRatio 2, double rAF, URL cleanup, CORS note
 - [x] Error toasts: export fail, wrong type, file too large (4000ms)
 - [x] Meta tags + favicon in index.html
+- [x] Swatch grid fixed (4 per row with labels)
+- [x] IMAGE/CANVAS zone tints (rounded wrappers)
+- [x] WCAG prefers-reduced-motion verified
+- [x] Sentence case labels verified
 - [ ] Social presets
 - [ ] Pro gate (Lemon Squeezy — variant ID needed)
 

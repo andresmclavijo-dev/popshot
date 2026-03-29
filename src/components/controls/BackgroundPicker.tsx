@@ -133,76 +133,97 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      {/* Swatch grid */}
+      {/* Swatch grid — 4 per row */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+          gridTemplateColumns: 'repeat(4, 1fr)',
           gap: '6px',
+          width: '100%',
         }}
       >
         {BACKGROUND_PRESETS.map((preset) => {
           const active = isActive(preset)
           const isTransparent = preset.id === 'transparent'
           return (
-            <Tooltip key={preset.id}>
-              <TooltipTrigger
-                render={
-                  <button
-                    type="button"
-                    onClick={() => setBackground(preset.background)}
-                    onMouseEnter={(e) => {
-                      onHoverBackground(preset.background)
-                      if (!active) {
-                        e.currentTarget.style.transform = 'scale(1.1)'
-                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      onHoverBackground(null)
-                      e.currentTarget.style.transform = 'none'
-                      e.currentTarget.style.boxShadow = 'none'
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px #6C47FF'
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.boxShadow = 'none'
-                    }}
-                    aria-label={`${preset.label} background`}
-                    aria-pressed={active}
-                    style={{
-                      width: '100%',
-                      aspectRatio: '1',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: isTransparent ? CHECKERBOARD : preset.background.value,
-                      cursor: 'pointer',
-                      outline: active ? '2px solid var(--color-app-accent)' : 'none',
-                      outlineOffset: active ? '2px' : undefined,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: 0,
-                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                    }}
-                  />
-                }
+            <div
+              key={preset.id}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      onClick={() => setBackground(preset.background)}
+                      onMouseEnter={(e) => {
+                        onHoverBackground(preset.background)
+                        if (!active) {
+                          e.currentTarget.style.transform = 'scale(1.05)'
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        onHoverBackground(null)
+                        e.currentTarget.style.transform = 'none'
+                        e.currentTarget.style.boxShadow = 'none'
+                      }}
+                      onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
+                      onMouseUp={(e) => { e.currentTarget.style.transform = active ? 'none' : 'scale(1.05)' }}
+                      aria-label={`${preset.label} background`}
+                      aria-pressed={active}
+                      style={{
+                        width: '100%',
+                        aspectRatio: '1',
+                        maxWidth: '52px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        background: isTransparent ? CHECKERBOARD : preset.background.value,
+                        cursor: 'pointer',
+                        outline: active ? '2px solid var(--color-app-accent)' : 'none',
+                        outlineOffset: active ? '2px' : undefined,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 0,
+                        transition: 'transform 100ms var(--ease-out), box-shadow 100ms var(--ease-out)',
+                      }}
+                    />
+                  }
+                >
+                  {active && (
+                    <Check
+                      size={14}
+                      strokeWidth={3}
+                      style={{
+                        color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
+                        filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+                      }}
+                      aria-hidden="true"
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent>{preset.label}</TooltipContent>
+              </Tooltip>
+              <span
+                style={{
+                  fontSize: '10px',
+                  color: 'var(--color-text-tertiary)',
+                  textAlign: 'center',
+                  width: '100%',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
               >
-                {active && (
-                  <Check
-                    size={14}
-                    strokeWidth={3}
-                    style={{
-                      color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
-                      filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
-                    }}
-                    aria-hidden="true"
-                  />
-                )}
-              </TooltipTrigger>
-              <TooltipContent>{preset.label}</TooltipContent>
-            </Tooltip>
+                {preset.label}
+              </span>
+            </div>
           )
         })}
       </div>
