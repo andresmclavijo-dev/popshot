@@ -22,9 +22,8 @@ const zoneLabelStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.1em',
   color: 'var(--color-text-tertiary)',
-  padding: '0 16px',
-  marginBottom: '6px',
-  marginTop: '12px',
+  marginBottom: '10px',
+  display: 'block',
 }
 
 function ProBadge() {
@@ -186,9 +185,9 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
       {/* Image zone */}
       <div style={{
         background: 'rgba(108, 71, 255, 0.025)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '12px 16px',
-        margin: '4px -16px',
+        borderRadius: '10px',
+        padding: '12px 16px 16px',
+        margin: '0 -16px',
       }}>
         <div style={zoneLabelStyle}>Image</div>
         <Section label="Corner radius" isFirst>
@@ -204,10 +203,10 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
 
       {/* Canvas zone */}
       <div style={{
-        background: 'rgba(0, 0, 0, 0.015)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '12px 16px',
-        margin: '4px -16px',
+        background: 'rgba(0, 0, 0, 0.018)',
+        borderRadius: '10px',
+        padding: '12px 16px 16px',
+        margin: '4px -16px 0',
       }}>
         <div style={zoneLabelStyle}>Canvas</div>
         <Section label="Background" isFirst action={<ShuffleButton />}>

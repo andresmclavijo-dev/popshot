@@ -10,7 +10,7 @@ import type { Background } from '@/types'
 
 const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach', 'transparent'])
 
-const CHECKERBOARD = 'repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 0 0 / 8px 8px'
+const CHECKERBOARD = 'repeating-conic-gradient(#D0D0CE 0% 25%, #F0F0EE 0% 50%) 0 0 / 8px 8px'
 
 const SHUFFLEABLE_PRESETS = BACKGROUND_PRESETS.filter((p) => p.id !== 'transparent')
 const SHUFFLEABLE_SHADOWS = SHADOW_PRESETS.filter((p) => p.id !== 'none')
@@ -78,7 +78,7 @@ export function ShuffleButton() {
         size={14}
         style={{
           transform: `rotate(${angle}deg)`,
-          transition: 'transform 0.3s ease',
+          transition: 'transform 300ms var(--ease-out)',
         }}
         aria-hidden="true"
       />

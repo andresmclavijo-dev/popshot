@@ -30,7 +30,7 @@ function ExampleThumbnail({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        transition: 'transform 0.3s ease',
+        transition: 'transform 300ms var(--ease-out)',
       }}
     >
       <div

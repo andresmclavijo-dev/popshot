@@ -52,7 +52,7 @@ export function ShadowPicker() {
                       fontFamily: 'inherit',
                       cursor: 'pointer',
                       outline: 'none',
-                      transition: 'all 0.15s ease',
+                      transition: 'all 150ms var(--ease-out)',
                       borderRadius: '8px',
                       border: active ? '1.5px solid #6C47FF' : '1px solid var(--color-app-border)',
                       background: active ? 'var(--color-app-accent-subtle)' : 'transparent',

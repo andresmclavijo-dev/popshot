@@ -170,6 +170,12 @@ The dev tool is a separate future product — not this repo.
 - [x] IMAGE/CANVAS zone tints (rounded wrappers)
 - [x] WCAG prefers-reduced-motion verified
 - [x] Sentence case labels verified
+- [x] Swatch grid: 4 per row, labels, hover/active, checkerboard refined
+- [x] IMAGE/CANVAS zone tints (rounded wrappers, barely-visible)
+- [x] Export gate flow verified (watermark inside export-canvas)
+- [x] All transitions use var(--ease-out), no plain ease keyword
+- [x] Background transition 200ms confirmed
+- [x] Toast: bottom-right, 2000ms success, 4000ms error
 - [ ] Social presets
 - [ ] Pro gate (Lemon Squeezy — variant ID needed)
 

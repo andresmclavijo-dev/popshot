@@ -41,7 +41,7 @@ export function SegmentedControl<T extends string>({
               fontFamily: 'inherit',
               cursor: 'pointer',
               outline: 'none',
-              transition: 'all 0.15s ease',
+              transition: 'all 150ms var(--ease-out)',
               borderRadius: '6px',
               border: 'none',
               background: active ? '#FFFFFF' : 'transparent',
