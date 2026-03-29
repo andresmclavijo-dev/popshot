@@ -1,14 +1,16 @@
-interface SectionDividerProps {
+interface SectionHeaderProps {
   label: string
   action?: React.ReactNode
 }
 
-export function SectionDivider({ label, action }: SectionDividerProps) {
+export function SectionHeader({ label, action }: SectionHeaderProps) {
   return (
     <div style={{
       paddingTop: '24px',
-      paddingBottom: '14px',
-      borderBottom: '0.5px solid var(--color-app-border)',
+      paddingLeft: '24px',
+      paddingRight: '24px',
+      paddingBottom: '12px',
+      borderBottom: '1px solid var(--color-border)',
       marginBottom: '16px',
       display: 'flex',
       alignItems: 'center',
@@ -19,6 +21,7 @@ export function SectionDivider({ label, action }: SectionDividerProps) {
         fontWeight: 600,
         color: 'var(--color-text-primary)',
         letterSpacing: '-0.01em',
+        lineHeight: 1.3,
       }}>
         {label}
       </span>
@@ -26,3 +29,6 @@ export function SectionDivider({ label, action }: SectionDividerProps) {
     </div>
   )
 }
+
+// Keep backward compat export
+export const SectionDivider = SectionHeader

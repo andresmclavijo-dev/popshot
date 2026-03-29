@@ -82,8 +82,8 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: isDragOver ? 'rgba(108,71,255,0.03)' : '#E4E4E2',
-    backgroundImage: isDragOver ? 'none' : 'radial-gradient(circle, #C8C8C4 1px, transparent 1px)',
+    background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--color-bg-page)',
+    backgroundImage: isDragOver ? 'none' : 'radial-gradient(circle, #D8D8D8 1px, transparent 1px)',
     backgroundSize: '20px 20px',
     overflow: 'auto',
     padding: 'var(--space-8)',
@@ -135,8 +135,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
               src={imageUrl}
               crossOrigin="anonymous"
               alt="Screenshot preview"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageLoaded(false)}
+              onLoad={(e) => {
+                const img = e.target as HTMLImageElement
+                console.log('[Popshot] Image loaded:', img.naturalWidth, 'x', img.naturalHeight)
+                setImageLoaded(true)
+              }}
+              onError={(e) => {
+                console.error('[Popshot] Image load failed:', e)
+                setImageLoaded(false)
+              }}
               style={{
                 display: 'block',
                 width: '100%',

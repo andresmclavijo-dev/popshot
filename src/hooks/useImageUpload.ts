@@ -36,6 +36,7 @@ export function useImageUpload() {
         reader.readAsDataURL(file)
       })
 
+      console.log('[Popshot] Image type:', base64.substring(0, 25))
       setImage(file, base64)
       setDemoMode(isDemo)
 

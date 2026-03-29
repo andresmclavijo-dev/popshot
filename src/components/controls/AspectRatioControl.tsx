@@ -33,9 +33,9 @@ function SizeButton({ id, active, onClick }: {
         cursor: 'pointer',
         outline: 'none',
         transition: 'all 0.15s',
-        border: active ? '1px solid #6C47FF' : '1px solid var(--color-app-border)',
-        background: active ? '#6C47FF' : 'transparent',
-        color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+        border: active ? '2px solid var(--color-border-selected)' : '1px solid var(--color-border-input)',
+        background: 'transparent',
+        color: 'var(--color-text-primary)',
         position: 'relative',
         zIndex: active ? 1 : 0,
       }}
@@ -46,8 +46,8 @@ function SizeButton({ id, active, onClick }: {
           style={{
             fontSize: '10px',
             fontWeight: 400,
-            opacity: active ? 0.8 : 0.6,
-            color: active ? '#FFFFFF' : 'var(--color-text-tertiary)',
+            opacity: 0.6,
+            color: 'var(--color-text-tertiary)',
           }}
         >
           {preset.width}&times;{preset.height}

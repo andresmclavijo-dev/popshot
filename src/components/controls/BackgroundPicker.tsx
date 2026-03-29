@@ -185,7 +185,7 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
                         border: 'none',
                         background: isTransparent ? CHECKERBOARD : preset.background.value,
                         cursor: 'pointer',
-                        outline: active ? '2px solid var(--color-app-accent)' : 'none',
+                        outline: active ? '2px solid #222222' : 'none',
                         outlineOffset: active ? '2px' : undefined,
                         display: 'flex',
                         alignItems: 'center',
@@ -201,7 +201,7 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
                       size={14}
                       strokeWidth={3}
                       style={{
-                        color: LIGHT_SWATCHES.has(preset.id) ? '#6C47FF' : '#FFFFFF',
+                        color: LIGHT_SWATCHES.has(preset.id) ? '#222222' : '#FFFFFF',
                         filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
                       }}
                       aria-hidden="true"
@@ -234,10 +234,10 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '8px 10px',
-          background: 'var(--color-bg-card)',
-          borderRadius: 'var(--radius-sm)',
-          border: '1px solid var(--color-app-border)',
+          padding: '8px 12px',
+          background: 'var(--color-bg-input)',
+          borderRadius: 'var(--radius-input)',
+          border: '1px solid var(--color-border-input)',
         }}
       >
         <div
@@ -279,7 +279,9 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginTop: '12px',
+          marginTop: '14px',
+          paddingTop: '14px',
+          borderTop: '1px solid var(--color-border)',
         }}
       >
         <label
@@ -309,7 +311,7 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
           border: 'none',
           cursor: 'pointer',
           fontSize: '12px',
-          color: 'var(--color-app-accent)',
+          color: 'var(--color-text-secondary)',
           fontFamily: 'inherit',
           padding: '4px 0',
           display: 'flex',
@@ -319,7 +321,7 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
           borderRadius: '4px',
         }}
         onFocus={(e) => {
-          e.currentTarget.style.outline = '2px solid #6C47FF'
+          e.currentTarget.style.outline = '2px solid var(--color-border-focus)'
           e.currentTarget.style.outlineOffset = '2px'
         }}
         onBlur={(e) => {

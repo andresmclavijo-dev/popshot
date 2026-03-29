@@ -4,7 +4,7 @@ import { CornerRadiusControl } from './CornerRadiusControl'
 import { ShadowPicker } from './ShadowPicker'
 import { FramePicker } from './FramePicker'
 import { AspectRatioControl } from './AspectRatioControl'
-import { SectionDivider } from '@/components/shared/SectionHeader'
+import { SectionHeader } from '@/components/shared/SectionHeader'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { openCheckout } from '@/lib/lemonSqueezy'
 import type { Background } from '@/types'
@@ -27,10 +27,10 @@ function ProBadge() {
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
-            background: 'linear-gradient(135deg, #6C47FF, #9C47FF)',
+            background: 'linear-gradient(135deg, #7C5DFA, #9C47FF)',
             color: '#FFFFFF',
             padding: '2px 6px',
-            borderRadius: '9999px',
+            borderRadius: 'var(--radius-full)',
             display: 'inline-block',
             lineHeight: 1.4,
           }}
@@ -49,15 +49,7 @@ function ProBadge() {
           gap: '8px',
         }}
       >
-        <span
-          style={{
-            fontSize: '10px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            color: 'var(--color-app-accent)',
-          }}
-        >
+        <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-app-accent)' }}>
           PRO FEATURE
         </span>
         <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
@@ -80,7 +72,7 @@ function ProBadge() {
             background: 'var(--color-app-accent)',
             color: '#FFFFFF',
             border: 'none',
-            borderRadius: 'var(--radius-sm)',
+            borderRadius: 'var(--radius-button)',
             fontSize: '12px',
             fontWeight: 600,
             fontFamily: 'inherit',
@@ -107,44 +99,51 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
         height: '100%',
         overflowY: 'auto',
         background: 'var(--color-bg-panel)',
-        borderLeft: '1px solid var(--color-app-border)',
-        padding: '8px 16px 32px',
-        display: 'flex',
-        flexDirection: 'column',
+        borderLeft: '1px solid var(--color-border)',
+        padding: 0,
+        boxShadow: 'var(--shadow-sidebar)',
       }}
     >
-      <SectionDivider label="Corner radius" />
-      <CornerRadiusControl />
+      <div style={{ paddingBottom: '48px' }}>
+        <SectionHeader label="Corner radius" />
+        <div style={{ padding: '0 24px 20px' }}>
+          <CornerRadiusControl />
+        </div>
 
-      <SectionDivider label="Shadow" />
-      <ShadowPicker />
+        <SectionHeader label="Shadow" />
+        <div style={{ padding: '0 24px 20px' }}>
+          <ShadowPicker />
+        </div>
 
-      <SectionDivider label="Frame" />
-      <FramePicker />
+        <SectionHeader label="Frame" />
+        <div style={{ padding: '0 24px 20px' }}>
+          <FramePicker />
+        </div>
 
-      <SectionDivider label="Background" action={<ShuffleButton />} />
-      <BackgroundPicker onHoverBackground={onHoverBackground} />
+        <SectionHeader label="Background" action={<ShuffleButton />} />
+        <div style={{ padding: '0 24px 20px' }}>
+          <BackgroundPicker onHoverBackground={onHoverBackground} />
+        </div>
 
-      <SectionDivider label="Padding" />
-      <PaddingControl />
+        <SectionHeader label="Padding" />
+        <div style={{ padding: '0 24px 20px' }}>
+          <PaddingControl />
+        </div>
 
-      <SectionDivider label="Canvas size" />
-      <AspectRatioControl />
+        <SectionHeader label="Canvas size" />
+        <div style={{ padding: '0 24px 20px' }}>
+          <AspectRatioControl />
+        </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '24px', paddingBottom: '14px' }}>
-        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>Presets</span>
-        <ProBadge />
-      </div>
-      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', paddingBottom: '20px' }}>
-        Available in Pro
-      </div>
+        <SectionHeader label="Presets" action={<ProBadge />} />
+        <div style={{ padding: '0 24px 20px', fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          Available in Pro
+        </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '24px', paddingBottom: '14px', borderTop: '0.5px solid var(--color-app-border)' }}>
-        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>Watermark</span>
-        <ProBadge />
-      </div>
-      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', paddingBottom: '20px' }}>
-        Available in Pro
+        <SectionHeader label="Watermark" action={<ProBadge />} />
+        <div style={{ padding: '0 24px 20px', fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+          Available in Pro
+        </div>
       </div>
     </aside>
   )

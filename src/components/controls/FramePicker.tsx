@@ -29,36 +29,30 @@ export function FramePicker() {
               onClick={() => setFrame(opt.id)}
               aria-pressed={active}
               style={{
-                height: '30px',
+                height: '36px',
                 fontSize: '12px',
                 fontWeight: active ? 600 : 500,
                 fontFamily: 'inherit',
                 cursor: 'pointer',
                 outline: 'none',
-                transition: 'all 150ms var(--ease-out)',
-                borderRadius: '6px',
-                border: active ? '1.5px solid #6C47FF' : '1px solid var(--color-app-border)',
-                background: active ? 'var(--color-app-accent-subtle)' : 'transparent',
-                color: active ? '#6C47FF' : 'var(--color-text-secondary)',
+                transition: 'border 100ms var(--ease-out)',
+                borderRadius: '12px',
+                border: active ? '2px solid var(--color-border-selected)' : '1px solid var(--color-border-input)',
+                background: 'transparent',
+                color: 'var(--color-text-primary)',
                 padding: '0 16px',
               }}
               onMouseEnter={(e) => {
-                if (!active) {
-                  e.currentTarget.style.borderColor = 'var(--color-app-border-strong)'
-                  e.currentTarget.style.background = 'var(--color-bg-hover)'
-                }
+                if (!active) e.currentTarget.style.borderColor = '#B0B0B0'
               }}
               onMouseLeave={(e) => {
-                if (!active) {
-                  e.currentTarget.style.borderColor = 'var(--color-app-border)'
-                  e.currentTarget.style.background = 'transparent'
-                }
+                if (!active) e.currentTarget.style.borderColor = 'var(--color-border-input)'
                 e.currentTarget.style.transform = 'none'
               }}
-              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.96)' }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
               onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
               onFocus={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px #6C47FF'
+                e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px var(--color-border-focus)'
               }}
               onBlur={(e) => {
                 e.currentTarget.style.boxShadow = 'none'

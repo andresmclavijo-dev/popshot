@@ -264,14 +264,14 @@ export function App() {
         <DemoLoader />
         <header
           style={{
-            height: '44px',
-            minHeight: '44px',
+            height: '64px',
+            minHeight: '64px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '0 var(--space-6)',
-            borderBottom: '1px solid var(--color-app-border-strong)',
-            background: '#FAFAF9',
+            padding: '0 20px',
+            borderBottom: '1px solid var(--color-border)',
+            background: '#FFFFFF',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

@@ -54,6 +54,18 @@ const COMMON_OPTIONS = {
 async function prepareForExport(node: HTMLElement) {
   await waitForImageReady(node)
   await ensureDataUrl(node)
+
+  // Log image state for debugging
+  const imgs = node.querySelectorAll('img')
+  imgs.forEach((img, i) => {
+    console.log(`[Popshot] Export canvas img ${i}:`, {
+      src: img.src.substring(0, 40),
+      complete: img.complete,
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight,
+    })
+  })
+
   // Double rAF + paint buffer
   await new Promise<void>(resolve =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()))

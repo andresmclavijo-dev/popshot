@@ -6,31 +6,57 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* App design tokens */
-  --color-bg-page: #E8E8E6;
-  --color-bg-panel: #F7F7F6;
-  --color-bg-card: #FFFFFF;
-  --color-bg-hover: #F0F0EE;
-  --color-app-border: #E2E2E0;
-  --color-app-border-strong: #C8C8C5;
+  /* Text — Airbnb-inspired, high contrast */
   --color-text-primary: #222222;
-  --color-text-secondary: #6B6B68;
+  --color-text-secondary: #717171;
   --color-text-tertiary: #767672;
-  --color-app-accent: #6C47FF;
-  --color-app-accent-hover: #5835EE;
-  --color-app-accent-subtle: #F0ECFF;
-  --color-success: #16A34A;
-  --color-danger: #DC2626;
 
+  /* Backgrounds */
+  --color-bg-page: #F7F7F7;
+  --color-bg-panel: #FFFFFF;
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #F7F7F7;
+  --color-bg-input: #FFFFFF;
+
+  /* Borders */
+  --color-border: #EBEBEB;
+  --color-border-input: #DDDDDD;
+  --color-border-focus: #222222;
+  --color-border-selected: #222222;
+
+  /* Legacy aliases — prevent breakage in components not yet migrated */
+  --color-app-border: var(--color-border);
+  --color-app-border-strong: #C8C8C5;
+  --color-app-accent: #7C5DFA;
+  --color-app-accent-hover: #6C47FF;
+  --color-app-accent-subtle: #F0ECFF;
+
+  /* Semantic */
+  --color-danger: #DC2626;
+  --color-success: #16A34A;
+
+  /* Shadows — Airbnb style: soft, not heavy */
+  --shadow-sidebar: 0 6px 16px rgba(0,0,0,0.12);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --shadow-app-sm: var(--shadow-sm);
+  --shadow-app-md: var(--shadow-md);
+  --shadow-app-lg: 0 8px 24px rgba(0,0,0,0.12);
+
+  /* Spacing */
   --space-1: 4px; --space-2: 8px; --space-3: 12px;
   --space-4: 16px; --space-5: 20px; --space-6: 24px;
   --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px;
+  --panel-padding-x: 24px;
 
+  /* Radius */
   --radius-xs: 4px;
-
-  --shadow-app-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-app-md: 0 4px 12px rgba(0,0,0,0.10);
-  --shadow-app-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --radius-input: 12px;
+  --radius-button: 8px;
+  --radius-card: 12px;
+  --radius-badge: 4px;
+  --radius-full: 9999px;
 
   --font-sans: 'Inter Variable', system-ui, sans-serif;
 
@@ -84,7 +110,7 @@ body {
 
 /* Global focus states — WCAG AA */
 :focus-visible {
-  outline: 2px solid var(--color-app-accent);
+  outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
   border-radius: inherit;
 }

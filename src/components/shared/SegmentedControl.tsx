@@ -15,17 +15,11 @@ export function SegmentedControl<T extends string>({
   onChange,
 }: SegmentedControlProps<T>) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        background: 'var(--color-bg-hover)',
-        borderRadius: '8px',
-        padding: '3px',
-        gap: '2px',
-      }}
-    >
-      {options.map((opt) => {
+    <div style={{ display: 'flex' }}>
+      {options.map((opt, i) => {
         const active = value === opt.id
+        const isFirst = i === 0
+        const isLast = i === options.length - 1
 
         return (
           <button
@@ -35,44 +29,35 @@ export function SegmentedControl<T extends string>({
             aria-pressed={active}
             style={{
               flex: 1,
-              height: '28px',
+              height: '36px',
               fontSize: '12px',
               fontWeight: active ? 600 : 500,
               fontFamily: 'inherit',
               cursor: 'pointer',
               outline: 'none',
-              transition: 'all 150ms var(--ease-out)',
-              borderRadius: '6px',
-              border: 'none',
-              background: active ? '#FFFFFF' : 'transparent',
-              color: active ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-              boxShadow: active ? '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)' : 'none',
+              transition: 'border 100ms var(--ease-out)',
+              borderRadius: isFirst ? '12px 0 0 12px' : isLast ? '0 12px 12px 0' : '0',
+              border: active ? '2px solid var(--color-border-selected)' : '1px solid var(--color-border-input)',
+              background: 'transparent',
+              color: 'var(--color-text-primary)',
               position: 'relative',
+              marginLeft: !isFirst ? '-1px' : undefined,
+              zIndex: active ? 1 : 0,
             }}
             onMouseEnter={(e) => {
-              if (!active) {
-                e.currentTarget.style.background = 'rgba(255,255,255,0.6)'
-                e.currentTarget.style.color = 'var(--color-text-primary)'
-              }
+              if (!active) e.currentTarget.style.borderColor = '#B0B0B0'
             }}
             onMouseLeave={(e) => {
-              if (!active) {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = 'var(--color-text-secondary)'
-              }
+              if (!active) e.currentTarget.style.borderColor = 'var(--color-border-input)'
               e.currentTarget.style.transform = 'none'
             }}
-            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.96)' }}
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
             onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
             onFocus={(e) => {
-              e.currentTarget.style.boxShadow = active
-                ? '0 1px 3px rgba(0,0,0,0.08), 0 0 0 2px var(--color-bg-panel), 0 0 0 4px #6C47FF'
-                : '0 0 0 2px var(--color-bg-panel), 0 0 0 4px #6C47FF'
+              e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-bg-panel), 0 0 0 4px var(--color-border-focus)'
             }}
             onBlur={(e) => {
-              e.currentTarget.style.boxShadow = active
-                ? '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)'
-                : 'none'
+              e.currentTarget.style.boxShadow = 'none'
             }}
           >
             {opt.label}

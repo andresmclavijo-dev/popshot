@@ -110,33 +110,34 @@ export function NumberInput({ value, onChange, min, max, step, label, unit }: Nu
           aria-label={label}
           style={{
             width: '64px',
-            height: '30px',
+            height: '36px',
             fontSize: '13px',
+            fontWeight: 500,
             fontFamily: 'inherit',
             textAlign: 'right',
             color: 'var(--color-text-primary)',
-            background: 'var(--color-bg-card)',
-            border: '1px solid transparent',
-            borderRadius: 'var(--radius-sm)',
-            padding: '0 8px',
+            background: 'var(--color-bg-input)',
+            border: '1px solid var(--color-border-input)',
+            borderRadius: 'var(--radius-input)',
+            padding: '0 10px',
             outline: 'none',
-            transition: 'border-color 0.15s',
+            transition: 'border-color 150ms var(--ease-out)',
           }}
           onMouseEnter={(e) => {
             if (document.activeElement !== e.currentTarget) {
-              e.currentTarget.style.borderColor = 'var(--color-app-border)'
+              e.currentTarget.style.borderColor = 'var(--color-border-input)'
             }
           }}
           onMouseLeave={(e) => {
             if (document.activeElement !== e.currentTarget) {
-              e.currentTarget.style.borderColor = 'transparent'
+              e.currentTarget.style.borderColor = 'var(--color-border-input)'
             }
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = 'var(--color-app-accent)'
+            e.currentTarget.style.borderColor = 'var(--color-border-focus)'
           }}
           onBlurCapture={(e) => {
-            e.currentTarget.style.borderColor = 'transparent'
+            e.currentTarget.style.borderColor = 'var(--color-border-input)'
           }}
         />
         {unit && (

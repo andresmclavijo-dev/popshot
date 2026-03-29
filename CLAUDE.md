@@ -44,41 +44,41 @@ Do not re-state those rules here.
 - Vercel (hosting)
 - Domain: popshot.app (Cloudflare)
 
-## Design tokens
---color-bg-page: #E4E4E2        canvas area with dot grid
---color-bg-panel: #F7F7F6       right panel
---color-bg-card: #FFFFFF
---color-bg-hover: #F0F0EE
---color-border: #E2E2E0
---color-border-strong: #C8C8C5
---color-text-primary: #222222   (warm near-black, Airbnb-inspired)
---color-text-secondary: #6B6B68
---color-text-tertiary: #767672  (was #9F9F9B — 4.6:1 contrast on panel)
---color-accent: #6C47FF
---color-accent-hover: #5835EE
---color-accent-subtle: #F0ECFF
---color-danger: #DC2626
---color-success: #16A34A
+## Design system v2 (Airbnb-inspired)
 
---ease-out: cubic-bezier(0.0, 0.0, 0.2, 1)
---ease-in: cubic-bezier(0.4, 0.0, 1, 1)
---ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1)
+### Color tokens
+--color-text-primary: #222222
+--color-text-secondary: #717171
+--color-text-tertiary: #767672
+--color-bg-page: #F7F7F7 (light gray canvas)
+--color-bg-panel: #FFFFFF (pure white)
+--color-border: #EBEBEB
+--color-border-input: #DDDDDD
+--color-border-focus: #222222 (black on focus)
+--color-border-selected: #222222 (black when selected)
+--color-accent: #7C5DFA (PRIMARY BUTTONS ONLY)
 
-## Panel design rules
-- Width: 300px
-- Padding: 16px horizontal on all sections
-- Section headers: SectionDivider component (13px/600, 0.5px border-bottom)
-- No zone tints — spacing does hierarchy work (Airbnb-inspired)
-- No icons on section headers — clean text + divider only
-- Section gap: 24px paddingTop above each SectionDivider
-- No text below 10px anywhere (badges, dimensions only at 10px)
-- Control labels: 13px minimum for readability
-- Number inputs: 30px height, 13px font, 64px wide, right-aligned
-- Segmented controls: 30px height, 12px font, connected pills
-- Button heights: 36px primary, 32px small (global standard)
-- Slider track: 4px, thumb: 14px
+### Typography
+- Section headers: 13px/600 sentence case, #222222
+- Control labels: 13px/400, #717171
+- Input values: 13px/500, #222222
+- Button primary: 14px/600, white on accent
+- Segment buttons: 12px/500, #222222
+- Minimum: 10px absolute (badges/dims only)
+
+### The Airbnb selected state rule
+Selected options: 2px solid #222222 border, transparent bg.
+NEVER fill selected state with accent color (except primary buttons).
+Applies to: swatches, shadow buttons, frame buttons, canvas size buttons.
+
+### Panel structure
+- 24px horizontal padding on all sections
+- SectionHeader: 13px/600 label + 1px #EBEBEB border-bottom
+- 24px gap above each SectionHeader
+- No background tints on zones
+- Inputs: 1px #DDDDDD border, 12px radius, black border on focus
+- Top bar: 64px height, white background
 - TooltipProvider at App.tsx root, delayDuration=600
-- Reference design: Airbnb filter panel typography and spacing
 
 ## ICP — locked
 Indie makers + product designers. Forever.
