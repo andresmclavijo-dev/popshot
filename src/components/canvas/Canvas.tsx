@@ -24,6 +24,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const proUnlocked = useEditorStore((s) => s.proUnlocked)
 
   const { handleFile } = useImageUpload()
+  const setImageLoaded = useEditorStore((s) => s.setImageLoaded)
   const [popKey, setPopKey] = useState(0)
   const [isDragOver, setIsDragOver] = useState(false)
   const prevShuffle = useRef(lastShuffle)
@@ -131,7 +132,10 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
                 If adding remote images in future: convert to base64 first. */}
             <img
               src={imageUrl}
+              crossOrigin="anonymous"
               alt="Screenshot preview"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(false)}
               style={{
                 display: 'block',
                 maxWidth: '100%',

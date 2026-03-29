@@ -8,6 +8,8 @@ interface StoreExtras {
   setDemoMode: (v: boolean) => void
   isLoading: boolean
   setIsLoading: (v: boolean) => void
+  imageLoaded: boolean
+  setImageLoaded: (v: boolean) => void
 }
 
 const initialState: EditorState = {
@@ -28,7 +30,9 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   lastShuffle: 0,
   isDemoMode: false,
   isLoading: false,
-  setImage: (file: File, url: string) => set({ imageFile: file, imageUrl: url }),
+  imageLoaded: false,
+  setImage: (file: File, url: string) => set({ imageFile: file, imageUrl: url, imageLoaded: false }),
+  setImageLoaded: (v: boolean) => set({ imageLoaded: v }),
   setBackground: (bg: Background) => set({ background: bg }),
   setPadding: (v: number) => set({ padding: v }),
   setCornerRadius: (v: number) => set({ cornerRadius: v }),
@@ -40,5 +44,5 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   setDemoMode: (v: boolean) => set({ isDemoMode: v }),
   setIsLoading: (v: boolean) => set({ isLoading: v }),
   triggerShuffle: () => set({ lastShuffle: Date.now() }),
-  reset: () => set({ ...initialState, lastShuffle: 0, isDemoMode: false, isLoading: false }),
+  reset: () => set({ ...initialState, lastShuffle: 0, isDemoMode: false, isLoading: false, imageLoaded: false }),
 }))

@@ -36,6 +36,7 @@ function TopBarActions() {
   const { exportPng, copyImage, isExporting, copied, showGate, proceedWithWatermark, dismissGate } = useExport()
   const [exportOpen, setExportOpen] = useState(false)
   const imageUrl = useEditorStore((s) => s.imageUrl)
+  const imageLoaded = useEditorStore((s) => s.imageLoaded)
   const setBackground = useEditorStore((s) => s.setBackground)
   const setShadow = useEditorStore((s) => s.setShadow)
   const triggerShuffle = useEditorStore((s) => s.triggerShuffle)
@@ -65,7 +66,7 @@ function TopBarActions() {
 
   useKeyboardShortcuts({ onExportOpen, onCopyClipboard: handleCopy, onShuffle })
 
-  const disabled = isExporting || !imageUrl
+  const disabled = isExporting || !imageUrl || !imageLoaded
 
   return (
     <>
