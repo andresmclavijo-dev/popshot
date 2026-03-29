@@ -1,33 +1,28 @@
-import type { LucideIcon } from 'lucide-react'
-
-interface SectionHeaderProps {
-  icon: LucideIcon
+interface SectionDividerProps {
   label: string
+  action?: React.ReactNode
 }
 
-export function SectionHeader({ icon: Icon, label }: SectionHeaderProps) {
+export function SectionDivider({ label, action }: SectionDividerProps) {
   return (
     <div style={{
+      paddingTop: '24px',
+      paddingBottom: '14px',
+      borderBottom: '0.5px solid var(--color-app-border)',
+      marginBottom: '16px',
       display: 'flex',
       alignItems: 'center',
-      gap: '6px',
-      paddingBottom: '10px',
-      marginBottom: '12px',
-      borderBottom: '0.5px solid var(--color-app-border)',
+      justifyContent: 'space-between',
     }}>
-      <Icon
-        size={14}
-        strokeWidth={2}
-        style={{ color: 'var(--color-text-secondary)', flexShrink: 0 }}
-      />
       <span style={{
-        fontSize: '12px',
+        fontSize: '13px',
         fontWeight: 600,
         color: 'var(--color-text-primary)',
-        letterSpacing: '0.01em',
+        letterSpacing: '-0.01em',
       }}>
         {label}
       </span>
+      {action}
     </div>
   )
 }

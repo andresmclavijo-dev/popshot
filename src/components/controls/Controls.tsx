@@ -1,28 +1,13 @@
-import {
-  Layers, CornerUpRight, Sun, Monitor,
-  Layout, Palette, AlignCenter, Maximize2,
-} from 'lucide-react'
 import { BackgroundPicker, ShuffleButton } from './BackgroundPicker'
 import { PaddingControl } from './PaddingControl'
 import { CornerRadiusControl } from './CornerRadiusControl'
 import { ShadowPicker } from './ShadowPicker'
 import { FramePicker } from './FramePicker'
 import { AspectRatioControl } from './AspectRatioControl'
-import { SectionHeader } from '@/components/shared/SectionHeader'
+import { SectionDivider } from '@/components/shared/SectionHeader'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { openCheckout } from '@/lib/lemonSqueezy'
-import type { LucideIcon } from 'lucide-react'
 import type { Background } from '@/types'
-
-const zoneLabelStyle: React.CSSProperties = {
-  fontSize: '11px',
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  color: 'var(--color-text-tertiary)',
-  marginBottom: '10px',
-  display: 'block',
-}
 
 function ProBadge() {
   return (
@@ -113,57 +98,6 @@ function ProBadge() {
   )
 }
 
-function Section({ icon, label, children, isFirst = false, action }: {
-  icon: LucideIcon
-  label: string
-  children: React.ReactNode
-  isFirst?: boolean
-  action?: React.ReactNode
-}) {
-  return (
-    <section
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        paddingTop: isFirst ? '8px' : '24px',
-        paddingBottom: '20px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <SectionHeader icon={icon} label={label} />
-        {action}
-      </div>
-      {children}
-    </section>
-  )
-}
-
-function LockedSection({ icon, label }: { icon: LucideIcon; label: string }) {
-  return (
-    <section style={{ paddingTop: '24px', paddingBottom: '20px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <SectionHeader icon={icon} label={label} />
-        <ProBadge />
-      </div>
-      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', padding: '10px 0' }}>
-        Available in Pro
-      </div>
-    </section>
-  )
-}
-
 export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   return (
     <aside
@@ -174,51 +108,44 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
         overflowY: 'auto',
         background: 'var(--color-bg-panel)',
         borderLeft: '1px solid var(--color-app-border)',
-        padding: '0 16px',
+        padding: '8px 16px 32px',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      {/* Image zone */}
-      <div style={{
-        background: 'rgba(108, 71, 255, 0.025)',
-        borderRadius: '10px',
-        padding: '12px 16px 16px',
-        margin: '0 -16px',
-      }}>
-        <div style={zoneLabelStyle}>Image</div>
-        <Section icon={CornerUpRight} label="Corner radius" isFirst>
-          <CornerRadiusControl />
-        </Section>
-        <Section icon={Sun} label="Shadow">
-          <ShadowPicker />
-        </Section>
-        <Section icon={Monitor} label="Frame">
-          <FramePicker />
-        </Section>
+      <SectionDivider label="Corner radius" />
+      <CornerRadiusControl />
+
+      <SectionDivider label="Shadow" />
+      <ShadowPicker />
+
+      <SectionDivider label="Frame" />
+      <FramePicker />
+
+      <SectionDivider label="Background" action={<ShuffleButton />} />
+      <BackgroundPicker onHoverBackground={onHoverBackground} />
+
+      <SectionDivider label="Padding" />
+      <PaddingControl />
+
+      <SectionDivider label="Canvas size" />
+      <AspectRatioControl />
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '24px', paddingBottom: '14px' }}>
+        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>Presets</span>
+        <ProBadge />
+      </div>
+      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', paddingBottom: '20px' }}>
+        Available in Pro
       </div>
 
-      {/* Canvas zone */}
-      <div style={{
-        background: 'rgba(0, 0, 0, 0.018)',
-        borderRadius: '10px',
-        padding: '12px 16px 16px',
-        margin: '4px -16px 0',
-      }}>
-        <div style={zoneLabelStyle}>Canvas</div>
-        <Section icon={Palette} label="Background" isFirst action={<ShuffleButton />}>
-          <BackgroundPicker onHoverBackground={onHoverBackground} />
-        </Section>
-        <Section icon={AlignCenter} label="Padding">
-          <PaddingControl />
-        </Section>
-        <Section icon={Maximize2} label="Canvas size">
-          <AspectRatioControl />
-        </Section>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '24px', paddingBottom: '14px', borderTop: '0.5px solid var(--color-app-border)' }}>
+        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>Watermark</span>
+        <ProBadge />
       </div>
-
-      <LockedSection icon={Layers} label="Presets" />
-      <LockedSection icon={Layout} label="Watermark" />
+      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', paddingBottom: '20px' }}>
+        Available in Pro
+      </div>
     </aside>
   )
 }

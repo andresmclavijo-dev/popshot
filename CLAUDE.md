@@ -51,9 +51,9 @@ Do not re-state those rules here.
 --color-bg-hover: #F0F0EE
 --color-border: #E2E2E0
 --color-border-strong: #C8C8C5
---color-text-primary: #1A1A18
+--color-text-primary: #222222   (warm near-black, Airbnb-inspired)
 --color-text-secondary: #6B6B68
---color-text-tertiary: #767672   (was #9F9F9B — 4.6:1 contrast on panel)
+--color-text-tertiary: #767672  (was #9F9F9B — 4.6:1 contrast on panel)
 --color-accent: #6C47FF
 --color-accent-hover: #5835EE
 --color-accent-subtle: #F0ECFF
@@ -67,16 +67,18 @@ Do not re-state those rules here.
 ## Panel design rules
 - Width: 300px
 - Padding: 16px horizontal on all sections
-- Section headers: SectionHeader component (icon 14px + label 12px/600 + border)
-- Zone labels: 11px, 700 weight, uppercase, --color-text-tertiary
-- No text below 10px anywhere in the panel
+- Section headers: SectionDivider component (13px/600, 0.5px border-bottom)
+- No zone tints — spacing does hierarchy work (Airbnb-inspired)
+- No icons on section headers — clean text + divider only
+- Section gap: 24px paddingTop above each SectionDivider
+- No text below 10px anywhere (badges, dimensions only at 10px)
+- Control labels: 13px minimum for readability
 - Number inputs: 30px height, 13px font, 64px wide, right-aligned
 - Segmented controls: 30px height, 12px font, connected pills
 - Button heights: 36px primary, 32px small (global standard)
 - Slider track: 4px, thumb: 14px
-- Breathing room: 24px between sections
-- Two zones: Image (radius, shadow, frame) / Canvas (bg, padding, size)
 - TooltipProvider at App.tsx root, delayDuration=600
+- Reference design: Airbnb filter panel typography and spacing
 
 ## ICP — locked
 Indie makers + product designers. Forever.

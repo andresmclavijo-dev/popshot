@@ -25,15 +25,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
 
   const { handleFile } = useImageUpload()
   const setImageLoaded = useEditorStore((s) => s.setImageLoaded)
-  const [imageReady, setImageReady] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
   const [popKey, setPopKey] = useState(0)
   const [isDragOver, setIsDragOver] = useState(false)
   const prevShuffle = useRef(lastShuffle)
   const canvasRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setImageReady(false)
-  }, [imageUrl])
+    setImageLoaded(false)
+  }, [imageUrl, setImageLoaded])
 
   useEffect(() => {
     if (lastShuffle > prevShuffle.current) {
@@ -131,13 +131,16 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
           <div style={{ position: 'relative' }}>
             <FrameOverlay frame={frame} />
             <img
+              ref={imgRef}
               src={imageUrl}
               crossOrigin="anonymous"
               alt="Screenshot preview"
-              onLoad={() => { setImageReady(true); setImageLoaded(true) }}
-              onError={() => { setImageReady(false); setImageLoaded(false) }}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(false)}
               style={{
                 display: 'block',
+                width: '100%',
+                height: 'auto',
                 maxWidth: '100%',
                 borderRadius: frameRadius > 0 ? `${frameRadius}px` : `${cornerRadius}px`,
                 boxShadow: shadowStyle,
