@@ -18,8 +18,8 @@ const SHUFFLEABLE_SHADOWS = SHADOW_PRESETS.filter((p) => p.id !== 'none')
 const ProBadge = () => (
   <span
     style={{
-      fontSize: '9px',
-      fontWeight: 600,
+      fontSize: '10px',
+      fontWeight: 700,
       textTransform: 'uppercase',
       letterSpacing: '0.05em',
       background: 'linear-gradient(135deg, #6C47FF, #9C47FF)',

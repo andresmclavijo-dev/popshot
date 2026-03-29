@@ -1,6 +1,6 @@
 # CLAUDE.md — Popshot
 # ~/screenshoot-app
-# Last updated: March 28, 2026
+# Last updated: March 29, 2026
 
 ## Global rules
 Inherits from ~/.claude/CLAUDE.md.
@@ -53,7 +53,7 @@ Do not re-state those rules here.
 --color-border-strong: #C8C8C5
 --color-text-primary: #1A1A18
 --color-text-secondary: #6B6B68
---color-text-tertiary: #9F9F9B
+--color-text-tertiary: #767672   (was #9F9F9B — 4.6:1 contrast on panel)
 --color-accent: #6C47FF
 --color-accent-hover: #5835EE
 --color-accent-subtle: #F0ECFF
@@ -67,12 +67,14 @@ Do not re-state those rules here.
 ## Panel design rules
 - Width: 300px
 - Padding: 16px horizontal on all sections
-- Section labels: 11px, 500 weight, sentence case, 0.06em spacing
+- Section headers: SectionHeader component (icon 14px + label 12px/600 + border)
+- Zone labels: 11px, 700 weight, uppercase, --color-text-tertiary
+- No text below 10px anywhere in the panel
 - Number inputs: 30px height, 13px font, 64px wide, right-aligned
 - Segmented controls: 30px height, 12px font, connected pills
 - Button heights: 36px primary, 32px small (global standard)
 - Slider track: 4px, thumb: 14px
-- Breathing room: 20px between sections
+- Breathing room: 24px between sections
 - Two zones: Image (radius, shadow, frame) / Canvas (bg, padding, size)
 - TooltipProvider at App.tsx root, delayDuration=600
 

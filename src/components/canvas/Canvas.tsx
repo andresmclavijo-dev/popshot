@@ -25,10 +25,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
 
   const { handleFile } = useImageUpload()
   const setImageLoaded = useEditorStore((s) => s.setImageLoaded)
+  const [imageReady, setImageReady] = useState(false)
   const [popKey, setPopKey] = useState(0)
   const [isDragOver, setIsDragOver] = useState(false)
   const prevShuffle = useRef(lastShuffle)
   const canvasRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setImageReady(false)
+  }, [imageUrl])
 
   useEffect(() => {
     if (lastShuffle > prevShuffle.current) {
@@ -125,13 +130,12 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
         <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
           <div style={{ position: 'relative' }}>
             <FrameOverlay frame={frame} />
-            {/* imageUrl is base64 data URL — html-to-image captures this correctly.
-                Never use blob: URLs — they fail silently in html-to-image exports. */}
             <img
               src={imageUrl}
+              crossOrigin="anonymous"
               alt="Screenshot preview"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageLoaded(false)}
+              onLoad={() => { setImageReady(true); setImageLoaded(true) }}
+              onError={() => { setImageReady(false); setImageLoaded(false) }}
               style={{
                 display: 'block',
                 maxWidth: '100%',
