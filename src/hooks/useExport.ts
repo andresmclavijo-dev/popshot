@@ -2,15 +2,8 @@ import { useState, useCallback } from 'react'
 import { exportAsPng, copyToClipboard } from '@/lib/exportImage'
 import { showToast } from '@/components/shared/Toast'
 
-function shouldShowExportGate(): boolean {
-  const proUnlocked = localStorage.getItem('popshot_pro') === 'true'
-  if (proUnlocked) return false
-  const seen = localStorage.getItem('hasSeenExportGate') === 'true'
-  return !seen
-}
-
-function markExportGateSeen() {
-  localStorage.setItem('hasSeenExportGate', 'true')
+function isProUser(): boolean {
+  return localStorage.getItem('popshot_pro') === 'true'
 }
 
 export function useExport() {
@@ -46,7 +39,7 @@ export function useExport() {
   }, [])
 
   const exportPng = useCallback(async (scale: 1 | 2) => {
-    if (shouldShowExportGate()) {
+    if (!isProUser()) {
       setPendingAction({ type: 'png', scale })
       setShowGate(true)
       return
@@ -55,7 +48,7 @@ export function useExport() {
   }, [doExportPng])
 
   const copyImage = useCallback(async () => {
-    if (shouldShowExportGate()) {
+    if (!isProUser()) {
       setPendingAction({ type: 'copy' })
       setShowGate(true)
       return
@@ -64,7 +57,6 @@ export function useExport() {
   }, [doCopyImage])
 
   const proceedWithWatermark = useCallback(async () => {
-    markExportGateSeen()
     setShowGate(false)
     if (pendingAction?.type === 'copy') {
       await doCopyImage()
@@ -75,7 +67,6 @@ export function useExport() {
   }, [pendingAction, doCopyImage, doExportPng])
 
   const dismissGate = useCallback(() => {
-    markExportGateSeen()
     setShowGate(false)
     setPendingAction(null)
   }, [])
