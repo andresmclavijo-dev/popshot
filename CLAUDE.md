@@ -80,13 +80,25 @@ Applies to: swatches, shadow buttons, frame buttons, canvas size buttons.
 - Top bar: 64px height, white background
 - TooltipProvider at App.tsx root, delayDuration=600
 
+### Panel zone order (by intent)
+Style → Layout → Polish → Canvas
+- STYLE: Presets (hero), Frame, Background
+- LAYOUT: Padding, Corner radius
+- POLISH: Shadow
+- CANVAS: Canvas size
+Zone labels: 10px, uppercase, #AAAAAA, letter-spacing 0.1em
+
 ### Component patterns
 - Toggle: 44x24px, dark (#222222) when checked, NOT accent
 - Shadow picker: 2-column grid, 80px min height cards, Deep spans full row
 - Frame picker: 2-column grid, 72px min height cards with SVG frame icons
-- Canvas size: 2-column grid, label 13px/500, dims 10px/400 #717171
+- Canvas size: 2-column grid, label 13px/600, dims 10px/400 #717171
 - Background swatches: 4 per row, black ring on active
 - All option cards: 1px #DDDDDD border → 2px #222222 when active
+- Presets: locked gradient thumbnails (3-col), click opens checkout
+- Sliders: 4px track #DDDDDD, accent fill via Indicator, 14px white thumb
+- Button hierarchy: Copy image = hero (accent filled), Save PNG = secondary (outline)
+- Empty state: "Used for" pills below file format hint (contextual, not clickable)
 
 ## ICP — locked
 Indie makers + product designers. Forever.

@@ -42,7 +42,7 @@ export function AspectRatioControl() {
           >
             <span style={{
               fontSize: '13px',
-              fontWeight: active ? 600 : 500,
+              fontWeight: 600,
               color: '#222222',
               lineHeight: 1.3,
             }}>
@@ -54,6 +54,7 @@ export function AspectRatioControl() {
                 fontWeight: 400,
                 color: '#717171',
                 lineHeight: 1.2,
+                marginTop: '2px',
               }}>
                 {preset.width}&times;{preset.height}
               </span>

@@ -130,6 +130,32 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
         PNG, JPG, or WebP
       </span>
 
+      <div style={{
+        display: 'flex',
+        gap: '8px',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        marginTop: '20px',
+      }}>
+        {['Product launches', 'Case studies', 'Social posts', 'Portfolio'].map(tag => (
+          <span
+            key={tag}
+            style={{
+              fontSize: '12px',
+              color: '#AAAAAA',
+              background: '#F5F5F3',
+              border: '1px solid #EBEBEB',
+              borderRadius: '100px',
+              padding: '4px 12px',
+              fontWeight: 400,
+              letterSpacing: '0.01em',
+            }}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
       <input
         ref={inputRef}
         type="file"

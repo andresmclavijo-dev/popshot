@@ -128,7 +128,7 @@ export function ExportGate({ open, onExportWithWatermark, onDismiss }: ExportGat
             <div style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '10px',
+              gap: '14px',
               marginBottom: '24px',
             }}>
               {FEATURES.map(feature => (
@@ -141,7 +141,7 @@ export function ExportGate({ open, onExportWithWatermark, onDismiss }: ExportGat
                     strokeWidth={2.5}
                     style={{ color: 'var(--color-app-accent)', flexShrink: 0 }}
                   />
-                  <span style={{ fontSize: '14px', color: '#222222' }}>
+                  <span style={{ fontSize: '14px', color: '#222222', lineHeight: 1.5 }}>
                     {feature}
                   </span>
                 </div>

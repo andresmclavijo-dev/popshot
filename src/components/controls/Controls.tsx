@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Lock } from 'lucide-react'
 import { BackgroundPicker, ShuffleButton } from './BackgroundPicker'
 import { PaddingControl } from './PaddingControl'
 import { CornerRadiusControl } from './CornerRadiusControl'
@@ -6,88 +7,79 @@ import { ShadowPicker } from './ShadowPicker'
 import { FramePicker } from './FramePicker'
 import { AspectRatioControl } from './AspectRatioControl'
 import { SectionHeader } from '@/components/shared/SectionHeader'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { openCheckout } from '@/lib/lemonSqueezy'
 import type { Background } from '@/types'
 
-function ProBadge() {
+const zoneLabelStyle: React.CSSProperties = {
+  fontSize: '10px',
+  fontWeight: 500,
+  textTransform: 'uppercase',
+  letterSpacing: '0.1em',
+  color: '#AAAAAA',
+  padding: '20px 24px 8px',
+  display: 'block',
+}
+
+const PRESET_GRADIENTS = [
+  { label: 'Ocean', bg: 'linear-gradient(135deg, #667eea, #764ba2)' },
+  { label: 'Sunset', bg: 'linear-gradient(135deg, #f093fb, #f5576c)' },
+  { label: 'Aurora', bg: 'linear-gradient(135deg, #4facfe, #00f2fe)' },
+  { label: 'Midnight', bg: 'linear-gradient(135deg, #1a1a2e, #16213e)' },
+  { label: 'Forest', bg: 'linear-gradient(135deg, #134e5e, #71b280)' },
+  { label: 'Peach', bg: 'linear-gradient(135deg, #ffecd2, #fcb69f)' },
+]
+
+function LockedPresets() {
   return (
-    <Popover>
-      <PopoverTrigger
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+        {PRESET_GRADIENTS.map(p => (
+          <button
+            key={p.label}
+            type="button"
+            onClick={() => openCheckout()}
+            aria-label={`${p.label} preset — Pro only`}
+            style={{
+              width: '100%',
+              aspectRatio: '4/3',
+              background: p.bg,
+              borderRadius: '8px',
+              border: '1px solid rgba(0,0,0,0.06)',
+              opacity: 0.6,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'opacity 150ms var(--ease-out)',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8' }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.6' }}
+          >
+            <Lock size={14} strokeWidth={2} style={{ color: '#FFFFFF', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} />
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => openCheckout()}
         style={{
           background: 'none',
           border: 'none',
+          fontSize: '12px',
+          fontWeight: 500,
+          color: 'var(--color-app-accent)',
           cursor: 'pointer',
-          padding: 0,
-          display: 'inline-flex',
+          fontFamily: 'inherit',
+          padding: '2px 0',
+          textAlign: 'left',
+          transition: 'color 100ms var(--ease-out)',
         }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-app-accent-hover)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-app-accent)' }}
       >
-        <span
-          style={{
-            fontSize: '10px',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            background: 'linear-gradient(135deg, #7C5DFA, #9C47FF)',
-            color: '#FFFFFF',
-            padding: '2px 6px',
-            borderRadius: 'var(--radius-full)',
-            display: 'inline-block',
-            lineHeight: 1.4,
-          }}
-        >
-          PRO
-        </span>
-      </PopoverTrigger>
-      <PopoverContent
-        side="left"
-        sideOffset={8}
-        style={{
-          width: '220px',
-          padding: '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-        }}
-      >
-        <span style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-app-accent)' }}>
-          PRO FEATURE
-        </span>
-        <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
-          Make every screenshot stunning
-        </span>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', textDecoration: 'line-through' }}>$29</span>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>$19</span>
-          <span style={{ fontSize: '10px', color: 'var(--color-app-accent)', fontWeight: 500 }}>Launch price</span>
-        </div>
-        <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-          One-time. No subscription. Yours forever.
-        </span>
-        <button
-          type="button"
-          onClick={() => openCheckout()}
-          style={{
-            width: '100%',
-            height: '30px',
-            background: 'var(--color-app-accent)',
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: 'var(--radius-button)',
-            fontSize: '12px',
-            fontWeight: 600,
-            fontFamily: 'inherit',
-            cursor: 'pointer',
-            marginTop: '4px',
-          }}
-        >
-          Get Popshot Pro
-        </button>
-        <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'center' }}>
-          $19 · one-time · no subscription
-        </span>
-      </PopoverContent>
-    </Popover>
+        Unlock with Pro
+      </button>
+    </div>
   )
 }
 
@@ -113,49 +105,58 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
       }}
     >
       <div ref={panelRef} style={{ height: '100%', overflowY: 'auto' }}>
-      <div style={{ paddingBottom: '48px' }}>
-        <SectionHeader label="Corner radius" />
-        <div style={{ padding: '0 24px 20px' }}>
-          <CornerRadiusControl />
-        </div>
+        <div style={{ paddingBottom: '48px' }}>
 
-        <SectionHeader label="Shadow" />
-        <div style={{ padding: '0 24px 20px' }}>
-          <ShadowPicker />
-        </div>
+          {/* ── STYLE ── */}
+          <span style={zoneLabelStyle}>Style</span>
 
-        <SectionHeader label="Frame" />
-        <div style={{ padding: '0 24px 20px' }}>
-          <FramePicker />
-        </div>
+          <SectionHeader label="Presets" />
+          <div style={{ padding: '0 24px 20px' }}>
+            <LockedPresets />
+          </div>
 
-        <SectionHeader label="Background" action={<ShuffleButton />} />
-        <div style={{ padding: '0 24px 20px' }}>
-          <BackgroundPicker onHoverBackground={onHoverBackground} />
-        </div>
+          <SectionHeader label="Frame" />
+          <div style={{ padding: '0 24px 20px' }}>
+            <FramePicker />
+          </div>
 
-        <SectionHeader label="Padding" />
-        <div style={{ padding: '0 24px 20px' }}>
-          <PaddingControl />
-        </div>
+          <SectionHeader label="Background" action={<ShuffleButton />} />
+          <div style={{ padding: '0 24px 20px' }}>
+            <BackgroundPicker onHoverBackground={onHoverBackground} />
+          </div>
 
-        <SectionHeader label="Canvas size" />
-        <div style={{ padding: '0 24px 20px' }}>
-          <AspectRatioControl />
-        </div>
+          {/* ── LAYOUT ── */}
+          <span style={zoneLabelStyle}>Layout</span>
 
-        <SectionHeader label="Presets" action={<ProBadge />} />
-        <div style={{ padding: '0 24px 20px', fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-          Available in Pro
-        </div>
+          <SectionHeader label="Padding" />
+          <div style={{ padding: '0 24px 20px' }}>
+            <PaddingControl />
+          </div>
 
-        <SectionHeader label="Watermark" action={<ProBadge />} />
-        <div style={{ padding: '0 24px 20px', fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-          Available in Pro
+          <SectionHeader label="Corner radius" />
+          <div style={{ padding: '0 24px 20px' }}>
+            <CornerRadiusControl />
+          </div>
+
+          {/* ── POLISH ── */}
+          <span style={zoneLabelStyle}>Polish</span>
+
+          <SectionHeader label="Shadow" />
+          <div style={{ padding: '0 24px 20px' }}>
+            <ShadowPicker />
+          </div>
+
+          {/* ── CANVAS ── */}
+          <span style={zoneLabelStyle}>Canvas</span>
+
+          <SectionHeader label="Canvas size" />
+          <div style={{ padding: '0 24px 20px' }}>
+            <AspectRatioControl />
+          </div>
+
         </div>
       </div>
-      </div>
-      {/* Bottom fade indicator */}
+      {/* Bottom fade */}
       <div style={{
         position: 'absolute',
         bottom: 0,

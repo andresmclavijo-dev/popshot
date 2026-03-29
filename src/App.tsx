@@ -81,35 +81,35 @@ function TopBarActions() {
                     render={<Button />}
                     style={{
                       background: 'transparent',
-                      color: 'var(--color-text-secondary)',
-                      fontSize: '13px',
+                      color: '#717171',
+                      fontSize: '14px',
                       fontWeight: 500,
-                      borderRadius: 'var(--radius-md)',
-                      padding: '0 var(--space-3)',
+                      borderRadius: '8px',
+                      padding: '0 14px',
                       height: '36px',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '6px',
-                      border: '1px solid var(--color-app-border)',
+                      gap: '8px',
+                      border: '1px solid #DDDDDD',
                       cursor: disabled ? 'not-allowed' : 'pointer',
                       opacity: disabled ? 0.4 : 1,
-                      transition: 'background 100ms var(--ease-out), border-color 100ms var(--ease-out)',
+                      transition: 'border-color 100ms var(--ease-out), color 100ms var(--ease-out)',
                       fontFamily: 'inherit',
                     }}
                     onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                       if (!disabled) {
-                        e.currentTarget.style.background = 'var(--color-bg-hover)'
-                        e.currentTarget.style.borderColor = 'var(--color-app-border-strong)'
+                        e.currentTarget.style.borderColor = '#222222'
+                        e.currentTarget.style.color = '#222222'
                       }
                     }}
                     onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      e.currentTarget.style.background = 'transparent'
-                      e.currentTarget.style.borderColor = 'var(--color-app-border)'
+                      e.currentTarget.style.borderColor = '#DDDDDD'
+                      e.currentTarget.style.color = '#717171'
                     }}
                   >
                     <ArrowDownToLine size={15} aria-hidden="true" />
                     Save PNG
-                    <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginLeft: '2px' }}>&#8984;E</span>
+                    <span style={{ fontSize: '11px', color: '#AAAAAA', background: '#F0F0EE', borderRadius: '4px', padding: '1px 5px' }}>&#8984;E</span>
                   </PopoverTrigger>
                   <PopoverContent
                     align="end"
@@ -158,32 +158,28 @@ function TopBarActions() {
                 onClick={handleCopy}
                 disabled={disabled}
                 style={{
-                  background: '#6C47FF',
+                  background: 'var(--color-app-accent)',
                   color: '#FFFFFF',
-                  fontSize: '13px',
+                  fontSize: '14px',
                   fontWeight: 600,
                   fontFamily: 'inherit',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0 var(--space-4)',
+                  borderRadius: '8px',
+                  padding: '0 16px',
                   height: '36px',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '8px',
                   border: 'none',
                   cursor: disabled ? 'not-allowed' : 'pointer',
                   opacity: disabled ? 0.4 : 1,
-                  transition: 'transform 100ms var(--ease-out), box-shadow 150ms var(--ease-out), background 100ms var(--ease-out)',
+                  transition: 'transform 100ms var(--ease-out), background 150ms var(--ease-out)',
                 }}
                 onMouseEnter={(e) => {
-                  if (!disabled) {
-                    e.currentTarget.style.background = '#5835EE'
-                    e.currentTarget.style.boxShadow = '0 4px 14px rgba(108,71,255,0.35)'
-                  }
+                  if (!disabled) e.currentTarget.style.background = 'var(--color-app-accent-hover)'
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#6C47FF'
+                  e.currentTarget.style.background = 'var(--color-app-accent)'
                   e.currentTarget.style.transform = 'none'
-                  e.currentTarget.style.boxShadow = 'none'
                 }}
                 onMouseDown={(e) => { if (!disabled) e.currentTarget.style.transform = 'scale(0.97)' }}
                 onMouseUp={(e) => { if (!disabled) e.currentTarget.style.transform = 'none' }}
@@ -199,7 +195,7 @@ function TopBarActions() {
             )}
             {copied ? 'Copied' : 'Copy image'}
             {!copied && !isExporting && (
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginLeft: '2px' }}>&#8984;C</span>
+              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.15)', borderRadius: '4px', padding: '1px 5px' }}>&#8984;C</span>
             )}
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={8}>{disabled ? 'Drop a screenshot first' : 'Copy to clipboard · ⌘C'}</TooltipContent>
