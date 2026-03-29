@@ -231,6 +231,11 @@ input[type="range"]::-webkit-slider-thumb {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Export gate: hide right column on narrow viewports */
+@media (max-width: 500px) {
+  .hidden-narrow { display: none !important; }
+}
+
 /* WCAG AA — prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,
