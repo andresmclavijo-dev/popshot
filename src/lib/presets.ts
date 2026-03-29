@@ -1,4 +1,54 @@
-import type { Background, ShadowType, AspectRatioType } from '@/types'
+import type { Background, ShadowType, FrameType, AspectRatioType } from '@/types'
+
+export interface StylePreset {
+  id: string
+  label: string
+  background: Background
+  shadow: ShadowType
+  frame: FrameType
+  padding: number
+  cornerRadius: number
+  previewGradient: string
+}
+
+export const STYLE_PRESETS: StylePreset[] = [
+  {
+    id: 'dribbble-shot', label: 'Dribbble Shot',
+    background: { type: 'gradient', value: 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)' },
+    shadow: 'soft', frame: 'none', padding: 64, cornerRadius: 16,
+    previewGradient: 'linear-gradient(135deg, #1a1a2e, #0f3460)',
+  },
+  {
+    id: 'product-hunt', label: 'Product Hunt',
+    background: { type: 'solid', value: '#F7F7F6' },
+    shadow: 'soft', frame: 'macos-light', padding: 48, cornerRadius: 12,
+    previewGradient: 'linear-gradient(135deg, #F7F7F6, #EBEBEB)',
+  },
+  {
+    id: 'twitter-post', label: 'Twitter Post',
+    background: { type: 'gradient', value: 'linear-gradient(135deg, #667eea, #764ba2)' },
+    shadow: 'deep', frame: 'none', padding: 40, cornerRadius: 12,
+    previewGradient: 'linear-gradient(135deg, #667eea, #764ba2)',
+  },
+  {
+    id: 'portfolio', label: 'Portfolio',
+    background: { type: 'gradient', value: 'linear-gradient(135deg, #ffecd2, #fcb69f)' },
+    shadow: 'soft', frame: 'none', padding: 80, cornerRadius: 20,
+    previewGradient: 'linear-gradient(135deg, #ffecd2, #fcb69f)',
+  },
+  {
+    id: 'case-study', label: 'Case Study',
+    background: { type: 'solid', value: '#222222' },
+    shadow: 'deep', frame: 'macos-dark', padding: 56, cornerRadius: 12,
+    previewGradient: 'linear-gradient(135deg, #222222, #444444)',
+  },
+  {
+    id: 'minimal', label: 'Minimal',
+    background: { type: 'solid', value: '#FFFFFF' },
+    shadow: 'none', frame: 'none', padding: 32, cornerRadius: 8,
+    previewGradient: 'linear-gradient(135deg, #FFFFFF, #F0F0F0)',
+  },
+]
 
 export interface BackgroundPreset {
   id: string

@@ -142,9 +142,9 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
             key={tag}
             style={{
               fontSize: '12px',
-              color: '#AAAAAA',
-              background: '#F5F5F3',
-              border: '1px solid #EBEBEB',
+              color: '#717171',
+              background: '#F0F0EE',
+              border: '1px solid #E2E2E0',
               borderRadius: '100px',
               padding: '4px 12px',
               fontWeight: 400,

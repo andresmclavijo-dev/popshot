@@ -16,7 +16,10 @@ Do not re-state those rules here.
 - 2x export is free — never gate resolution
 - Lemon Squeezy variant ID: VARIANT_ID_PLACEHOLDER (update before launch)
 - localStorage key: 'popshot_pro' = 'true'
-- Export gate shown once (localStorage 'hasSeenExportGate')
+- License key stored: 'popshot_license_key' in localStorage
+- Pro validated via /api/validate-license Vercel serverless function
+- No OAuth/auth needed — license key IS the proof of purchase
+- Export gate shows on every export for free users
 
 ## Global rule adaptations for Popshot
 - Background transition: 200ms var(--ease-out) — not 600ms

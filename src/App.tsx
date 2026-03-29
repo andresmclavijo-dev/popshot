@@ -218,11 +218,13 @@ export function App() {
   const setProUnlocked = useEditorStore((s) => s.setProUnlocked)
 
   useEffect(() => {
+    // Restore Pro from localStorage
+    if (isProUnlocked()) {
+      setProUnlocked(true)
+    }
+    // Check LS redirect — prompt license key entry
     if (checkUpgradeSuccess()) {
-      setProUnlocked(true)
-      showToast('Welcome to Pro. Watermark removed.')
-    } else if (isProUnlocked()) {
-      setProUnlocked(true)
+      showToast('Check your email for the license key')
     }
   }, [setProUnlocked])
 

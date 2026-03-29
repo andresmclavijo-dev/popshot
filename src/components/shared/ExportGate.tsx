@@ -39,7 +39,7 @@ export function ExportGate({ open, onExportWithWatermark, onDismiss }: ExportGat
       <div
         style={{
           width: '100%',
-          maxWidth: '580px',
+          maxWidth: '600px',
           background: '#FFFFFF',
           borderRadius: '16px',
           padding: '32px',
@@ -80,7 +80,7 @@ export function ExportGate({ open, onExportWithWatermark, onDismiss }: ExportGat
         </button>
 
         {/* Two-column layout */}
-        <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: '28px', alignItems: 'flex-start' }}>
 
           {/* LEFT — Marketing copy */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -210,7 +210,7 @@ export function ExportGate({ open, onExportWithWatermark, onDismiss }: ExportGat
           {/* RIGHT — Visual proof (hidden on narrow screens via min-width) */}
           <div
             style={{
-              width: '200px',
+              width: '220px',
               flexShrink: 0,
               display: 'flex',
               flexDirection: 'column',
