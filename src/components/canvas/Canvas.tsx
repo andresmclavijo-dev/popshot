@@ -3,7 +3,6 @@ import { X } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { SHADOW_PRESETS, ASPECT_RATIO_PRESETS } from '@/lib/presets'
-import { isBackgroundDark } from '@/lib/utils'
 import { DropZone } from './DropZone'
 import { FrameOverlay } from './FrameOverlay'
 import { CanvasLoading } from './CanvasLoading'
@@ -20,7 +19,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const aspectRatio = useEditorStore((s) => s.aspectRatio)
   const reset = useEditorStore((s) => s.reset)
   const lastShuffle = useEditorStore((s) => s.lastShuffle)
-  const proUnlocked = useEditorStore((s) => s.proUnlocked)
   const imagePosition = useEditorStore((s) => s.imagePosition)
   const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
   const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
@@ -159,33 +157,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
               }}
             />
           </div>
-          {/* Watermark — free users only, only when image loaded */}
-          {!proUnlocked && imageUrl && (
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '14px',
-                right: '16px',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-                fontSize: '13px',
-                fontWeight: 500,
-                letterSpacing: '0.01em',
-                opacity: 0.55,
-                color: isBackgroundDark(displayBg.value) ? '#FFFFFF' : '#1A1A18',
-                pointerEvents: 'none',
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                cursor: 'default',
-                lineHeight: 1,
-                zIndex: 10,
-              }}
-              contentEditable={false}
-              suppressContentEditableWarning
-              aria-hidden="true"
-            >
-              popshot.app
-            </div>
-          )}
         </div>
         <Tooltip>
           <TooltipTrigger
