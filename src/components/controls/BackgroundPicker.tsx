@@ -228,7 +228,7 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
         })}
       </div>
 
-      {/* Hex input */}
+      {/* Hex input + native color picker */}
       <div style={{ marginTop: '14px' }}>
         <span style={{ fontSize: '12px', color: '#717171', fontWeight: 500, display: 'block', marginBottom: '6px' }}>
           Custom color
@@ -245,17 +245,38 @@ export function BackgroundPicker({ onHoverBackground }: { onHoverBackground: (bg
             background: '#FFFFFF',
           }}
         >
-          <div
-            aria-hidden="true"
+          <label
             style={{
-              width: '14px',
-              height: '14px',
+              width: '20px',
+              height: '20px',
               borderRadius: '50%',
               flexShrink: 0,
-              background: background.type === 'transparent' ? CHECKERBOARD : background.value,
+              overflow: 'hidden',
+              cursor: 'pointer',
+              position: 'relative',
+              background: background.type === 'solid' ? background.value : background.type === 'transparent' ? CHECKERBOARD : background.value,
               border: '1px solid rgba(0,0,0,0.1)',
             }}
-          />
+          >
+            <input
+              type="color"
+              value={background.type === 'solid' ? background.value : '#EEEEEE'}
+              onChange={(e) => {
+                setBackground({ type: 'solid', value: e.target.value })
+              }}
+              aria-label="Pick custom color"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                opacity: 0,
+                cursor: 'pointer',
+                border: 'none',
+                padding: 0,
+              }}
+            />
+          </label>
           <span style={{ fontSize: '13px', color: '#717171' }}>#</span>
           <input
             type="text"

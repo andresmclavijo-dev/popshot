@@ -21,6 +21,9 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const reset = useEditorStore((s) => s.reset)
   const lastShuffle = useEditorStore((s) => s.lastShuffle)
   const proUnlocked = useEditorStore((s) => s.proUnlocked)
+  const imagePosition = useEditorStore((s) => s.imagePosition)
+  const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
+  const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
 
   const { handleFile } = useImageUpload()
   const setImageLoaded = useEditorStore((s) => s.setImageLoaded)
@@ -56,19 +59,30 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     if (file) handleFile(file)
   }, [handleFile])
 
+  const positionMap: Record<string, { justifyContent: string; alignItems: string }> = {
+    center: { justifyContent: 'center', alignItems: 'center' },
+    top: { justifyContent: 'center', alignItems: 'flex-start' },
+    bottom: { justifyContent: 'center', alignItems: 'flex-end' },
+    'top-left': { justifyContent: 'flex-start', alignItems: 'flex-start' },
+    'top-right': { justifyContent: 'flex-end', alignItems: 'flex-start' },
+  }
+  const pos = positionMap[imagePosition] ?? positionMap.center
+
   const displayBg = hoveredBackground ?? background
   const shadowStyle = SHADOW_PRESETS.find((p) => p.id === shadow)?.style ?? ''
   const ratioPreset = ASPECT_RATIO_PRESETS.find((p) => p.id === aspectRatio)
   const framePaddingTop = frame.startsWith('macos') ? 28 : 0
   const frameRadius = frame === 'iphone' ? 50 : frame !== 'none' ? 10 : 0
 
+  const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const canvasStyle: React.CSSProperties = {
-    background: displayBg.type === 'transparent' ? 'transparent' : displayBg.value,
+    background: isImageBg ? 'transparent' : displayBg.type === 'transparent' ? 'transparent' : displayBg.value,
     padding: `${padding}px`,
     display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: pos.alignItems as React.CSSProperties['alignItems'],
+    justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
+    overflow: 'hidden',
     transition: 'background 200ms var(--ease-out)',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
     ...(ratioPreset?.width
@@ -106,7 +120,20 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       <CanvasLoading />
       <div style={{ position: 'relative', display: 'inline-flex' }}>
         <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
-          <div style={{ position: 'relative' }}>
+          {/* Background image layer */}
+          {isImageBg && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: `-${backgroundImageBlur * 2}px`,
+                backgroundImage: `url(${backgroundImageUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: backgroundImageBlur > 0 ? `blur(${backgroundImageBlur}px)` : undefined,
+              }}
+            />
+          )}
+          <div style={{ position: 'relative', borderRadius: frameRadius > 0 ? `${frameRadius}px` : `${cornerRadius}px`, overflow: 'hidden' }}>
             <FrameOverlay frame={frame} />
             <img
               ref={imgRef}

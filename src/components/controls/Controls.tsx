@@ -6,6 +6,8 @@ import { CornerRadiusControl } from './CornerRadiusControl'
 import { ShadowPicker } from './ShadowPicker'
 import { FramePicker } from './FramePicker'
 import { AspectRatioControl } from './AspectRatioControl'
+import { PositionControl } from './PositionControl'
+import { BackgroundImageUpload } from './BackgroundImageUpload'
 import { SectionHeader } from '@/components/shared/SectionHeader'
 import { LicenseModal } from '@/components/shared/LicenseModal'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -148,6 +150,7 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
           <SectionHeader label="Background" action={<ShuffleButton />} />
           <div style={{ padding: '0 24px 20px' }}>
             <BackgroundPicker onHoverBackground={onHoverBackground} />
+            <BackgroundImageUpload />
           </div>
 
           {/* ── LAYOUT ── */}
@@ -161,6 +164,11 @@ export function Controls({ onHoverBackground }: { onHoverBackground: (bg: Backgr
           <SectionHeader label="Corner radius" />
           <div style={{ padding: '0 24px 20px' }}>
             <CornerRadiusControl />
+          </div>
+
+          <SectionHeader label="Position" />
+          <div style={{ padding: '0 24px 20px' }}>
+            <PositionControl />
           </div>
 
           {/* ── POLISH ── */}

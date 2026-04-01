@@ -14,7 +14,7 @@ export function CornerRadiusControl() {
         value={cornerRadius}
         onChange={setCornerRadius}
         min={0}
-        max={32}
+        max={48}
         step={2}
       />
       <Slider
@@ -24,7 +24,7 @@ export function CornerRadiusControl() {
           setCornerRadius(v)
         }}
         min={0}
-        max={32}
+        max={48}
         step={2}
         aria-label="Corner radius"
       />

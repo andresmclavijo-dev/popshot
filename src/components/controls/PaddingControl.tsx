@@ -14,7 +14,7 @@ export function PaddingControl() {
         value={padding}
         onChange={setPadding}
         min={0}
-        max={120}
+        max={240}
         step={4}
       />
       <Slider
@@ -24,7 +24,7 @@ export function PaddingControl() {
           setPadding(v)
         }}
         min={0}
-        max={120}
+        max={240}
         step={4}
         aria-label="Padding"
       />

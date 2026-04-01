@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType } from '@/types'
+import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType, ImagePosition } from '@/types'
+import { IS_PRO } from '@/lib/config'
 
 interface StoreExtras {
   lastShuffle: number
@@ -22,7 +23,10 @@ const initialState: EditorState = {
   frame: 'none',
   aspectRatio: 'free',
   autoColor: true,
-  proUnlocked: false,
+  proUnlocked: IS_PRO,
+  imagePosition: 'center',
+  backgroundImageUrl: null,
+  backgroundImageBlur: 0,
 }
 
 export const useEditorStore = create<EditorState & EditorActions & StoreExtras>()((set) => ({
@@ -41,6 +45,9 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   setAspectRatio: (v: AspectRatioType) => set({ aspectRatio: v }),
   setAutoColor: (v: boolean) => set({ autoColor: v }),
   setProUnlocked: (v: boolean) => set({ proUnlocked: v }),
+  setImagePosition: (v: ImagePosition) => set({ imagePosition: v }),
+  setBackgroundImageUrl: (v: string | null) => set({ backgroundImageUrl: v }),
+  setBackgroundImageBlur: (v: number) => set({ backgroundImageBlur: v }),
   setDemoMode: (v: boolean) => set({ isDemoMode: v }),
   setIsLoading: (v: boolean) => set({ isLoading: v }),
   triggerShuffle: () => set({ lastShuffle: Date.now() }),

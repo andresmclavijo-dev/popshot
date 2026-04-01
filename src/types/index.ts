@@ -1,4 +1,5 @@
-export type BackgroundType = 'solid' | 'gradient' | 'transparent'
+export type BackgroundType = 'solid' | 'gradient' | 'transparent' | 'image'
+export type ImagePosition = 'center' | 'top' | 'bottom' | 'top-left' | 'top-right'
 export type ShadowType = 'none' | 'soft' | 'deep'
 export type FrameType = 'none' | 'macos-light' | 'macos-dark' | 'iphone'
 export type AspectRatioType = 'free' | '16:9' | '1:1' | '4:3' | 'twitter' | 'linkedin' | 'dribbble' | 'behance' | 'og' | 'pinterest'
@@ -19,6 +20,9 @@ export interface EditorState {
   aspectRatio: AspectRatioType
   autoColor: boolean
   proUnlocked: boolean
+  imagePosition: ImagePosition
+  backgroundImageUrl: string | null
+  backgroundImageBlur: number
 }
 
 export interface EditorActions {
@@ -31,5 +35,8 @@ export interface EditorActions {
   setAspectRatio: (v: AspectRatioType) => void
   setAutoColor: (v: boolean) => void
   setProUnlocked: (v: boolean) => void
+  setImagePosition: (v: ImagePosition) => void
+  setBackgroundImageUrl: (v: string | null) => void
+  setBackgroundImageBlur: (v: number) => void
   reset: () => void
 }

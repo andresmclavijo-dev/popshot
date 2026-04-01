@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react'
 import { exportAsPng, copyToClipboard } from '@/lib/exportImage'
 import { showToast } from '@/components/shared/Toast'
+import { IS_PRO } from '@/lib/config'
 
 function isProUser(): boolean {
-  return localStorage.getItem('popshot_pro') === 'true'
+  return IS_PRO || localStorage.getItem('popshot_pro') === 'true'
 }
 
 export function useExport() {
