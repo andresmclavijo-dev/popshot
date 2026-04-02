@@ -11,7 +11,7 @@ import { useZoom } from '@/hooks/useZoom'
 import type { Background, WatermarkPosition } from '@/types'
 
 function wmPositionStyle(pos: WatermarkPosition): React.CSSProperties {
-  const inset = '12px'
+  const inset = '16px'
   const map: Record<WatermarkPosition, React.CSSProperties> = {
     'top-left': { top: inset, left: inset },
     'top-center': { top: inset, left: '50%', transform: 'translateX(-50%)' },
@@ -233,8 +233,9 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
                 aria-hidden="true"
                 style={{
                   display: 'block',
-                  height: `${Math.round(24 * watermarkScale)}px`,
-                  width: 'auto',
+                  width: `${Math.round(watermarkScale * 100)}%`,
+                  maxWidth: '40%',
+                  height: 'auto',
                   userSelect: 'none',
                 }}
               />

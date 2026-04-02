@@ -520,13 +520,38 @@ function PolishTab() {
               <Slider value={[watermarkOpacity]} onValueChange={(val) => setWatermarkOpacity(Array.isArray(val) ? val[0] : val)} min={0} max={100} step={5} aria-label="Watermark opacity" />
             </div>
 
-            {/* Size */}
-            <div style={sliderRowStyle}>
-              <div style={sliderLabelRow}>
-                <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>Size</span>
-                <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontVariantNumeric: 'tabular-nums' }}>{Math.round(watermarkScale * 100)}%</span>
+            {/* Size — S/M/L */}
+            <div>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Size</span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {([{ label: 'S', value: 0.08 }, { label: 'M', value: 0.12 }, { label: 'L', value: 0.18 }] as const).map((opt) => {
+                  const active = Math.abs(watermarkScale - opt.value) < 0.01
+                  return (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => setWatermarkScale(opt.value)}
+                      aria-pressed={active}
+                      style={{
+                        flex: 1,
+                        background: active ? '#222' : 'rgba(0,0,0,0.04)',
+                        color: active ? '#FFF' : 'var(--color-text-secondary)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '6px 0',
+                        fontSize: '11px',
+                        fontWeight: active ? 600 : 500,
+                        fontFamily: 'inherit',
+                        borderRadius: '8px',
+                        transition: 'all 100ms var(--ease-out)',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  )
+                })}
               </div>
-              <Slider value={[watermarkScale]} onValueChange={(val) => setWatermarkScale(Array.isArray(val) ? val[0] : val)} min={0.25} max={2} step={0.05} aria-label="Watermark size" />
             </div>
           </div>
         ) : (

@@ -34,7 +34,7 @@ const initialState: EditorState = {
   watermarkUrl: null,
   watermarkPosition: 'bottom-right',
   watermarkOpacity: 80,
-  watermarkScale: 1,
+  watermarkScale: 0.12,
 }
 
 export const useEditorStore = create<EditorState & EditorActions & StoreExtras>()((set) => ({
