@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ChevronDown, Lock, Upload, X, RotateCcw, Check, Sparkles } from 'lucide-react'
+import { ChevronDown, Lock, Upload, X, RotateCcw, Check } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -33,7 +33,7 @@ function Section({ label, locked, defaultOpen = true, children }: { label: strin
           {label}
           {locked && <Lock size={10} strokeWidth={2.5} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
         </span>
-        {!locked && <ChevronDown size={16} style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 220ms ease', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
+        {!locked && <ChevronDown size={14} style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 220ms ease', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
       </button>
       <div style={{
         overflow: 'hidden',
@@ -115,24 +115,36 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       border: '0.5px solid var(--ps-border-panel)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
-      {/* Header — action buttons only */}
-      <div style={{ padding: '12px 14px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          {!proUnlocked && (
-            <button type="button" onClick={openUpgradeModal}
-              style={{ flex: 1, height: '34px', background: 'transparent', border: `1px solid var(--ps-border-strong)`, borderRadius: 'var(--ps-radius-pill)', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--ps-text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 150ms ease-out' }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ps-border-selected)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}>
-              <Sparkles size={12} aria-hidden="true" /> Go Pro
-            </button>
-          )}
-          <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
-            style={{ flex: 1, height: '34px', background: 'var(--ps-text-primary)', color: 'var(--ps-bg-page)', border: 'none', borderRadius: 'var(--ps-radius-pill)', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit', cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'background 150ms ease-out' }}
-            onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = hasImage ? '1' : '0.4' }}>
-            Export <ChevronDown size={12} aria-hidden="true" />
+      {/* Header — Go Pro + Export buttons */}
+      <div style={{ padding: '12px 14px', display: 'flex', gap: '8px', flexShrink: 0, borderBottom: '0.5px solid var(--ps-border)' }}>
+        {!proUnlocked && (
+          <button type="button" onClick={openUpgradeModal}
+            style={{
+              flex: 1, padding: '8px 0', background: 'transparent',
+              border: '0.5px solid var(--ps-border-strong)', borderRadius: 'var(--ps-radius-pill)',
+              fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
+              color: 'var(--ps-text-primary)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 150ms ease-out',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+            Go Pro
           </button>
-        </div>
+        )}
+        <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
+          style={{
+            flex: 1, padding: '8px 0', background: 'var(--ps-text-primary)',
+            color: 'var(--ps-bg-page)', border: 'none', borderRadius: 'var(--ps-radius-pill)',
+            fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
+            cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+            transition: 'opacity 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
+          onMouseLeave={(e) => { e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
+          Export <ChevronDown size={14} aria-hidden="true" />
+        </button>
       </div>
 
       {/* Scrollable sections */}
