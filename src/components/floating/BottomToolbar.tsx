@@ -27,7 +27,7 @@ const sep: React.CSSProperties = { width: '1px', height: '20px', background: 'va
 
 const pillBtn = (active: boolean): React.CSSProperties => ({
   background: active ? 'var(--ps-text-primary)' : 'transparent',
-  color: active ? 'var(--ps-text-on-dark)' : 'var(--ps-text-secondary)',
+  color: active ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)',
   border: 'none', cursor: 'pointer', padding: '5px 12px',
   fontSize: '12px', fontWeight: 500, fontFamily: 'inherit',
   borderRadius: 'var(--ps-radius-md)', transition: 'all 150ms ease-out',

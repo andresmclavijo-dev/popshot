@@ -96,7 +96,7 @@ export function UpgradeModal() {
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             width: '100%', height: '44px',
-            background: 'var(--ps-text-primary)', color: 'var(--ps-text-on-dark)',
+            background: 'var(--ps-text-primary)', color: 'var(--ps-bg-page)',
             borderRadius: 'var(--ps-radius-pill)',
             fontSize: '14px', fontWeight: 500, fontFamily: 'inherit',
             textDecoration: 'none',

@@ -11,7 +11,7 @@ export function openExportModal() { openExportGlobal?.() }
 const segBtn = (active: boolean): React.CSSProperties => ({
   flex: 1, padding: '6px 0', fontSize: '12px', fontWeight: active ? 600 : 500,
   fontFamily: 'inherit', background: active ? 'var(--ps-text-primary)' : 'transparent',
-  color: active ? 'var(--ps-text-on-dark)' : 'var(--ps-text-secondary)',
+  color: active ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)',
   border: 'none', borderRadius: '6px', cursor: 'pointer', transition: 'all 150ms ease-out',
   textAlign: 'center' as const,
 })
@@ -90,7 +90,7 @@ export function ExportModal() {
         {/* Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button type="button" onClick={handleDownload}
-            style={{ ...actionBtn, background: 'var(--ps-text-primary)', color: 'var(--ps-text-on-dark)' }}
+            style={{ ...actionBtn, background: 'var(--ps-text-primary)', color: 'var(--ps-bg-page)' }}
             onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}>
             <ArrowDownToLine size={14} aria-hidden="true" /> Download

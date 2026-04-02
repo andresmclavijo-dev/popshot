@@ -127,7 +127,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             </button>
           )}
           <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
-            style={{ flex: 1, height: '34px', background: 'var(--ps-text-primary)', color: 'var(--ps-text-on-dark)', border: 'none', borderRadius: 'var(--ps-radius-pill)', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit', cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'background 150ms ease-out' }}
+            style={{ flex: 1, height: '34px', background: 'var(--ps-text-primary)', color: 'var(--ps-bg-page)', border: 'none', borderRadius: 'var(--ps-radius-pill)', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit', cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'background 150ms ease-out' }}
             onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = hasImage ? '1' : '0.4' }}>
             Export <ChevronDown size={12} aria-hidden="true" />
@@ -156,7 +156,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   onMouseLeave={() => onHoverBackground(null)}
                   aria-label={`${preset.label} background`} aria-pressed={active}
                   style={{
-                    width: '100%', aspectRatio: '1', borderRadius: 'var(--ps-radius-md)', border: 'none',
+                    width: '100%', aspectRatio: '1', borderRadius: 'var(--ps-radius-md)', border: '1.5px solid var(--ps-border)',
                     background: isTransparent ? CHECKERBOARD : preset.background.value,
                     cursor: 'pointer', outline: active ? `2px solid var(--ps-border-selected)` : 'none',
                     outlineOffset: active ? '2px' : undefined, opacity: locked ? 0.45 : 1,
@@ -236,7 +236,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   const previewShadow = opt.id === 'soft' ? '0 2px 8px rgba(0,0,0,0.10)' : opt.id === 'deep' ? '0 4px 16px rgba(0,0,0,0.28)' : 'none'
                   return (
                     <button key={opt.id} type="button" onClick={() => setShadow(opt.id)} aria-pressed={active} aria-label={`${opt.label} shadow`}
-                      style={{ background: active ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)', color: active ? 'var(--ps-text-on-dark)' : 'var(--ps-text-secondary)', border: 'none', cursor: 'pointer', padding: '6px 4px', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit', borderRadius: 'var(--ps-radius-sm)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', transition: 'all 150ms ease-out' }}>
+                      style={{ background: active ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)', color: active ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)', border: 'none', cursor: 'pointer', padding: '6px 4px', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit', borderRadius: 'var(--ps-radius-sm)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', transition: 'all 150ms ease-out' }}>
                       <div style={{ width: '20px', height: '14px', borderRadius: '3px', background: active ? 'rgba(255,255,255,0.9)' : 'var(--ps-bg-surface)', boxShadow: previewShadow }} />
                       {opt.label}
                     </button>
@@ -281,7 +281,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   <img src={watermarkUrl} alt="Watermark" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   <button type="button" onClick={() => { setWatermarkUrl(null); showToast('Watermark removed') }} aria-label="Remove watermark"
                     style={{ position: 'absolute', top: '-1px', right: '-1px', width: '14px', height: '14px', borderRadius: '50%', background: 'var(--ps-text-primary)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
-                    <X size={7} color="var(--ps-text-on-dark)" aria-hidden="true" />
+                    <X size={7} color="var(--ps-bg-page)" aria-hidden="true" />
                   </button>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px', width: '48px' }}>
@@ -301,7 +301,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
               <div style={{ display: 'flex', gap: '4px' }}>
                 {([{ l: 'S', v: 0.08 }, { l: 'M', v: 0.12 }, { l: 'L', v: 0.18 }] as const).map((o) => (
                   <button key={o.l} type="button" onClick={() => setWatermarkScale(o.v)} aria-pressed={Math.abs(watermarkScale - o.v) < 0.01}
-                    style={{ flex: 1, background: Math.abs(watermarkScale - o.v) < 0.01 ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)', color: Math.abs(watermarkScale - o.v) < 0.01 ? 'var(--ps-text-on-dark)' : 'var(--ps-text-secondary)', border: 'none', cursor: 'pointer', padding: '5px 0', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit', borderRadius: 'var(--ps-radius-sm)' }}>
+                    style={{ flex: 1, background: Math.abs(watermarkScale - o.v) < 0.01 ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)', color: Math.abs(watermarkScale - o.v) < 0.01 ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)', border: 'none', cursor: 'pointer', padding: '5px 0', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit', borderRadius: 'var(--ps-radius-sm)' }}>
                     {o.l}
                   </button>
                 ))}

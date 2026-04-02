@@ -57,7 +57,7 @@ function TemplateCard({ template, active, onSelect }: { template: Template; acti
       {/* Thumbnail */}
       <div style={{
         width: '100%', aspectRatio: `${template.width}/${template.height}`,
-        maxHeight: '80px', background: '#2a2a2a', borderRadius: 'var(--ps-radius-sm)',
+        maxHeight: '80px', background: '#2a2a2a', borderRadius: 'var(--ps-radius-sm)', border: '1px solid var(--ps-border)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         marginBottom: '4px', overflow: 'hidden',
       }}>
@@ -158,7 +158,7 @@ export function LeftPanel() {
             style={{
               flex: 1, padding: '6px 0', fontSize: '12px', fontWeight: tab === t ? 600 : 500,
               fontFamily: 'inherit', background: tab === t ? 'var(--ps-text-primary)' : 'transparent',
-              color: tab === t ? 'var(--ps-text-on-dark)' : 'var(--ps-text-secondary)',
+              color: tab === t ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)',
               border: 'none', borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer',
               transition: 'all 150ms ease-out', textAlign: 'center',
             }}
@@ -187,7 +187,7 @@ export function LeftPanel() {
                 style={{
                   padding: '4px 10px', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit',
                   background: filter === f.value ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)',
-                  color: filter === f.value ? 'var(--ps-text-on-dark)' : 'var(--ps-text-secondary)',
+                  color: filter === f.value ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)',
                   border: 'none', borderRadius: 'var(--ps-radius-pill)', cursor: 'pointer',
                   transition: 'all 150ms ease-out',
                 }}>
