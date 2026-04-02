@@ -70,12 +70,12 @@ export function ExportModal() {
           </div>
         </div>
 
-        {/* Size */}
+        {/* Resolution */}
         <div style={{ marginBottom: '14px' }}>
-          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Size</span>
+          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Resolution</span>
           <div style={{ display: 'flex', gap: '2px', background: 'var(--ps-bg-hover)', borderRadius: 'var(--ps-radius-sm)', padding: '2px' }}>
             {([1, 2, 3] as ExportScale[]).map((s) => (
-              <button key={s} type="button" onClick={() => setScale(s)} style={segBtn(scale === s)}>{s}\u00d7</button>
+              <button key={s} type="button" onClick={() => setScale(s)} style={segBtn(scale === s)}>{s}×</button>
             ))}
           </div>
         </div>

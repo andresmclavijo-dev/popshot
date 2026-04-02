@@ -105,10 +105,19 @@ export function LeftPanel() {
 
   if (collapsed) {
     return (
-      <div style={{ ...floatingBase, width: `${COLLAPSED_WIDTH}px`, alignItems: 'center', paddingTop: '14px' }}>
+      <div style={{ ...floatingBase, width: `${COLLAPSED_WIDTH}px`, alignItems: 'center', justifyContent: 'space-between', padding: '14px 0' }}>
+        {/* Logo — expand on click */}
         <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
           style={{ width: '28px', height: '28px', borderRadius: 'var(--ps-radius-sm)', background: 'var(--ps-brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" /></svg>
+        </button>
+        {/* Theme toggle */}
+        <button type="button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+          style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer', background: 'transparent', color: 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+          {theme === 'light' ? <Sun size={14} aria-hidden="true" /> : <Moon size={14} aria-hidden="true" />}
         </button>
       </div>
     )

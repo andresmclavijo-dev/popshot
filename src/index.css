@@ -277,10 +277,10 @@ input[type="range"] {
   border-radius: 2px;
   background: linear-gradient(
     to right,
-    #222222 0%,
-    #222222 var(--slider-fill, 50%),
-    #DDDDDD var(--slider-fill, 50%),
-    #DDDDDD 100%
+    var(--ps-text-primary) 0%,
+    var(--ps-text-primary) var(--slider-fill, 50%),
+    var(--ps-border-strong) var(--slider-fill, 50%),
+    var(--ps-border-strong) 100%
   );
   cursor: pointer;
   width: 100%;
@@ -291,8 +291,8 @@ input[type="range"]::-webkit-slider-thumb {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #FFFFFF;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.20), 0 0 0 1px rgba(0,0,0,0.06);
+  background: var(--ps-bg-surface);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.20), 0 0 0 1px var(--ps-border);
   cursor: pointer;
   border: none;
   transition: transform 150ms var(--ease-out);

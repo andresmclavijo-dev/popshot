@@ -33,9 +33,16 @@ function Section({ label, locked, defaultOpen = true, children }: { label: strin
           {label}
           {locked && <Lock size={10} strokeWidth={2.5} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
         </span>
-        {!locked && <ChevronDown size={16} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease-out', color: 'rgba(0,0,0,0.3)' }} aria-hidden="true" />}
+        {!locked && <ChevronDown size={16} style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 220ms ease', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
       </button>
-      {open && <div>{children}</div>}
+      <div style={{
+        overflow: 'hidden',
+        maxHeight: open ? '800px' : '0px',
+        opacity: open ? 1 : 0,
+        transition: 'max-height 250ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease',
+      }}>
+        {children}
+      </div>
     </div>
   )
 }
@@ -108,26 +115,21 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       border: '0.5px solid var(--ps-border-panel)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
-      {/* Header */}
+      {/* Header — action buttons only */}
       <div style={{ padding: '12px 14px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>Customize</span>
-        </div>
-
-        {/* Action buttons */}
         <div style={{ display: 'flex', gap: '6px' }}>
           {!proUnlocked && (
             <button type="button" onClick={openUpgradeModal}
-              style={{ flex: 1, height: '32px', background: 'transparent', border: `1px solid var(--ps-border-strong)`, borderRadius: 'var(--ps-radius-pill)', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--ps-text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 150ms ease-out' }}
+              style={{ flex: 1, height: '34px', background: 'transparent', border: `1px solid var(--ps-border-strong)`, borderRadius: 'var(--ps-radius-pill)', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--ps-text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 150ms ease-out' }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ps-border-selected)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}>
               <Sparkles size={12} aria-hidden="true" /> Go Pro
             </button>
           )}
           <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
-            style={{ flex: 1, height: '32px', background: 'var(--ps-text-primary)', color: 'var(--ps-text-on-dark)', border: 'none', borderRadius: 'var(--ps-radius-pill)', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'background 150ms ease-out' }}
-            onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.background = '#333' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ps-text-primary)' }}>
+            style={{ flex: 1, height: '34px', background: 'var(--ps-text-primary)', color: 'var(--ps-text-on-dark)', border: 'none', borderRadius: 'var(--ps-radius-pill)', fontSize: '13px', fontWeight: 500, fontFamily: 'inherit', cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'background 150ms ease-out' }}
+            onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = hasImage ? '1' : '0.4' }}>
             Export <ChevronDown size={12} aria-hidden="true" />
           </button>
         </div>
@@ -137,7 +139,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: '18px', opacity: dimmed ? 0.35 : 1, pointerEvents: dimmed ? 'none' : 'auto', transition: 'opacity 200ms ease-out' }}>
         {/* Background */}
         <Section label="Background">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '10px' }}>
             {BACKGROUND_PRESETS.map((preset, i) => {
               const active = background.value === preset.background.value && !backgroundImageUrl
               const isTransparent = preset.id === 'transparent'
@@ -154,7 +156,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   onMouseLeave={() => onHoverBackground(null)}
                   aria-label={`${preset.label} background`} aria-pressed={active}
                   style={{
-                    width: '100%', height: '36px', borderRadius: 'var(--ps-radius-md)', border: 'none',
+                    width: '100%', aspectRatio: '1', borderRadius: 'var(--ps-radius-md)', border: 'none',
                     background: isTransparent ? CHECKERBOARD : preset.background.value,
                     cursor: 'pointer', outline: active ? `2px solid var(--ps-border-selected)` : 'none',
                     outlineOffset: active ? '2px' : undefined, opacity: locked ? 0.45 : 1,
@@ -210,14 +212,14 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                 <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>X offset</span>
                 <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', fontVariantNumeric: 'tabular-nums' }}>{imageOffsetX}px</span>
               </div>
-              <Slider value={[imageOffsetX]} onValueChange={(v) => setImageOffsetX(Array.isArray(v) ? v[0] : v)} min={-300} max={300} step={1} aria-label="X offset" />
+              <Slider value={[imageOffsetX]} onValueChange={(v) => setImageOffsetX(Array.isArray(v) ? v[0] : v)} min={-500} max={500} step={1} aria-label="X offset" />
             </div>
             <div style={sliderRow}>
               <div style={sliderLabelRow}>
                 <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>Y offset</span>
                 <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', fontVariantNumeric: 'tabular-nums' }}>{imageOffsetY}px</span>
               </div>
-              <Slider value={[imageOffsetY]} onValueChange={(v) => setImageOffsetY(Array.isArray(v) ? v[0] : v)} min={-300} max={300} step={1} aria-label="Y offset" />
+              <Slider value={[imageOffsetY]} onValueChange={(v) => setImageOffsetY(Array.isArray(v) ? v[0] : v)} min={-500} max={500} step={1} aria-label="Y offset" />
             </div>
           </div>
         </Section>
