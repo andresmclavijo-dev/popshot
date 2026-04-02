@@ -3,9 +3,7 @@ import { LayoutGrid, Undo2, Redo2, Minus, Plus } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useEditorStore } from '@/store/useEditorStore'
-import { STYLE_PRESETS } from '@/lib/presets'
-import { openCheckout } from '@/lib/lemonSqueezy'
-import { showToast } from '@/components/shared/Toast'
+import { PresetGallery } from './PresetGallery'
 import type { AspectRatioType } from '@/types'
 
 const CANVAS_SIZES: { id: AspectRatioType; label: string; dims?: string }[] = [
@@ -81,27 +79,11 @@ const menuItemStyle: React.CSSProperties = {
 export function BottomToolbar() {
   const aspectRatio = useEditorStore((s) => s.aspectRatio)
   const setAspectRatio = useEditorStore((s) => s.setAspectRatio)
-  const proUnlocked = useEditorStore((s) => s.proUnlocked)
-  const setBackground = useEditorStore((s) => s.setBackground)
-  const setShadow = useEditorStore((s) => s.setShadow)
-  const setFrame = useEditorStore((s) => s.setFrame)
-  const setPadding = useEditorStore((s) => s.setPadding)
-  const setCornerRadius = useEditorStore((s) => s.setCornerRadius)
   const zoom = useEditorStore((s) => s.zoom)
   const setZoom = useEditorStore((s) => s.setZoom)
   const requestFit = useEditorStore((s) => s.requestFit)
-  const [presetsOpen, setPresetsOpen] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState(false)
   const [zoomOpen, setZoomOpen] = useState(false)
-
-  const applyPreset = (preset: typeof STYLE_PRESETS[number]) => {
-    setBackground(preset.background)
-    setShadow(preset.shadow)
-    setFrame(preset.frame)
-    setPadding(preset.padding)
-    setCornerRadius(preset.cornerRadius)
-    showToast(`${preset.label} applied`)
-    setPresetsOpen(false)
-  }
 
   const zoomPercent = Math.round(zoom * 100)
 
@@ -276,7 +258,7 @@ export function BottomToolbar() {
             render={
               <button
                 type="button"
-                onClick={() => setPresetsOpen(!presetsOpen)}
+                onClick={() => setGalleryOpen(true)}
                 aria-label="Style presets"
                 style={{
                   ...iconBtnStyle,
@@ -340,71 +322,8 @@ export function BottomToolbar() {
         </Tooltip>
       </div>
 
-      {/* Presets gallery modal */}
-      {presetsOpen && (
-        <>
-          <div
-            onClick={() => setPresetsOpen(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 60,
-            }}
-          />
-          <div
-            className="frosted-pill"
-            style={{
-              position: 'absolute',
-              bottom: '68px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 70,
-              padding: '12px',
-              width: '320px',
-            }}
-          >
-            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '10px', padding: '0 4px' }}>
-              Style presets
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-              {STYLE_PRESETS.map((p) => {
-                const locked = !proUnlocked
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => locked ? openCheckout() : applyPreset(p)}
-                    aria-label={locked ? `${p.label} — Pro only` : `Apply ${p.label}`}
-                    style={{
-                      width: '100%',
-                      aspectRatio: '4/3',
-                      background: p.previewGradient,
-                      borderRadius: '8px',
-                      border: '1px solid rgba(0,0,0,0.06)',
-                      opacity: locked ? 0.6 : 1,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'flex-end',
-                      padding: '0 0 5px',
-                      transition: 'opacity 150ms var(--ease-out), transform 150ms var(--ease-out)',
-                      fontFamily: 'inherit',
-                      outline: 'none',
-                    }}
-                    onMouseEnter={(e) => { if (!locked) e.currentTarget.style.transform = 'scale(1.04)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-                  >
-                    <span style={{ fontSize: '10px', fontWeight: 500, color: '#FFFFFF', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
-                      {p.label}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        </>
-      )}
+      {/* Preset gallery modal */}
+      <PresetGallery open={galleryOpen} onClose={() => setGalleryOpen(false)} />
     </>
   )
 }

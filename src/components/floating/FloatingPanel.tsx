@@ -1,11 +1,13 @@
 import { useState, useRef, useCallback } from 'react'
-import { RotateCcw, Lock, Upload, X } from 'lucide-react'
+import { RotateCcw, Lock, Upload, X, Save, ImageIcon } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BACKGROUND_PRESETS, SHADOW_PRESETS } from '@/lib/presets'
 import { extractColorsFromImage } from '@/lib/colorExtract'
+import { showToast } from '@/components/shared/Toast'
+import { ProTooltipContent } from '@/components/shared/ProTooltip'
 import { Check } from 'lucide-react'
 import type { Background, WatermarkPosition } from '@/types'
 
@@ -13,62 +15,32 @@ type Tab = 'style' | 'layout' | 'polish'
 
 const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach', 'transparent'])
 const CHECKERBOARD = 'repeating-conic-gradient(#D0D0CE 0% 25%, #F0F0EE 0% 50%) 0 0 / 8px 8px'
-
-// First 6 swatches are free, rest are premium
 const FREE_SWATCH_COUNT = 6
 
 const tabStyle = (active: boolean): React.CSSProperties => ({
-  background: active ? '#222222' : 'transparent',
-  color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
-  border: 'none',
-  cursor: 'pointer',
-  padding: '5px 14px',
-  fontSize: '12px',
-  fontWeight: active ? 600 : 500,
-  fontFamily: 'inherit',
-  borderRadius: '12px',
-  transition: 'all 100ms var(--ease-out)',
-  flex: 1,
-  textAlign: 'center' as const,
+  background: active ? '#222' : 'transparent',
+  color: active ? '#FFF' : 'var(--color-text-secondary)',
+  border: 'none', cursor: 'pointer', padding: '5px 14px',
+  fontSize: '12px', fontWeight: active ? 600 : 500, fontFamily: 'inherit',
+  borderRadius: '12px', transition: 'all 100ms var(--ease-out)',
+  flex: 1, textAlign: 'center' as const,
 })
 
 const labelStyle: React.CSSProperties = {
-  fontSize: '11px',
-  fontWeight: 600,
-  color: 'var(--color-text-secondary)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  marginBottom: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '4px',
+  fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)',
+  textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px',
+  display: 'flex', alignItems: 'center', gap: '4px',
 }
 
-const sliderRowStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-}
-
-const sliderLabelRow: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-}
-
-const proTooltipContent = 'Unlock with Popshot Pro'
+const sliderRowStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '8px' }
+const sliderLabelRow: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
 
 function LockBadge() {
   return <Lock size={10} strokeWidth={2.5} style={{ color: 'var(--color-text-tertiary)' }} aria-hidden="true" />
 }
 
 function SectionLabel({ children, locked }: { children: React.ReactNode; locked?: boolean }) {
-  return (
-    <span style={labelStyle}>
-      {children}
-      {locked && <LockBadge />}
-    </span>
-  )
+  return <span style={labelStyle}>{children}{locked && <LockBadge />}</span>
 }
 
 function hexFromBg(bg: Background): string {
@@ -81,6 +53,8 @@ function isCustomColor(bg: Background): boolean {
   return !BACKGROUND_PRESETS.some((p) => p.background.value === bg.value)
 }
 
+// ── Style Tab ──
+
 function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   const background = useEditorStore((s) => s.background)
   const setBackground = useEditorStore((s) => s.setBackground)
@@ -88,29 +62,34 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
   const setAutoColor = useEditorStore((s) => s.setAutoColor)
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const proUnlocked = useEditorStore((s) => s.proUnlocked)
+  const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
+  const setBackgroundImageUrl = useEditorStore((s) => s.setBackgroundImageUrl)
+  const savedPresets = useEditorStore((s) => s.savedPresets)
+  const applyPreset = useEditorStore((s) => s.applyPreset)
 
   const colorInputRef = useRef<HTMLInputElement>(null)
+  const bgImageInputRef = useRef<HTMLInputElement>(null)
   const [customHex, setCustomHex] = useState('F4F4F4')
   const [customOpacity, setCustomOpacity] = useState(100)
 
   const isActive = (preset: typeof BACKGROUND_PRESETS[number]) =>
-    background.value === preset.background.value
+    background.value === preset.background.value && !backgroundImageUrl
 
-  const customActive = isCustomColor(background)
+  const customActive = isCustomColor(background) && !backgroundImageUrl
 
   const applyCustomColor = useCallback((hex: string, opacity: number) => {
     const r = parseInt(hex.slice(0, 2), 16)
     const g = parseInt(hex.slice(2, 4), 16)
     const b = parseInt(hex.slice(4, 6), 16)
     if (isNaN(r) || isNaN(g) || isNaN(b)) return
-    if (opacity >= 100) {
-      setBackground({ type: 'solid', value: `#${hex}` })
-    } else {
+    if (opacity >= 100) setBackground({ type: 'solid', value: `#${hex}` })
+    else {
       const a = Math.round((opacity / 100) * 100) / 100
       setBackground({ type: 'solid', value: `rgba(${r},${g},${b},${a})` })
     }
     if (autoColor) setAutoColor(false)
-  }, [setBackground, autoColor, setAutoColor])
+    if (backgroundImageUrl) setBackgroundImageUrl(null)
+  }, [setBackground, autoColor, setAutoColor, backgroundImageUrl, setBackgroundImageUrl])
 
   const handleColorPickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const hex = e.target.value.replace('#', '').toUpperCase()
@@ -122,36 +101,63 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
     let val = e.target.value.replace('#', '').toUpperCase()
     if (val.length > 6) val = val.slice(0, 6)
     setCustomHex(val)
-    if (/^[0-9A-F]{6}$/.test(val)) {
-      applyCustomColor(val, customOpacity)
-    }
+    if (/^[0-9A-F]{6}$/.test(val)) applyCustomColor(val, customOpacity)
   }, [customOpacity, applyCustomColor])
 
   const handleOpacityInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/[^0-9]/g, '')
     let val = parseInt(raw, 10)
     if (isNaN(val)) val = 100
-    if (val > 100) val = 100
-    if (val < 0) val = 0
+    val = Math.max(0, Math.min(100, val))
     setCustomOpacity(val)
-    if (/^[0-9A-F]{6}$/.test(customHex)) {
-      applyCustomColor(customHex, val)
-    }
+    if (/^[0-9A-F]{6}$/.test(customHex)) applyCustomColor(customHex, val)
   }, [customHex, applyCustomColor])
 
   const handleAutoColorToggle = async (checked: boolean) => {
     setAutoColor(checked)
     if (checked && imageUrl) {
-      try {
-        const bg = await extractColorsFromImage(imageUrl)
-        setBackground(bg)
-      } catch { /* keep current */ }
+      try { const bg = await extractColorsFromImage(imageUrl); setBackground(bg) } catch { /* keep */ }
     }
   }
 
+  const handleBgImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      setBackgroundImageUrl(reader.result as string)
+      setBackground({ type: 'image', value: 'image' })
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }, [setBackgroundImageUrl, setBackground])
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* Background swatches — 2x5 grid */}
+      {/* Saved presets row */}
+      {savedPresets.length > 0 && (
+        <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', paddingBottom: '4px' }}>
+          {savedPresets.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => { applyPreset(p); showToast(`${p.name} applied`) }}
+              style={{
+                background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '10px',
+                padding: '4px 10px', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit',
+                color: 'var(--color-text-secondary)', cursor: 'pointer', whiteSpace: 'nowrap',
+                transition: 'background 100ms var(--ease-out)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Background swatches */}
       <div>
         <SectionLabel>Background</SectionLabel>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
@@ -163,17 +169,15 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
               <Tooltip key={preset.id}>
                 <TooltipTrigger
                   render={
-                    <button
-                      type="button"
+                    <button type="button"
                       onClick={() => {
                         if (locked) return
                         setBackground(preset.background)
-                        // Sync hex input for solid colors
+                        if (backgroundImageUrl) setBackgroundImageUrl(null)
                         if (preset.background.type === 'solid') {
                           setCustomHex(preset.background.value.replace('#', '').toUpperCase())
                           setCustomOpacity(100)
                         }
-                        // Turn off auto-color on manual selection
                         if (autoColor) setAutoColor(false)
                       }}
                       onMouseEnter={() => !locked && onHoverBackground(preset.background)}
@@ -181,39 +185,22 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
                       aria-label={`${preset.label} background${locked ? ' — Pro only' : ''}`}
                       aria-pressed={active}
                       style={{
-                        width: '100%',
-                        aspectRatio: '1',
-                        borderRadius: '8px',
-                        border: 'none',
+                        width: '100%', aspectRatio: '1', borderRadius: '8px', border: 'none',
                         background: isTransparent ? CHECKERBOARD : preset.background.value,
                         cursor: locked ? 'default' : 'pointer',
-                        outline: active ? '2px solid #222222' : 'none',
+                        outline: active ? '2px solid #222' : 'none',
                         outlineOffset: active ? '2px' : undefined,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: 0,
-                        transition: 'transform 100ms var(--ease-out)',
-                        position: 'relative',
-                        opacity: locked ? 0.5 : 1,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: 0, transition: 'transform 100ms var(--ease-out)',
+                        position: 'relative', opacity: locked ? 0.5 : 1,
                       }}
                     />
                   }
                 >
-                  {locked && (
-                    <Lock size={10} strokeWidth={2.5} style={{
-                      color: LIGHT_SWATCHES.has(preset.id) ? '#666' : '#FFF',
-                      filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
-                    }} aria-hidden="true" />
-                  )}
-                  {active && !locked && (
-                    <Check size={12} strokeWidth={3} style={{
-                      color: LIGHT_SWATCHES.has(preset.id) ? '#222' : '#FFF',
-                      filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
-                    }} aria-hidden="true" />
-                  )}
+                  {locked && <Lock size={10} strokeWidth={2.5} style={{ color: LIGHT_SWATCHES.has(preset.id) ? '#666' : '#FFF', filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} aria-hidden="true" />}
+                  {active && !locked && <Check size={12} strokeWidth={3} style={{ color: LIGHT_SWATCHES.has(preset.id) ? '#222' : '#FFF', filter: LIGHT_SWATCHES.has(preset.id) ? 'none' : 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} aria-hidden="true" />}
                 </TooltipTrigger>
-                <TooltipContent>{locked ? proTooltipContent : preset.label}</TooltipContent>
+                <TooltipContent>{locked ? <ProTooltipContent /> : preset.label}</TooltipContent>
               </Tooltip>
             )
           })}
@@ -222,44 +209,57 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
 
       {/* Custom color row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-        <button
-          type="button"
-          onClick={() => colorInputRef.current?.click()}
-          aria-label="Pick custom color"
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '8px',
-            border: '0.5px solid rgba(0,0,0,0.12)',
-            background: customActive ? background.value : `#${customHex}`,
-            cursor: 'pointer',
-            flexShrink: 0,
-            padding: 0,
-            outline: customActive ? '2px solid #222222' : 'none',
-            outlineOffset: customActive ? '2px' : undefined,
-            transition: 'outline 100ms var(--ease-out)',
-            position: 'relative',
-          }}
-        >
-          <input
-            ref={colorInputRef}
-            type="color"
-            value={`#${customHex}`}
-            onChange={handleColorPickerChange}
-            aria-label="Color picker"
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer', border: 'none', padding: 0 }}
-          />
+        <button type="button" onClick={() => colorInputRef.current?.click()} aria-label="Pick custom color"
+          style={{ width: '32px', height: '32px', borderRadius: '8px', border: '0.5px solid rgba(0,0,0,0.12)',
+            background: customActive ? background.value : `#${customHex}`, cursor: 'pointer', flexShrink: 0, padding: 0,
+            outline: customActive ? '2px solid #222' : 'none', outlineOffset: customActive ? '2px' : undefined,
+            transition: 'outline 100ms var(--ease-out)', position: 'relative' }}>
+          <input ref={colorInputRef} type="color" value={`#${customHex}`} onChange={handleColorPickerChange} aria-label="Color picker"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer', border: 'none', padding: 0 }} />
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', flex: 1, height: '32px', border: '1px solid var(--color-border-input)', borderRadius: '8px', padding: '0 8px', background: '#FFFFFF', gap: '2px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', flex: 1, height: '32px', border: '1px solid var(--color-border-input)', borderRadius: '8px', padding: '0 8px', background: '#FFF', gap: '2px' }}>
           <span style={{ fontSize: '12px', color: '#999', userSelect: 'none' }}>#</span>
           <input type="text" value={customActive ? hexFromBg(background) || customHex : customHex} onChange={handleHexInput} placeholder="F4F4F4" maxLength={6} aria-label="Hex color value"
             style={{ flex: 1, border: 'none', outline: 'none', fontSize: '12px', fontFamily: 'monospace', color: '#222', background: 'transparent', width: '100%', minWidth: 0, textTransform: 'uppercase' }} />
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', height: '32px', width: '52px', border: '1px solid var(--color-border-input)', borderRadius: '8px', padding: '0 6px', background: '#FFFFFF', gap: '1px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', height: '32px', width: '52px', border: '1px solid var(--color-border-input)', borderRadius: '8px', padding: '0 6px', background: '#FFF', gap: '1px' }}>
           <input type="text" value={customOpacity} onChange={handleOpacityInput} maxLength={3} aria-label="Background opacity"
             style={{ width: '100%', border: 'none', outline: 'none', fontSize: '12px', fontFamily: 'monospace', color: '#222', background: 'transparent', textAlign: 'right', minWidth: 0 }} />
           <span style={{ fontSize: '11px', color: '#999', userSelect: 'none' }}>%</span>
         </div>
+      </div>
+
+      {/* Background image — Pro gated */}
+      <div>
+        <SectionLabel locked={!proUnlocked}>Background image</SectionLabel>
+        {!proUnlocked ? (
+          <Tooltip>
+            <TooltipTrigger render={
+              <div style={{ border: '1.5px dashed #DDD', borderRadius: '10px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: 0.45, cursor: 'default', fontSize: '12px', color: 'var(--color-text-tertiary)' }} />
+            }>
+              <ImageIcon size={14} aria-hidden="true" />
+              Upload image
+            </TooltipTrigger>
+            <TooltipContent style={{ background: 'rgba(0,0,0,0.9)', color: '#FFF', borderRadius: '10px', padding: '10px 14px', border: 'none' }}><ProTooltipContent /></TooltipContent>
+          </Tooltip>
+        ) : backgroundImageUrl ? (
+          <div style={{ position: 'relative', height: '48px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #DDD' }}>
+            <div style={{ width: '100%', height: '100%', backgroundImage: `url(${backgroundImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+            <button type="button" onClick={() => setBackgroundImageUrl(null)} aria-label="Remove background image"
+              style={{ position: 'absolute', top: '4px', right: '4px', width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+              <X size={10} color="#FFF" aria-hidden="true" />
+            </button>
+          </div>
+        ) : (
+          <button type="button" onClick={() => bgImageInputRef.current?.click()}
+            style={{ border: '1.5px dashed #DDD', borderRadius: '10px', padding: '12px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--color-text-secondary)', transition: 'border-color 100ms var(--ease-out)', width: '100%' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#B0B0B0' }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDD' }}>
+            <ImageIcon size={14} aria-hidden="true" />
+            Upload image
+          </button>
+        )}
+        <input ref={bgImageInputRef} type="file" accept="image/*" onChange={handleBgImageUpload} style={{ display: 'none' }} aria-hidden="true" />
       </div>
 
       {/* Match to image */}
@@ -271,10 +271,10 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
   )
 }
 
+// ── Layout Tab ──
+
 const IMAGE_POSITIONS: import('@/types').ImagePosition[] = [
-  'top-left', 'top', 'top-right',
-  'left', 'center', 'right',
-  'bottom-left', 'bottom', 'bottom-right',
+  'top-left', 'top', 'top-right', 'left', 'center', 'right', 'bottom-left', 'bottom', 'bottom-right',
 ]
 
 function LayoutTab() {
@@ -301,31 +301,15 @@ function LayoutTab() {
         </div>
         <Slider value={[cornerRadius]} onValueChange={(val) => setCornerRadius(Array.isArray(val) ? val[0] : val)} min={0} max={48} step={2} aria-label="Corner radius" />
       </div>
-
-      {/* Position */}
       <div>
         <SectionLabel>Position</SectionLabel>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 28px)', gap: '6px', justifyContent: 'center' }}>
           {IMAGE_POSITIONS.map((pos) => {
             const active = imagePosition === pos
             return (
-              <button
-                key={pos}
-                type="button"
-                onClick={() => setImagePosition(pos)}
-                aria-label={`Position ${pos}`}
-                aria-pressed={active}
-                style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  border: active ? 'none' : '0.5px solid rgba(0,0,0,0.1)',
-                  background: active ? 'var(--color-text-primary)' : 'rgba(0,0,0,0.04)',
-                  cursor: 'pointer',
-                  padding: 0,
-                  transition: 'background 100ms var(--ease-out)',
-                }}
-              />
+              <button key={pos} type="button" onClick={() => setImagePosition(pos)} aria-label={`Position ${pos}`} aria-pressed={active}
+                style={{ width: '28px', height: '28px', borderRadius: '50%', border: active ? 'none' : '0.5px solid rgba(0,0,0,0.1)',
+                  background: active ? 'var(--color-text-primary)' : 'rgba(0,0,0,0.04)', cursor: 'pointer', padding: 0, transition: 'background 100ms var(--ease-out)' }} />
             )
           })}
         </div>
@@ -334,7 +318,7 @@ function LayoutTab() {
   )
 }
 
-// --- Frame options ---
+// ── Frame options ──
 
 const FRAME_OPTIONS: { id: import('@/types').FrameType; label: string; pro?: boolean }[] = [
   { id: 'none', label: 'None' },
@@ -357,41 +341,25 @@ function FramePreviewIcon({ type }: { type: import('@/types').FrameType }) {
   return <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true"><rect x="5" y="5" width="30" height="20" rx="3" fill="#E0E0E0" stroke="#CCC" strokeWidth=".5" /><rect x="3" y="3" width="30" height="20" rx="3" fill="#EEE" stroke="#CCC" strokeWidth=".5" /><rect x="1" y="1" width="30" height="20" rx="3" fill="white" stroke="#DDD" strokeWidth="1" /></svg>
 }
 
-// --- Watermark position grid ---
+// ── Watermark position grid ──
 
 const WM_POSITIONS: WatermarkPosition[] = [
-  'top-left', 'top-center', 'top-right',
-  'center-left', 'center', 'center-right',
-  'bottom-left', 'bottom-center', 'bottom-right',
+  'top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right',
 ]
 
 function PositionGrid({ value, onChange }: { value: WatermarkPosition; onChange: (v: WatermarkPosition) => void }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px', width: '54px' }}>
       {WM_POSITIONS.map((pos) => (
-        <button
-          key={pos}
-          type="button"
-          onClick={() => onChange(pos)}
-          aria-label={`Position ${pos}`}
-          aria-pressed={value === pos}
-          style={{
-            width: '16px',
-            height: '16px',
-            borderRadius: '50%',
-            border: 'none',
-            background: value === pos ? '#222' : '#DDD',
-            cursor: 'pointer',
-            padding: 0,
-            transition: 'background 100ms var(--ease-out)',
-          }}
-        />
+        <button key={pos} type="button" onClick={() => onChange(pos)} aria-label={`Position ${pos}`} aria-pressed={value === pos}
+          style={{ width: '16px', height: '16px', borderRadius: '50%', border: 'none',
+            background: value === pos ? '#222' : '#DDD', cursor: 'pointer', padding: 0, transition: 'background 100ms var(--ease-out)' }} />
       ))}
     </div>
   )
 }
 
-// --- Polish Tab ---
+// ── Polish Tab ──
 
 function PolishTab() {
   const shadow = useEditorStore((s) => s.shadow)
@@ -399,8 +367,6 @@ function PolishTab() {
   const frame = useEditorStore((s) => s.frame)
   const setFrame = useEditorStore((s) => s.setFrame)
   const proUnlocked = useEditorStore((s) => s.proUnlocked)
-
-  // Watermark state
   const watermarkUrl = useEditorStore((s) => s.watermarkUrl)
   const setWatermarkUrl = useEditorStore((s) => s.setWatermarkUrl)
   const watermarkPosition = useEditorStore((s) => s.watermarkPosition)
@@ -409,23 +375,20 @@ function PolishTab() {
   const setWatermarkOpacity = useEditorStore((s) => s.setWatermarkOpacity)
   const watermarkScale = useEditorStore((s) => s.watermarkScale)
   const setWatermarkScale = useEditorStore((s) => s.setWatermarkScale)
-
   const wmInputRef = useRef<HTMLInputElement>(null)
 
   const handleWatermarkUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => {
-      setWatermarkUrl(reader.result as string)
-    }
+    reader.onload = () => setWatermarkUrl(reader.result as string)
     reader.readAsDataURL(file)
     e.target.value = ''
   }, [setWatermarkUrl])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* Shadow */}
+      {/* Shadow with visual previews */}
       <div>
         <SectionLabel>Shadow</SectionLabel>
         <div style={{ display: 'flex', gap: '6px' }}>
@@ -433,33 +396,13 @@ function PolishTab() {
             const active = shadow === opt.id
             const previewShadow = opt.id === 'soft' ? '0 2px 8px rgba(0,0,0,0.10)' : opt.id === 'deep' ? '0 4px 16px rgba(0,0,0,0.28)' : 'none'
             return (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setShadow(opt.id)}
-                aria-pressed={active}
-                aria-label={`${opt.label} shadow`}
-                style={{
-                  flex: 1,
-                  background: active ? '#222' : 'rgba(0,0,0,0.04)',
-                  color: active ? '#FFF' : 'var(--color-text-secondary)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '6px 4px 6px',
-                  fontSize: '11px',
-                  fontWeight: active ? 600 : 500,
-                  fontFamily: 'inherit',
-                  borderRadius: '10px',
-                  transition: 'all 100ms var(--ease-out)',
-                  textAlign: 'center',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
+              <button key={opt.id} type="button" onClick={() => setShadow(opt.id)} aria-pressed={active} aria-label={`${opt.label} shadow`}
+                style={{ flex: 1, background: active ? '#222' : 'rgba(0,0,0,0.04)', color: active ? '#FFF' : 'var(--color-text-secondary)',
+                  border: 'none', cursor: 'pointer', padding: '6px 4px', fontSize: '11px', fontWeight: active ? 600 : 500, fontFamily: 'inherit',
+                  borderRadius: '10px', transition: 'all 100ms var(--ease-out)', textAlign: 'center',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}
                 onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
-                onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
-              >
+                onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}>
                 <div style={{ width: '24px', height: '16px', borderRadius: '4px', background: active ? 'rgba(255,255,255,0.9)' : '#FFF', boxShadow: previewShadow }} />
                 {opt.label}
               </button>
@@ -468,7 +411,7 @@ function PolishTab() {
         </div>
       </div>
 
-      {/* Frame */}
+      {/* Frame picker */}
       <div>
         <SectionLabel>Frame</SectionLabel>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
@@ -477,42 +420,23 @@ function PolishTab() {
             const locked = f.pro && !proUnlocked
             return (
               <Tooltip key={f.id}>
-                <TooltipTrigger
-                  render={
-                    <button
-                      type="button"
-                      onClick={() => !locked && setFrame(f.id)}
-                      aria-pressed={active}
-                      aria-label={`${f.label} frame${locked ? ' — Pro only' : ''}`}
-                      style={{
-                        border: active ? '2px solid #222' : '1px solid #DDD',
-                        borderRadius: '10px',
-                        background: '#FFF',
-                        padding: '8px 4px 6px',
-                        cursor: locked ? 'default' : 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '4px',
-                        transition: 'border-color 100ms var(--ease-out)',
-                        outline: 'none',
-                        fontFamily: 'inherit',
-                        opacity: locked ? 0.5 : 1,
-                        position: 'relative',
-                      }}
-                      onMouseEnter={(e) => { if (!active && !locked) e.currentTarget.style.borderColor = '#B0B0B0' }}
-                      onMouseLeave={(e) => { if (!active && !locked) e.currentTarget.style.borderColor = '#DDD' }}
-                    />
-                  }
-                >
+                <TooltipTrigger render={
+                  <button type="button" onClick={() => !locked && setFrame(f.id)} aria-pressed={active}
+                    aria-label={`${f.label} frame${locked ? ' — Pro only' : ''}`}
+                    style={{ border: active ? '2px solid #222' : '1px solid #DDD', borderRadius: '10px', background: '#FFF',
+                      padding: '8px 4px 6px', cursor: locked ? 'default' : 'pointer', display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'border-color 100ms var(--ease-out)',
+                      outline: 'none', fontFamily: 'inherit', opacity: locked ? 0.5 : 1, position: 'relative' }}
+                    onMouseEnter={(e) => { if (!active && !locked) e.currentTarget.style.borderColor = '#B0B0B0' }}
+                    onMouseLeave={(e) => { if (!active && !locked) e.currentTarget.style.borderColor = '#DDD' }} />
+                }>
                   <FramePreviewIcon type={f.id} />
                   <span style={{ fontSize: '10px', fontWeight: active ? 600 : 500, color: locked ? '#999' : '#222', lineHeight: 1.2, display: 'flex', alignItems: 'center', gap: '2px' }}>
                     {f.label}
                     {locked && <Lock size={8} strokeWidth={2.5} style={{ color: '#999' }} aria-hidden="true" />}
                   </span>
                 </TooltipTrigger>
-                {locked && <TooltipContent>{proTooltipContent}</TooltipContent>}
+                {locked && <TooltipContent style={{ background: 'rgba(0,0,0,0.9)', color: '#FFF', borderRadius: '10px', padding: '10px 14px', border: 'none' }}><ProTooltipContent /></TooltipContent>}
               </Tooltip>
             )
           })}
@@ -522,52 +446,25 @@ function PolishTab() {
       {/* Watermark — Pro gated */}
       <div>
         <SectionLabel locked={!proUnlocked}>Watermark</SectionLabel>
-
         {!proUnlocked ? (
           <Tooltip>
-            <TooltipTrigger
-              render={
-                <div
-                  style={{
-                    border: '1.5px dashed #DDD',
-                    borderRadius: '10px',
-                    padding: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    opacity: 0.4,
-                    cursor: 'default',
-                    fontSize: '12px',
-                    color: 'var(--color-text-tertiary)',
-                  }}
-                />
-              }
-            >
-              <Upload size={14} aria-hidden="true" />
-              Add logo
+            <TooltipTrigger render={<div style={{ border: '1.5px dashed #DDD', borderRadius: '10px', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: 0.4, cursor: 'default', fontSize: '12px', color: 'var(--color-text-tertiary)' }} />}>
+              <Upload size={14} aria-hidden="true" /> Add logo
             </TooltipTrigger>
-            <TooltipContent>{proTooltipContent}</TooltipContent>
+            <TooltipContent style={{ background: 'rgba(0,0,0,0.9)', color: '#FFF', borderRadius: '10px', padding: '10px 14px', border: 'none' }}><ProTooltipContent /></TooltipContent>
           </Tooltip>
         ) : watermarkUrl ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* Preview + position */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ position: 'relative', width: '40px', height: '40px', borderRadius: '8px', border: '1px solid #DDD', overflow: 'hidden', flexShrink: 0, background: '#F8F8F8' }}>
                 <img src={watermarkUrl} alt="Watermark" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                <button
-                  type="button"
-                  onClick={() => setWatermarkUrl(null)}
-                  aria-label="Remove watermark"
-                  style={{ position: 'absolute', top: '-1px', right: '-1px', width: '16px', height: '16px', borderRadius: '50%', background: '#222', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
-                >
+                <button type="button" onClick={() => { setWatermarkUrl(null); showToast('Watermark removed') }} aria-label="Remove watermark"
+                  style={{ position: 'absolute', top: '-1px', right: '-1px', width: '16px', height: '16px', borderRadius: '50%', background: '#222', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                   <X size={8} color="#FFF" aria-hidden="true" />
                 </button>
               </div>
               <PositionGrid value={watermarkPosition} onChange={setWatermarkPosition} />
             </div>
-
-            {/* Opacity */}
             <div style={sliderRowStyle}>
               <div style={sliderLabelRow}>
                 <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>Opacity</span>
@@ -575,34 +472,16 @@ function PolishTab() {
               </div>
               <Slider value={[watermarkOpacity]} onValueChange={(val) => setWatermarkOpacity(Array.isArray(val) ? val[0] : val)} min={0} max={100} step={5} aria-label="Watermark opacity" />
             </div>
-
-            {/* Size — S/M/L */}
             <div>
               <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '6px' }}>Size</span>
               <div style={{ display: 'flex', gap: '4px' }}>
                 {([{ label: 'S', value: 0.08 }, { label: 'M', value: 0.12 }, { label: 'L', value: 0.18 }] as const).map((opt) => {
                   const active = Math.abs(watermarkScale - opt.value) < 0.01
                   return (
-                    <button
-                      key={opt.label}
-                      type="button"
-                      onClick={() => setWatermarkScale(opt.value)}
-                      aria-pressed={active}
-                      style={{
-                        flex: 1,
-                        background: active ? '#222' : 'rgba(0,0,0,0.04)',
-                        color: active ? '#FFF' : 'var(--color-text-secondary)',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '6px 0',
-                        fontSize: '11px',
-                        fontWeight: active ? 600 : 500,
-                        fontFamily: 'inherit',
-                        borderRadius: '8px',
-                        transition: 'all 100ms var(--ease-out)',
-                        textAlign: 'center',
-                      }}
-                    >
+                    <button key={opt.label} type="button" onClick={() => setWatermarkScale(opt.value)} aria-pressed={active}
+                      style={{ flex: 1, background: active ? '#222' : 'rgba(0,0,0,0.04)', color: active ? '#FFF' : 'var(--color-text-secondary)',
+                        border: 'none', cursor: 'pointer', padding: '6px 0', fontSize: '11px', fontWeight: active ? 600 : 500,
+                        fontFamily: 'inherit', borderRadius: '8px', transition: 'all 100ms var(--ease-out)', textAlign: 'center' }}>
                       {opt.label}
                     </button>
                   )
@@ -611,140 +490,101 @@ function PolishTab() {
             </div>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => wmInputRef.current?.click()}
-            style={{
-              border: '1.5px dashed #DDD',
-              borderRadius: '10px',
-              padding: '14px',
-              background: 'transparent',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              fontSize: '12px',
-              fontWeight: 500,
-              fontFamily: 'inherit',
-              color: 'var(--color-text-secondary)',
-              transition: 'border-color 100ms var(--ease-out), color 100ms var(--ease-out)',
-              width: '100%',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#B0B0B0'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDD'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
-          >
-            <Upload size={14} aria-hidden="true" />
-            Add logo
+          <button type="button" onClick={() => wmInputRef.current?.click()}
+            style={{ border: '1.5px dashed #DDD', borderRadius: '10px', padding: '14px', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--color-text-secondary)', transition: 'border-color 100ms var(--ease-out)', width: '100%' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#B0B0B0' }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#DDD' }}>
+            <Upload size={14} aria-hidden="true" /> Add logo
           </button>
         )}
-
-        <input
-          ref={wmInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/svg+xml,image/webp"
-          onChange={handleWatermarkUpload}
-          style={{ display: 'none' }}
-          aria-hidden="true"
-        />
+        <input ref={wmInputRef} type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" onChange={handleWatermarkUpload} style={{ display: 'none' }} aria-hidden="true" />
       </div>
     </div>
   )
 }
 
+// ── Main Panel ──
+
 export function FloatingPanel({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   const [activeTab, setActiveTab] = useState<Tab>('style')
   const reset = useEditorStore((s) => s.reset)
   const imageUrl = useEditorStore((s) => s.imageUrl)
+  const proUnlocked = useEditorStore((s) => s.proUnlocked)
+  const savePreset = useEditorStore((s) => s.savePreset)
+  const [presetName, setPresetName] = useState('')
+
+  const handleSave = () => {
+    const name = presetName.trim() || `Style ${Date.now() % 1000}`
+    savePreset(name)
+    showToast(`Style saved as "${name}"`)
+    setPresetName('')
+  }
 
   return (
-    <div
-      className="frosted-pill"
-      style={{
-        position: 'absolute',
-        top: '50%',
-        right: '18px',
-        transform: 'translateY(-50%)',
-        zIndex: 50,
-        width: '220px',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        maxHeight: 'calc(100vh - 120px)',
-      }}
-    >
+    <div className="frosted-pill" style={{ position: 'absolute', top: '50%', right: '18px', transform: 'translateY(-50%)', zIndex: 50, width: '220px', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxHeight: 'calc(100vh - 120px)' }}>
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '2px', padding: '6px 6px 0', background: 'transparent', flexShrink: 0 }}>
         {(['style', 'layout', 'polish'] as Tab[]).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            style={tabStyle(activeTab === tab)}
+          <button key={tab} type="button" onClick={() => setActiveTab(tab)} style={tabStyle(activeTab === tab)}
             onMouseEnter={(e) => { if (activeTab !== tab) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
-            onMouseLeave={(e) => { if (activeTab !== tab) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' } }}
-          >
+            onMouseLeave={(e) => { if (activeTab !== tab) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' } }}>
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Tab content — scrollable */}
+      {/* Tab content */}
       <div style={{ padding: '16px 14px', minHeight: '180px', overflowY: 'auto', flex: 1 }}>
         {activeTab === 'style' && <StyleTab onHoverBackground={onHoverBackground} />}
         {activeTab === 'layout' && <LayoutTab />}
         {activeTab === 'polish' && <PolishTab />}
       </div>
 
-      {/* Footer */}
-      <div style={{ display: 'flex', gap: '6px', padding: '0 14px 12px', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '10px', flexShrink: 0 }}>
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                onClick={() => {
-                  if (imageUrl) {
-                    const s = useEditorStore.getState()
-                    s.setBackground({ type: 'gradient', value: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' })
-                    s.setPadding(48)
-                    s.setCornerRadius(12)
-                    s.setShadow('soft')
-                    s.setFrame('none')
-                    s.setWatermarkUrl(null)
-                  } else {
-                    reset()
-                  }
-                }}
-                aria-label="Reset styles"
-                style={{
-                  flex: 1,
-                  background: 'rgba(0,0,0,0.04)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '7px 0',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  fontFamily: 'inherit',
-                  borderRadius: '10px',
-                  color: 'var(--color-text-secondary)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                  transition: 'all 100ms var(--ease-out)',
-                }}
+      {/* Footer — Save preset CTA + Reset */}
+      <div style={{ padding: '0 14px 12px', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '10px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {proUnlocked ? (
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder="Preset name..."
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSave() }}
+              style={{ flex: 1, height: '30px', border: '1px solid var(--color-border-input)', borderRadius: '8px', padding: '0 8px', fontSize: '12px', fontFamily: 'inherit', color: '#222', background: '#FFF', outline: 'none', minWidth: 0 }} />
+            <button type="button" onClick={handleSave}
+              style={{ height: '30px', padding: '0 12px', background: '#222', color: '#FFF', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background 100ms var(--ease-out)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#333' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#222' }}>
+              <Save size={12} aria-hidden="true" /> Save
+            </button>
+          </div>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger render={
+              <button type="button" style={{ width: '100%', height: '32px', background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'background 100ms var(--ease-out)' }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
-              />
-            }
-          >
-            <RotateCcw size={12} aria-hidden="true" />
-            Reset
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Reset to defaults</TooltipContent>
-        </Tooltip>
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }} />
+            }>
+              <Lock size={11} strokeWidth={2.5} aria-hidden="true" /> Save this style
+            </TooltipTrigger>
+            <TooltipContent style={{ background: 'rgba(0,0,0,0.9)', color: '#FFF', borderRadius: '10px', padding: '10px 14px', border: 'none' }}>
+              <ProTooltipContent />
+            </TooltipContent>
+          </Tooltip>
+        )}
+
+        {proUnlocked && (
+          <Tooltip>
+            <TooltipTrigger render={
+              <button type="button" onClick={() => { if (imageUrl) { const s = useEditorStore.getState(); s.setBackground(initialStateRef.background); s.setPadding(48); s.setCornerRadius(12); s.setShadow('soft'); s.setFrame('none'); s.setWatermarkUrl(null) } else { reset() } }}
+                aria-label="Reset styles" style={{ width: '100%', background: 'rgba(0,0,0,0.04)', border: 'none', cursor: 'pointer', padding: '7px 0', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', borderRadius: '10px', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 100ms var(--ease-out)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }} />
+            }>
+              <RotateCcw size={12} aria-hidden="true" /> Reset
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Reset to defaults</TooltipContent>
+          </Tooltip>
+        )}
       </div>
     </div>
   )
 }
+
+const initialStateRef = { background: { type: 'gradient' as const, value: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' } }

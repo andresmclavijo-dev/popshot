@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType, ImagePosition, WatermarkPosition } from '@/types'
+import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType, ImagePosition, WatermarkPosition, SavedPreset } from '@/types'
 import { IS_PRO } from '@/lib/config'
 
 // Snapshot of canvas-affecting properties for undo/redo
@@ -36,6 +36,14 @@ interface StoreExtras {
   redo: () => void
   canUndo: () => boolean
   canRedo: () => boolean
+  // Saved presets
+  savedPresets: SavedPreset[]
+  savePreset: (name: string) => void
+  deletePreset: (id: string) => void
+  applyPreset: (preset: SavedPreset) => void
+  // Export badge
+  badgeEnabled: boolean
+  setBadgeEnabled: (v: boolean) => void
 }
 
 const MAX_HISTORY = 50
@@ -120,6 +128,49 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   setZoom: (v: number) => set({ zoom: Math.max(0.25, Math.min(4, v)) }),
   fitRequested: 0,
   requestFit: () => set({ fitRequested: Date.now() }),
+
+  // Saved presets
+  savedPresets: JSON.parse(localStorage.getItem('popshot_presets') || '[]') as SavedPreset[],
+  savePreset: (name: string) => {
+    const s = get()
+    const preset: SavedPreset = {
+      id: `p_${Date.now()}`,
+      name,
+      timestamp: Date.now(),
+      background: s.background,
+      padding: s.padding,
+      cornerRadius: s.cornerRadius,
+      shadow: s.shadow,
+      frame: s.frame,
+      imagePosition: s.imagePosition,
+    }
+    const presets = [...get().savedPresets, preset]
+    localStorage.setItem('popshot_presets', JSON.stringify(presets))
+    set({ savedPresets: presets })
+  },
+  deletePreset: (id: string) => {
+    const presets = get().savedPresets.filter((p) => p.id !== id)
+    localStorage.setItem('popshot_presets', JSON.stringify(presets))
+    set({ savedPresets: presets })
+  },
+  applyPreset: (preset: SavedPreset) => {
+    set({
+      ...pushHistory(get),
+      background: preset.background,
+      padding: preset.padding,
+      cornerRadius: preset.cornerRadius,
+      shadow: preset.shadow,
+      frame: preset.frame,
+      imagePosition: preset.imagePosition,
+    })
+  },
+
+  // Export badge
+  badgeEnabled: localStorage.getItem('popshot_badge') === '1',
+  setBadgeEnabled: (v: boolean) => {
+    localStorage.setItem('popshot_badge', v ? '1' : '0')
+    set({ badgeEnabled: v })
+  },
 
   undo: () => {
     const { past, future } = get()

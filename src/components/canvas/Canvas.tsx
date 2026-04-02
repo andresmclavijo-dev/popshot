@@ -40,6 +40,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
   const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
   const requestFit = useEditorStore((s) => s.requestFit)
+  const badgeEnabled = useEditorStore((s) => s.badgeEnabled)
   const watermarkUrl = useEditorStore((s) => s.watermarkUrl)
   const watermarkPosition = useEditorStore((s) => s.watermarkPosition)
   const watermarkOpacity = useEditorStore((s) => s.watermarkOpacity)
@@ -254,6 +255,39 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
               />
             </div>
           )}
+          {/* Opt-in badge — only in export when enabled */}
+          <div
+            {...(badgeEnabled ? {} : { 'data-export-ignore': true })}
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              right: '12px',
+              zIndex: 10,
+              pointerEvents: 'none',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontSize: '11px',
+              fontWeight: 500,
+              letterSpacing: '0.01em',
+              lineHeight: 1,
+              opacity: badgeEnabled ? 0.5 : 0,
+              color: (() => {
+                const bg = displayBg.value
+                if (displayBg.type === 'transparent') return 'rgba(0,0,0,0.3)'
+                if (displayBg.type === 'gradient') return 'rgba(255,255,255,0.5)'
+                // Simple luminance check for solid colors
+                if (bg.startsWith('#') && bg.length === 7) {
+                  const r = parseInt(bg.slice(1, 3), 16)
+                  const g = parseInt(bg.slice(3, 5), 16)
+                  const b = parseInt(bg.slice(5, 7), 16)
+                  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+                  return lum > 0.5 ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.5)'
+                }
+                return 'rgba(255,255,255,0.5)'
+              })(),
+            }}
+          >
+            popshot.app
+          </div>
           </div>
           {/* Hover menu — Replace / Clear */}
           <div

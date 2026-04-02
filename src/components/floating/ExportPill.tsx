@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { ArrowDownToLine, Copy, Check, Loader2, Share2 } from 'lucide-react'
+import { ArrowDownToLine, Copy, Check, Loader2, Share2, Lock } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useExport } from '@/hooks/useExport'
@@ -56,6 +56,8 @@ export function ExportPill() {
   const [exportOpen, setExportOpen] = useState(false)
   const [format, setFormat] = useState<ExportFormat>('png')
 
+  const badgeEnabled = useEditorStore((s) => s.badgeEnabled)
+  const setBadgeEnabled = useEditorStore((s) => s.setBadgeEnabled)
   const disabled = isExporting || !imageUrl || !imageLoaded
 
   const handleExport = async (scale: ExportScale) => {
@@ -212,6 +214,15 @@ export function ExportPill() {
 
             <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)' }} />
 
+            {/* Badge opt-in */}
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 4px 2px', cursor: 'pointer', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+              <input type="checkbox" checked={badgeEnabled} onChange={(e) => setBadgeEnabled(e.target.checked)}
+                style={{ width: '14px', height: '14px', accentColor: '#222', cursor: 'pointer' }} />
+              Add "popshot.app" badge
+            </label>
+
+            <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)' }} />
+
             {/* Download options */}
             {([1, 2, 3] as ExportScale[]).map((scale) => (
               <button
@@ -226,6 +237,21 @@ export function ExportPill() {
                 Download {scale}×
               </button>
             ))}
+
+            <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)' }} />
+
+            {/* Batch export hint — locked */}
+            <Tooltip>
+              <TooltipTrigger render={
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 4px', fontSize: '12px', color: 'var(--color-text-tertiary)', cursor: 'default' }} />
+              }>
+                <Lock size={11} strokeWidth={2.5} aria-hidden="true" />
+                Batch export · Pro
+              </TooltipTrigger>
+              <TooltipContent style={{ background: 'rgba(0,0,0,0.9)', color: '#FFF', borderRadius: '10px', padding: '10px 14px', border: 'none', maxWidth: '220px' }}>
+                Style multiple screenshots at once — upgrade to Pro
+              </TooltipContent>
+            </Tooltip>
           </PopoverContent>
         </Popover>
       </div>

@@ -34,6 +34,18 @@ export interface EditorState extends WatermarkState {
   backgroundImageBlur: number
 }
 
+export interface SavedPreset {
+  id: string
+  name: string
+  timestamp: number
+  background: Background
+  padding: number
+  cornerRadius: number
+  shadow: ShadowType
+  frame: FrameType
+  imagePosition: ImagePosition
+}
+
 export interface EditorActions {
   setImage: (file: File, url: string) => void
   setBackground: (bg: Background) => void
