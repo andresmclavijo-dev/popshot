@@ -4,8 +4,24 @@ import { useEditorStore } from '@/store/useEditorStore'
 import { openUpgradeModal } from '@/components/shared/UpgradeModal'
 import { TEMPLATES, type Template, type TemplateCategory } from '@/data/templates'
 
-const PANEL_WIDTH = 240
+const PANEL_WIDTH = 220
 const COLLAPSED_WIDTH = 44
+
+const floatingBase: React.CSSProperties = {
+  position: 'absolute',
+  left: '12px',
+  top: '12px',
+  bottom: '12px',
+  borderRadius: '16px',
+  background: 'rgba(255,255,255,0.88)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '0.5px solid rgba(255,255,255,0.95)',
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+  zIndex: 10,
+}
 
 const FILTERS: { label: string; value: TemplateCategory | 'all' }[] = [
   { label: 'All', value: 'all' },
@@ -89,12 +105,7 @@ export function LeftPanel() {
 
   if (collapsed) {
     return (
-      <div style={{
-        width: `${COLLAPSED_WIDTH}px`, height: '100%', background: 'var(--ps-bg-panel)',
-        backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-        borderRight: '0.5px solid var(--ps-border-panel)', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', paddingTop: '14px', flexShrink: 0,
-      }}>
+      <div style={{ ...floatingBase, width: `${COLLAPSED_WIDTH}px`, alignItems: 'center', paddingTop: '14px' }}>
         <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
           style={{ width: '28px', height: '28px', borderRadius: 'var(--ps-radius-sm)', background: 'var(--ps-brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" /></svg>
@@ -104,12 +115,7 @@ export function LeftPanel() {
   }
 
   return (
-    <div style={{
-      width: `${PANEL_WIDTH}px`, height: '100%', background: 'var(--ps-bg-panel)',
-      backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-      borderRight: '0.5px solid var(--ps-border-panel)', display: 'flex', flexDirection: 'column',
-      flexShrink: 0, overflow: 'hidden',
-    }}>
+    <div style={{ ...floatingBase, width: `${PANEL_WIDTH}px` }}>
       {/* Header */}
       <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -185,9 +191,9 @@ export function LeftPanel() {
           <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '0 14px' }}>
             {Array.from(grouped.entries()).map(([platform, templates]) => (
               <div key={platform} style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                  <span style={{ color: 'var(--ps-text-tertiary)' }}><PlatformIcon icon={templates[0].platformIcon} /></span>
-                  <span style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--ps-text-tertiary)' }}>{platform}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 0 5px' }}>
+                  <span style={{ color: 'var(--ps-text-secondary)' }}><PlatformIcon icon={templates[0].platformIcon} /></span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>{platform}</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   {templates.map((t) => (

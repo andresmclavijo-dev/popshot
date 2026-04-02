@@ -3,6 +3,7 @@ import { Undo2, Redo2, Minus, Plus } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useEditorStore } from '@/store/useEditorStore'
+import { TEMPLATES } from '@/data/templates'
 import type { AspectRatioType } from '@/types'
 
 const CANVAS_SIZES: { id: AspectRatioType; label: string; dims?: string }[] = [
@@ -50,10 +51,14 @@ const menuItem: React.CSSProperties = {
 export function BottomToolbar() {
   const aspectRatio = useEditorStore((s) => s.aspectRatio)
   const setAspectRatio = useEditorStore((s) => s.setAspectRatio)
+  const activeTemplate = useEditorStore((s) => s.activeTemplate)
+  const setActiveTemplate = useEditorStore((s) => s.setActiveTemplate)
   const zoom = useEditorStore((s) => s.zoom)
   const setZoom = useEditorStore((s) => s.setZoom)
   const requestFit = useEditorStore((s) => s.requestFit)
   const [zoomOpen, setZoomOpen] = useState(false)
+
+  const activeTemplateName = activeTemplate ? TEMPLATES.find((t) => t.id === activeTemplate) : null
 
   const zoomPercent = Math.round(zoom * 100)
 
@@ -113,13 +118,13 @@ export function BottomToolbar() {
 
       <div style={sep} />
 
-      {/* Ratio pills */}
+      {/* Ratio pills — clicking clears active template */}
       {CANVAS_SIZES.map((size) => {
-        const active = aspectRatio === size.id
+        const active = !activeTemplate && aspectRatio === size.id
         return (
           <Tooltip key={size.id}>
             <TooltipTrigger render={
-              <button type="button" onClick={() => setAspectRatio(size.id)} aria-pressed={active} aria-label={`${size.label} canvas`}
+              <button type="button" onClick={() => { if (activeTemplate) setActiveTemplate(null); setAspectRatio(size.id) }} aria-pressed={active} aria-label={`${size.label} canvas`}
                 style={pillBtn(active)}
                 onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
                 onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' } }} />
@@ -128,6 +133,16 @@ export function BottomToolbar() {
           </Tooltip>
         )
       })}
+
+      {/* Template info label */}
+      {activeTemplateName && (
+        <>
+          <div style={sep} />
+          <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', whiteSpace: 'nowrap', padding: '0 4px' }}>
+            {activeTemplateName.name} · {activeTemplateName.width}\u00d7{activeTemplateName.height}
+          </span>
+        </>
+      )}
 
       <div style={sep} />
 

@@ -1,8 +1,7 @@
 import { useState, useRef } from 'react'
-import { ChevronDown, Lock, Upload, X, Save, RotateCcw, Check, Sparkles } from 'lucide-react'
+import { ChevronDown, Lock, Upload, X, RotateCcw, Check, Sparkles } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BACKGROUND_PRESETS, SHADOW_PRESETS } from '@/lib/presets'
 import { extractColorsFromImage } from '@/lib/colorExtract'
@@ -11,15 +10,10 @@ import { openUpgradeModal } from '@/components/shared/UpgradeModal'
 import { openExportModal } from '@/components/shared/ExportModal'
 import type { Background, WatermarkPosition, ImagePosition } from '@/types'
 
-const PANEL_WIDTH = 240
+const PANEL_WIDTH = 220
 const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach', 'transparent'])
 const CHECKERBOARD = 'repeating-conic-gradient(#D0D0CE 0% 25%, #F0F0EE 0% 50%) 0 0 / 8px 8px'
 const FREE_SWATCH_COUNT = 6
-
-const sectionLabel: React.CSSProperties = {
-  fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em',
-  color: 'var(--ps-text-tertiary)', display: 'flex', alignItems: 'center', gap: '4px',
-}
 
 const sliderRow: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '8px' }
 const sliderLabelRow: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
@@ -29,12 +23,17 @@ function Section({ label, locked, defaultOpen = true, children }: { label: strin
   return (
     <div>
       <button type="button" onClick={() => !locked && setOpen(!open)}
-        style={{ ...sectionLabel, width: '100%', background: 'transparent', border: 'none', cursor: locked ? 'default' : 'pointer', padding: '0 0 8px', fontFamily: 'inherit', justifyContent: 'space-between' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        style={{
+          width: '100%', background: 'transparent', border: 'none',
+          cursor: locked ? 'default' : 'pointer', padding: '11px 0 8px',
+          fontFamily: 'inherit', display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
           {label}
           {locked && <Lock size={10} strokeWidth={2.5} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
         </span>
-        {!locked && <ChevronDown size={12} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease-out', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
+        {!locked && <ChevronDown size={16} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease-out', color: 'rgba(0,0,0,0.3)' }} aria-hidden="true" />}
       </button>
       {open && <div>{children}</div>}
     </div>
@@ -89,68 +88,27 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
   const setWatermarkOpacity = useEditorStore((s) => s.setWatermarkOpacity)
   const watermarkScale = useEditorStore((s) => s.watermarkScale)
   const setWatermarkScale = useEditorStore((s) => s.setWatermarkScale)
-  const savePreset = useEditorStore((s) => s.savePreset)
   const reset = useEditorStore((s) => s.reset)
 
   const wmInputRef = useRef<HTMLInputElement>(null)
-  const [saveOpen, setSaveOpen] = useState(false)
-  const [presetName, setPresetName] = useState('')
 
   const hasImage = !!imageUrl
   const dimmed = !hasImage
 
-  const handleSave = () => {
-    const name = presetName.trim() || `Style ${Date.now() % 1000}`
-    savePreset(name)
-    showToast(`Style saved as "${name}"`)
-    setPresetName('')
-    setSaveOpen(false)
-  }
-
   return (
     <div style={{
-      width: `${PANEL_WIDTH}px`, height: '100%', background: 'var(--ps-bg-panel)',
+      position: 'absolute', right: '12px', top: '12px', bottom: '12px',
+      width: `${PANEL_WIDTH}px`, borderRadius: '16px',
+      background: 'rgba(255,255,255,0.88)',
       backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-      borderLeft: '0.5px solid var(--ps-border-panel)', display: 'flex', flexDirection: 'column',
-      flexShrink: 0, overflow: 'hidden',
+      border: '0.5px solid rgba(255,255,255,0.95)',
+      display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
       {/* Header */}
       <div style={{ padding: '12px 14px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>Customize</span>
-          {proUnlocked ? (
-            <Tooltip>
-              <TooltipTrigger render={
-                <button type="button" onClick={() => setSaveOpen(!saveOpen)} aria-label="Save style"
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: 'var(--ps-radius-sm)', color: 'var(--ps-text-secondary)', display: 'flex', transition: 'all 150ms ease-out' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }} />
-              }>
-                <Save size={14} aria-hidden="true" />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">Save style</TooltipContent>
-            </Tooltip>
-          ) : (
-            <button type="button" onClick={openUpgradeModal} aria-label="Save style — Pro"
-              style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--ps-text-tertiary)', display: 'flex', position: 'relative' }}>
-              <Save size={14} aria-hidden="true" />
-              <Lock size={7} strokeWidth={3} style={{ position: 'absolute', bottom: '1px', right: '1px' }} aria-hidden="true" />
-            </button>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>Customize</span>
         </div>
-
-        {/* Save popover */}
-        {saveOpen && (
-          <div style={{ display: 'flex', gap: '4px', marginBottom: '10px' }}>
-            <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder="Name this style..." autoFocus
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setSaveOpen(false) }}
-              style={{ flex: 1, height: '28px', border: `1px solid var(--ps-border-strong)`, borderRadius: 'var(--ps-radius-sm)', padding: '0 8px', fontSize: '12px', fontFamily: 'inherit', color: 'var(--ps-text-primary)', background: 'var(--ps-bg-surface)', outline: 'none', minWidth: 0 }} />
-            <button type="button" onClick={handleSave}
-              style={{ height: '28px', padding: '0 10px', background: 'var(--ps-text-primary)', color: 'var(--ps-text-on-dark)', border: 'none', borderRadius: 'var(--ps-radius-sm)', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', cursor: 'pointer' }}>
-              Save
-            </button>
-          </div>
-        )}
 
         {/* Action buttons */}
         <div style={{ display: 'flex', gap: '6px' }}>
