@@ -1,4 +1,5 @@
-import { X, Lock } from 'lucide-react'
+import { useState } from 'react'
+import { X, Lock, Check } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { showToast } from '@/components/shared/Toast'
 import type { Background, ShadowType, FrameType, ImagePosition, SavedPreset } from '@/types'
@@ -54,6 +55,66 @@ function PresetCard({ name, previewBg, onClick }: { name: string; previewBg: str
         {name}
       </span>
     </button>
+  )
+}
+
+function SavedPresetCard({ preset, onApply }: { preset: SavedPreset; onApply: () => void }) {
+  const deletePreset = useEditorStore((s) => s.deletePreset)
+  const [confirming, setConfirming] = useState(false)
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (confirming) {
+      deletePreset(preset.id)
+      showToast('Preset deleted')
+    } else {
+      setConfirming(true)
+      setTimeout(() => setConfirming(false), 1500)
+    }
+  }
+
+  const previewBg = preset.background.type === 'gradient' ? preset.background.value
+    : preset.background.type === 'solid' ? `linear-gradient(135deg, ${preset.background.value}, ${preset.background.value})`
+    : '#F0F0F0'
+
+  return (
+    <div style={{ position: 'relative' }}
+      onMouseLeave={() => setConfirming(false)}>
+      <PresetCard name={preset.name} previewBg={previewBg} onClick={onApply} />
+      <button
+        type="button"
+        onClick={handleDelete}
+        aria-label={confirming ? `Confirm delete ${preset.name}` : `Delete preset ${preset.name}`}
+        style={{
+          position: 'absolute', top: '4px', right: '4px',
+          width: confirming ? 'auto' : '20px', height: '20px',
+          borderRadius: confirming ? '10px' : '50%',
+          background: confirming ? 'var(--color-danger)' : 'rgba(0,0,0,0.6)',
+          border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: confirming ? '0 8px' : 0,
+          opacity: 0, transition: 'opacity 150ms var(--ease-out)',
+          fontSize: '10px', fontWeight: 600, fontFamily: 'inherit', color: '#FFF',
+          gap: '3px',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.opacity = '1' }}
+        onMouseLeave={(e) => { if (!confirming) e.currentTarget.style.opacity = '0' }}
+      >
+        {confirming ? (
+          <>
+            <Check size={10} aria-hidden="true" />
+            Remove
+          </>
+        ) : (
+          <X size={10} color="#FFF" aria-hidden="true" />
+        )}
+      </button>
+      {/* Show delete on card hover */}
+      <style>{`
+        div:hover > button[aria-label*="Delete"],
+        div:hover > button[aria-label*="Confirm"] { opacity: 1 !important; }
+      `}</style>
+    </div>
   )
 }
 
@@ -147,17 +208,12 @@ export function PresetGallery({ open, onClose }: Props) {
             </div>
           ) : savedPresets.length === 0 ? (
             <div style={{ padding: '24px', textAlign: 'center', fontSize: '12px', color: 'var(--color-text-tertiary)', border: '1px dashed #DDD', borderRadius: '12px' }}>
-              No saved presets yet. Use "Save" in the panel footer to save your current style.
+              No saved presets yet. Use the save icon in the panel header.
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
               {savedPresets.map((p) => (
-                <PresetCard
-                  key={p.id}
-                  name={p.name}
-                  previewBg={p.background.type === 'gradient' ? p.background.value : p.background.type === 'solid' ? `linear-gradient(135deg, ${p.background.value}, ${p.background.value})` : '#F0F0F0'}
-                  onClick={() => applySaved(p)}
-                />
+                <SavedPresetCard key={p.id} preset={p} onApply={() => applySaved(p)} />
               ))}
             </div>
           )}

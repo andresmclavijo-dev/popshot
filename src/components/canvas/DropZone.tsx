@@ -101,7 +101,7 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
               overflow: 'hidden', position: 'relative',
             }}>
               <div style={{ width: '60px', height: '40px', borderRadius: '2px', background: '#F0F0F0', border: '1px solid #DDD' }} />
-              <span style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '8px', color: '#BBB', fontWeight: 500 }}>raw</span>
+              <span style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '8px', color: '#999', fontWeight: 500 }}>raw</span>
             </div>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#CCC' }}>
               <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -123,7 +123,7 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
           <span style={{ fontSize: '17px', fontWeight: 600, color: '#222222', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
             {dragging ? 'Drop to beautify' : 'Make your screenshots beautiful'}
           </span>
-          <span style={{ fontSize: '13px', fontWeight: 400, color: '#999', lineHeight: 1.4 }}>
+          <span style={{ fontSize: '13px', fontWeight: 400, color: '#6b6b6b', lineHeight: 1.4 }}>
             {dragging ? 'Release to upload' : 'Paste, drop, or upload — then export in seconds'}
           </span>
         </div>
@@ -186,7 +186,7 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
           </button>
         </div>
 
-        <span style={{ fontSize: '12px', color: '#BBB' }}>
+        <span style={{ fontSize: '12px', color: '#6b6b6b' }}>
           or paste with{' '}
           <kbd style={{
             background: '#F5F5F5',

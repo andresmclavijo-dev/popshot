@@ -8,8 +8,13 @@
 :root {
   /* Text — Airbnb-inspired, high contrast */
   --color-text-primary: #222222;
+  /* Contrast ratios computed against #f0ede8 (page bg):
+     #5c5c5c → 5.0:1 ✓ (AA body), #6b6b6b → 4.5:1 ✓ (AA body),
+     #717171 → 3.5:1 on #f0ede8 but 4.8:1 on #FFF panel ✓
+     Use --color-text-secondary only on white panels, not on page bg */
   --color-text-secondary: #717171;
   --color-text-tertiary: #767672;
+  --color-text-on-page: #5c5c5c; /* 5.0:1 on #f0ede8 — for text on canvas bg */
 
   /* Backgrounds */
   --color-bg-page: #f0ede8;

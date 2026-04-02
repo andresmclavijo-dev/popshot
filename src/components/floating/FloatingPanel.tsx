@@ -511,6 +511,7 @@ export function FloatingPanel({ onHoverBackground }: { onHoverBackground: (bg: B
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const proUnlocked = useEditorStore((s) => s.proUnlocked)
   const savePreset = useEditorStore((s) => s.savePreset)
+  const [saveOpen, setSaveOpen] = useState(false)
   const [presetName, setPresetName] = useState('')
 
   const handleSave = () => {
@@ -518,20 +519,65 @@ export function FloatingPanel({ onHoverBackground }: { onHoverBackground: (bg: B
     savePreset(name)
     showToast(`Style saved as "${name}"`)
     setPresetName('')
+    setSaveOpen(false)
   }
 
   return (
     <div className="frosted-pill" style={{ position: 'absolute', top: '50%', right: '18px', transform: 'translateY(-50%)', zIndex: 50, width: '220px', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxHeight: 'calc(100vh - 120px)' }}>
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '2px', padding: '6px 6px 0', background: 'transparent', flexShrink: 0 }}>
-        {(['style', 'layout', 'polish'] as Tab[]).map((tab) => (
-          <button key={tab} type="button" onClick={() => setActiveTab(tab)} style={tabStyle(activeTab === tab)}
-            onMouseEnter={(e) => { if (activeTab !== tab) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
-            onMouseLeave={(e) => { if (activeTab !== tab) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' } }}>
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+      {/* Header: Tabs + Save icon */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '2px', padding: '6px 6px 0', flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: '2px', flex: 1 }}>
+          {(['style', 'layout', 'polish'] as Tab[]).map((tab) => (
+            <button key={tab} type="button" onClick={() => setActiveTab(tab)} style={tabStyle(activeTab === tab)}
+              onMouseEnter={(e) => { if (activeTab !== tab) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
+              onMouseLeave={(e) => { if (activeTab !== tab) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' } }}>
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+        {/* Save icon */}
+        {proUnlocked ? (
+          <Tooltip>
+            <TooltipTrigger render={
+              <button type="button" onClick={() => setSaveOpen(!saveOpen)} aria-label="Save style"
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '5px', borderRadius: '8px', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', transition: 'all 100ms var(--ease-out)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }} />
+            }>
+              <Save size={13} aria-hidden="true" />
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Save style</TooltipContent>
+          </Tooltip>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger render={
+              <button type="button" aria-label="Save style — Pro" style={{ background: 'transparent', border: 'none', cursor: 'default', padding: '5px', borderRadius: '8px', color: 'var(--color-text-tertiary)', display: 'flex', alignItems: 'center', position: 'relative' }} />
+            }>
+              <Save size={13} aria-hidden="true" />
+              <Lock size={7} strokeWidth={3} style={{ position: 'absolute', bottom: '2px', right: '2px', color: 'var(--color-text-tertiary)' }} aria-hidden="true" />
+            </TooltipTrigger>
+            <TooltipContent side="bottom" style={{ background: 'rgba(0,0,0,0.9)', color: '#FFF', borderRadius: '10px', padding: '10px 14px', border: 'none' }}>
+              <ProTooltipContent />
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
+
+      {/* Save popover (inline below header) */}
+      {saveOpen && (
+        <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', gap: '4px', flexShrink: 0 }}>
+          <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder="Name this style..."
+            onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setSaveOpen(false) }}
+            autoFocus
+            style={{ flex: 1, height: '28px', border: '1px solid var(--color-border-input)', borderRadius: '7px', padding: '0 8px', fontSize: '11px', fontFamily: 'inherit', color: '#222', background: '#FFF', outline: 'none', minWidth: 0 }} />
+          <button type="button" onClick={handleSave}
+            style={{ height: '28px', padding: '0 10px', background: '#222', color: '#FFF', border: 'none', borderRadius: '7px', fontSize: '11px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer', transition: 'background 100ms var(--ease-out)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#333' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#222' }}>
+            Save
+          </button>
+        </div>
+      )}
 
       {/* Tab content */}
       <div style={{ padding: '16px 14px', minHeight: '180px', overflowY: 'auto', flex: 1 }}>
@@ -540,51 +586,20 @@ export function FloatingPanel({ onHoverBackground }: { onHoverBackground: (bg: B
         {activeTab === 'polish' && <PolishTab />}
       </div>
 
-      {/* Footer — Save preset CTA + Reset */}
-      <div style={{ padding: '0 14px 12px', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '10px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {proUnlocked ? (
-          <div style={{ display: 'flex', gap: '4px' }}>
-            <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder="Preset name..."
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSave() }}
-              style={{ flex: 1, height: '30px', border: '1px solid var(--color-border-input)', borderRadius: '8px', padding: '0 8px', fontSize: '12px', fontFamily: 'inherit', color: '#222', background: '#FFF', outline: 'none', minWidth: 0 }} />
-            <button type="button" onClick={handleSave}
-              style={{ height: '30px', padding: '0 12px', background: '#222', color: '#FFF', border: 'none', borderRadius: '8px', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background 100ms var(--ease-out)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#333' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#222' }}>
-              <Save size={12} aria-hidden="true" /> Save
-            </button>
-          </div>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger render={
-              <button type="button" style={{ width: '100%', height: '32px', background: 'rgba(0,0,0,0.04)', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'background 100ms var(--ease-out)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }} />
-            }>
-              <Lock size={11} strokeWidth={2.5} aria-hidden="true" /> Save this style
-            </TooltipTrigger>
-            <TooltipContent style={{ background: 'rgba(0,0,0,0.9)', color: '#FFF', borderRadius: '10px', padding: '10px 14px', border: 'none' }}>
-              <ProTooltipContent />
-            </TooltipContent>
-          </Tooltip>
-        )}
-
-        {proUnlocked && (
-          <Tooltip>
-            <TooltipTrigger render={
-              <button type="button" onClick={() => { if (imageUrl) { const s = useEditorStore.getState(); s.setBackground(initialStateRef.background); s.setPadding(48); s.setCornerRadius(12); s.setShadow('soft'); s.setFrame('none'); s.setWatermarkUrl(null) } else { reset() } }}
-                aria-label="Reset styles" style={{ width: '100%', background: 'rgba(0,0,0,0.04)', border: 'none', cursor: 'pointer', padding: '7px 0', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', borderRadius: '10px', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 100ms var(--ease-out)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }} />
-            }>
-              <RotateCcw size={12} aria-hidden="true" /> Reset
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Reset to defaults</TooltipContent>
-          </Tooltip>
-        )}
+      {/* Footer — Reset only */}
+      <div style={{ padding: '0 14px 12px', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '10px', flexShrink: 0 }}>
+        <Tooltip>
+          <TooltipTrigger render={
+            <button type="button" onClick={() => { if (imageUrl) { const s = useEditorStore.getState(); s.setBackground({ type: 'gradient', value: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }); s.setPadding(48); s.setCornerRadius(12); s.setShadow('soft'); s.setFrame('none'); s.setWatermarkUrl(null) } else { reset() } }}
+              aria-label="Reset styles" style={{ width: '100%', background: 'rgba(0,0,0,0.04)', border: 'none', cursor: 'pointer', padding: '7px 0', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', borderRadius: '10px', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', transition: 'all 100ms var(--ease-out)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }} />
+          }>
+            <RotateCcw size={12} aria-hidden="true" /> Reset
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Reset to defaults</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   )
 }
-
-const initialStateRef = { background: { type: 'gradient' as const, value: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' } }
