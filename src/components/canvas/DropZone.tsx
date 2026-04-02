@@ -96,12 +96,12 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
             {/* Before: raw screenshot */}
             <div style={{
               width: '80px', height: '56px', borderRadius: '4px',
-              background: '#FFF', border: '1px solid #E0E0E0',
+              background: 'var(--ps-bg-surface)', border: `1px solid var(--ps-border-strong)`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden', position: 'relative',
             }}>
-              <div style={{ width: '60px', height: '40px', borderRadius: '2px', background: '#F0F0F0', border: '1px solid #DDD' }} />
-              <span style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '8px', color: '#999', fontWeight: 500 }}>raw</span>
+              <div style={{ width: '60px', height: '40px', borderRadius: '2px', background: 'var(--ps-bg-hover)', border: `1px solid var(--ps-border)` }} />
+              <span style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '8px', color: 'var(--ps-text-tertiary)', fontWeight: 500 }}>raw</span>
             </div>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: 'var(--ps-text-tertiary)' }}>
               <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

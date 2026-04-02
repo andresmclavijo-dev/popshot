@@ -277,7 +277,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
           ) : watermarkUrl ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ position: 'relative', width: '36px', height: '36px', borderRadius: 'var(--ps-radius-sm)', border: `1px solid var(--ps-border-strong)`, overflow: 'hidden', flexShrink: 0, background: '#F8F8F8' }}>
+                <div style={{ position: 'relative', width: '36px', height: '36px', borderRadius: 'var(--ps-radius-sm)', border: `1px solid var(--ps-border-strong)`, overflow: 'hidden', flexShrink: 0, background: 'var(--ps-bg-hover)' }}>
                   <img src={watermarkUrl} alt="Watermark" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   <button type="button" onClick={() => { setWatermarkUrl(null); showToast('Watermark removed') }} aria-label="Remove watermark"
                     style={{ position: 'absolute', top: '-1px', right: '-1px', width: '14px', height: '14px', borderRadius: '50%', background: 'var(--ps-text-primary)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
