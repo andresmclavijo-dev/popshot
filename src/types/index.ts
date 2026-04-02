@@ -4,12 +4,21 @@ export type ShadowType = 'none' | 'soft' | 'deep'
 export type FrameType = 'none' | 'macos-light' | 'macos-dark' | 'safari' | 'arc' | 'card' | 'stack'
 export type AspectRatioType = 'free' | '16:9' | '1:1' | '4:3' | '4:5' | 'twitter' | 'linkedin' | 'dribbble' | 'behance' | 'og' | 'pinterest'
 
+export type WatermarkPosition = 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'
+
 export interface Background {
   type: BackgroundType
   value: string
 }
 
-export interface EditorState {
+export interface WatermarkState {
+  watermarkUrl: string | null     // base64 data URL
+  watermarkPosition: WatermarkPosition
+  watermarkOpacity: number        // 0–100
+  watermarkScale: number          // 0.5–2 (maps to small/medium/large)
+}
+
+export interface EditorState extends WatermarkState {
   imageFile: File | null
   imageUrl: string | null
   background: Background
@@ -38,5 +47,9 @@ export interface EditorActions {
   setImagePosition: (v: ImagePosition) => void
   setBackgroundImageUrl: (v: string | null) => void
   setBackgroundImageBlur: (v: number) => void
+  setWatermarkUrl: (v: string | null) => void
+  setWatermarkPosition: (v: WatermarkPosition) => void
+  setWatermarkOpacity: (v: number) => void
+  setWatermarkScale: (v: number) => void
   reset: () => void
 }

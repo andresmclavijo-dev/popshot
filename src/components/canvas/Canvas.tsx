@@ -8,7 +8,23 @@ import { FrameOverlay, getFrameTopPadding, getFrameRadius } from './FrameOverlay
 import { CanvasLoading } from './CanvasLoading'
 import { useImageUpload } from '@/hooks/useImageUpload'
 import { useZoom } from '@/hooks/useZoom'
-import type { Background } from '@/types'
+import type { Background, WatermarkPosition } from '@/types'
+
+function wmPositionStyle(pos: WatermarkPosition): React.CSSProperties {
+  const inset = '12px'
+  const map: Record<WatermarkPosition, React.CSSProperties> = {
+    'top-left': { top: inset, left: inset },
+    'top-center': { top: inset, left: '50%', transform: 'translateX(-50%)' },
+    'top-right': { top: inset, right: inset },
+    'center-left': { top: '50%', left: inset, transform: 'translateY(-50%)' },
+    'center': { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+    'center-right': { top: '50%', right: inset, transform: 'translateY(-50%)' },
+    'bottom-left': { bottom: inset, left: inset },
+    'bottom-center': { bottom: inset, left: '50%', transform: 'translateX(-50%)' },
+    'bottom-right': { bottom: inset, right: inset },
+  }
+  return map[pos]
+}
 
 export function Canvas({ hoveredBackground }: { hoveredBackground: Background | null }) {
   const imageUrl = useEditorStore((s) => s.imageUrl)
@@ -24,6 +40,10 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
   const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
   const requestFit = useEditorStore((s) => s.requestFit)
+  const watermarkUrl = useEditorStore((s) => s.watermarkUrl)
+  const watermarkPosition = useEditorStore((s) => s.watermarkPosition)
+  const watermarkOpacity = useEditorStore((s) => s.watermarkOpacity)
+  const watermarkScale = useEditorStore((s) => s.watermarkScale)
 
   const { handleFile } = useImageUpload()
   const setImageLoaded = useEditorStore((s) => s.setImageLoaded)
@@ -196,6 +216,30 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
                 />
               </div>
             </div>
+          {/* Watermark overlay — on top of screenshot, below frame chrome z-index */}
+          {watermarkUrl && (
+            <div
+              style={{
+                position: 'absolute',
+                ...wmPositionStyle(watermarkPosition),
+                zIndex: 5,
+                pointerEvents: 'none',
+                opacity: watermarkOpacity / 100,
+              }}
+            >
+              <img
+                src={watermarkUrl}
+                alt=""
+                aria-hidden="true"
+                style={{
+                  display: 'block',
+                  height: `${Math.round(24 * watermarkScale)}px`,
+                  width: 'auto',
+                  userSelect: 'none',
+                }}
+              />
+            </div>
+          )}
           </div>
           {/* Hover menu — Replace / Clear */}
           <div

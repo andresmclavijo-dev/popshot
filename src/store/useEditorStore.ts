@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType, ImagePosition } from '@/types'
+import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType, ImagePosition, WatermarkPosition } from '@/types'
 import { IS_PRO } from '@/lib/config'
 
 interface StoreExtras {
@@ -31,6 +31,10 @@ const initialState: EditorState = {
   imagePosition: 'center',
   backgroundImageUrl: null,
   backgroundImageBlur: 0,
+  watermarkUrl: null,
+  watermarkPosition: 'bottom-right',
+  watermarkOpacity: 80,
+  watermarkScale: 1,
 }
 
 export const useEditorStore = create<EditorState & EditorActions & StoreExtras>()((set) => ({
@@ -52,6 +56,10 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   setImagePosition: (v: ImagePosition) => set({ imagePosition: v }),
   setBackgroundImageUrl: (v: string | null) => set({ backgroundImageUrl: v }),
   setBackgroundImageBlur: (v: number) => set({ backgroundImageBlur: v }),
+  setWatermarkUrl: (v: string | null) => set({ watermarkUrl: v }),
+  setWatermarkPosition: (v: WatermarkPosition) => set({ watermarkPosition: v }),
+  setWatermarkOpacity: (v: number) => set({ watermarkOpacity: v }),
+  setWatermarkScale: (v: number) => set({ watermarkScale: v }),
   setDemoMode: (v: boolean) => set({ isDemoMode: v }),
   setIsLoading: (v: boolean) => set({ isLoading: v }),
   triggerShuffle: () => set({ lastShuffle: Date.now() }),
