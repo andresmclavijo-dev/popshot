@@ -21,7 +21,7 @@ export function LogoPill() {
       // Unlock
       setProUnlocked(true)
       sessionStorage.setItem('ps_dev', '1')
-      ;(window as Record<string, unknown>).__popshotUnlocked = true
+      ;(window as Window & { __popshotUnlocked?: boolean }).__popshotUnlocked = true
       setFlashing(true)
       setTimeout(() => setFlashing(false), 1000)
       showToast('Dev mode activated')

@@ -54,7 +54,7 @@ export function App() {
     // Check dev session unlock
     if (sessionStorage.getItem('ps_dev') === '1') {
       setProUnlocked(true)
-      ;(window as Record<string, unknown>).__popshotUnlocked = true
+      ;(window as Window & { __popshotUnlocked?: boolean }).__popshotUnlocked = true
     }
     // Check LS redirect
     if (checkUpgradeSuccess()) {
