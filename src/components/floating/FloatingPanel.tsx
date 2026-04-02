@@ -352,44 +352,163 @@ function LayoutTab() {
   )
 }
 
+const FRAME_OPTIONS: { id: import('@/types').FrameType; label: string }[] = [
+  { id: 'none', label: 'None' },
+  { id: 'macos-light', label: 'macOS' },
+  { id: 'safari', label: 'Safari' },
+  { id: 'arc', label: 'Arc' },
+  { id: 'card', label: 'Card' },
+  { id: 'stack', label: 'Stack' },
+]
+
+function FramePreviewIcon({ type }: { type: import('@/types').FrameType }) {
+  const w = 36
+  const h = 26
+  if (type === 'none') {
+    return (
+      <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="34" height="24" rx="3" stroke="#BBBBBB" strokeWidth="1.2" fill="none" />
+      </svg>
+    )
+  }
+  if (type === 'macos-light') {
+    return (
+      <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="35" height="25" rx="3" fill="#F5F5F5" stroke="#DDD" />
+        <circle cx="5" cy="4.5" r="1.8" fill="#FF5F57" />
+        <circle cx="9.5" cy="4.5" r="1.8" fill="#FFBD2E" />
+        <circle cx="14" cy="4.5" r="1.8" fill="#28C840" />
+        <line x1="0.5" y1="8.5" x2="35.5" y2="8.5" stroke="#DDD" strokeWidth="0.5" />
+      </svg>
+    )
+  }
+  if (type === 'safari') {
+    return (
+      <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="35" height="25" rx="3" fill="#F5F5F5" stroke="#DDD" />
+        <circle cx="5" cy="4" r="1.5" fill="#FF5F57" />
+        <circle cx="9" cy="4" r="1.5" fill="#FFBD2E" />
+        <circle cx="13" cy="4" r="1.5" fill="#28C840" />
+        <rect x="8" y="8" width="20" height="4" rx="2" fill="#E8E8E8" />
+        <line x1="0.5" y1="14" x2="35.5" y2="14" stroke="#DDD" strokeWidth="0.5" />
+      </svg>
+    )
+  }
+  if (type === 'arc') {
+    return (
+      <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="35" height="25" rx="3" fill="#1A1A2E" stroke="#333" />
+        <rect x="3" y="4" width="2" height="10" rx="1" fill="url(#arc-grad)" />
+        <rect x="8" y="5" width="12" height="4" rx="2" fill="rgba(255,255,255,0.12)" />
+        <rect x="22" y="5" width="8" height="4" rx="2" fill="rgba(255,255,255,0.06)" />
+        <defs><linearGradient id="arc-grad" x1="4" y1="4" x2="4" y2="14" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#7C5DFA" /><stop offset="1" stopColor="#EC4899" />
+        </linearGradient></defs>
+      </svg>
+    )
+  }
+  if (type === 'card') {
+    return (
+      <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="34" height="24" rx="5" fill="white" stroke="#DDD" strokeWidth="1" />
+        <rect x="4" y="4" width="28" height="18" rx="2" fill="#F0F0F0" />
+      </svg>
+    )
+  }
+  // stack
+  return (
+    <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true">
+      <rect x="5" y="5" width="30" height="20" rx="3" fill="#E0E0E0" stroke="#CCC" strokeWidth="0.5" />
+      <rect x="3" y="3" width="30" height="20" rx="3" fill="#EEEEEE" stroke="#CCC" strokeWidth="0.5" />
+      <rect x="1" y="1" width="30" height="20" rx="3" fill="white" stroke="#DDD" strokeWidth="1" />
+    </svg>
+  )
+}
+
 function PolishTab() {
   const shadow = useEditorStore((s) => s.shadow)
   const setShadow = useEditorStore((s) => s.setShadow)
+  const frame = useEditorStore((s) => s.frame)
+  const setFrame = useEditorStore((s) => s.setFrame)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <span style={labelStyle}>Shadow</span>
-      <div style={{ display: 'flex', gap: '6px' }}>
-        {SHADOW_PRESETS.map((opt) => {
-          const active = shadow === opt.id
-          return (
-            <button
-              key={opt.id}
-              type="button"
-              onClick={() => setShadow(opt.id)}
-              aria-pressed={active}
-              aria-label={`${opt.label} shadow`}
-              style={{
-                flex: 1,
-                background: active ? '#222222' : 'rgba(0,0,0,0.04)',
-                color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '8px 4px',
-                fontSize: '12px',
-                fontWeight: active ? 600 : 500,
-                fontFamily: 'inherit',
-                borderRadius: '10px',
-                transition: 'all 100ms var(--ease-out)',
-                textAlign: 'center',
-              }}
-              onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
-              onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
-            >
-              {opt.label}
-            </button>
-          )
-        })}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Shadow */}
+      <div>
+        <span style={labelStyle}>Shadow</span>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          {SHADOW_PRESETS.map((opt) => {
+            const active = shadow === opt.id
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setShadow(opt.id)}
+                aria-pressed={active}
+                aria-label={`${opt.label} shadow`}
+                style={{
+                  flex: 1,
+                  background: active ? '#222222' : 'rgba(0,0,0,0.04)',
+                  color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '8px 4px',
+                  fontSize: '12px',
+                  fontWeight: active ? 600 : 500,
+                  fontFamily: 'inherit',
+                  borderRadius: '10px',
+                  transition: 'all 100ms var(--ease-out)',
+                  textAlign: 'center',
+                }}
+                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
+                onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
+              >
+                {opt.label}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Frame */}
+      <div>
+        <span style={labelStyle}>Frame</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+          {FRAME_OPTIONS.map((f) => {
+            const active = frame === f.id
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setFrame(f.id)}
+                aria-pressed={active}
+                aria-label={`${f.label} frame`}
+                style={{
+                  border: active ? '2px solid #222222' : '1px solid #DDDDDD',
+                  borderRadius: '10px',
+                  background: '#FFFFFF',
+                  padding: '8px 4px 6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  transition: 'border-color 100ms var(--ease-out)',
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                }}
+                onMouseEnter={(e) => { if (!active) e.currentTarget.style.borderColor = '#B0B0B0' }}
+                onMouseLeave={(e) => { if (!active) e.currentTarget.style.borderColor = '#DDDDDD' }}
+              >
+                <FramePreviewIcon type={f.id} />
+                <span style={{ fontSize: '10px', fontWeight: active ? 600 : 500, color: '#222', lineHeight: 1.2 }}>
+                  {f.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

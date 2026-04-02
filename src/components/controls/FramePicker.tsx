@@ -5,7 +5,10 @@ const FRAMES: { id: FrameType; label: string }[] = [
   { id: 'none', label: 'None' },
   { id: 'macos-light', label: 'macOS Light' },
   { id: 'macos-dark', label: 'macOS Dark' },
-  { id: 'iphone', label: 'iPhone' },
+  { id: 'safari', label: 'Safari' },
+  { id: 'arc', label: 'Arc' },
+  { id: 'card', label: 'Card' },
+  { id: 'stack', label: 'Stack' },
 ]
 
 function FrameIcon({ type, size }: { type: FrameType; size: number }) {
@@ -37,11 +40,10 @@ function FrameIcon({ type, size }: { type: FrameType; size: number }) {
       </svg>
     )
   }
-  // iphone
+  // default fallback
   return (
-    <svg width={s * 0.5} height={s * 0.85} viewBox="0 0 14 24" fill="none" aria-hidden="true">
-      <rect x="0.5" y="0.5" width="13" height="23" rx="3" fill="#F5F5F5" stroke="#DDDDDD" />
-      <rect x="4" y="21" width="6" height="1" rx="0.5" fill="#CCCCCC" />
+    <svg width={s} height={s * 0.7} viewBox="0 0 28 20" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="18" rx="3" stroke="#BBBBBB" strokeWidth="1.5" fill="none" />
     </svg>
   )
 }

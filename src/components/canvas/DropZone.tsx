@@ -30,6 +30,17 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
     return () => document.removeEventListener('paste', onPaste)
   }, [handleFile])
 
+  const loadDemo = useCallback(async () => {
+    try {
+      const res = await fetch('/demo.png')
+      const blob = await res.blob()
+      const file = new File([blob], 'demo.png', { type: 'image/png' })
+      handleFile(file, true)
+    } catch {
+      // Silently fail if demo not available
+    }
+  }, [handleFile])
+
   return (
     <div
       onDragOver={onDragOver}
@@ -48,28 +59,26 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
         transition: 'opacity 400ms var(--ease-out), transform 400ms var(--ease-out)',
       }}
     >
-      {/* Drop zone card */}
+      {/* Drop zone area */}
       <div
-        onClick={() => inputRef.current?.click()}
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '16px',
+          gap: '24px',
           padding: '48px 40px',
-          border: dragging ? '2px solid var(--color-app-accent)' : '1.5px dashed #DDDDDD',
-          borderRadius: '16px',
-          background: dragging ? 'rgba(124, 93, 250, 0.04)' : 'rgba(255,255,255,0.6)',
-          cursor: 'pointer',
+          border: dragging ? '2px dashed var(--color-app-accent)' : '1.5px dashed rgba(0,0,0,0.12)',
+          borderRadius: '20px',
+          background: dragging ? 'rgba(124, 93, 250, 0.04)' : 'transparent',
           transition: 'border 150ms var(--ease-out), background 150ms var(--ease-out)',
-          maxWidth: '320px',
+          maxWidth: '360px',
           width: '100%',
         }}
       >
         <div style={{ animation: mounted ? 'iconPulse 1.8s ease-in-out 3' : 'none' }}>
           <ImagePlus
-            size={36}
-            strokeWidth={1.5}
+            size={40}
+            strokeWidth={1.2}
             style={{
               color: dragging ? 'var(--color-app-accent)' : '#BBBBBB',
               transition: 'color 150ms var(--ease-out)',
@@ -80,80 +89,82 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
 
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <span style={{ fontSize: '17px', fontWeight: 600, color: '#222222', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
-            {dragging ? 'Drop to beautify' : 'Make your screenshots pop'}
+            {dragging ? 'Drop to beautify' : 'Drop your screenshot'}
           </span>
-          <span style={{ fontSize: '14px', fontWeight: 400, color: '#717171', lineHeight: 1.4 }}>
-            Drop, paste, or click to start
+          <span style={{ fontSize: '13px', fontWeight: 400, color: '#999', lineHeight: 1.4 }}>
+            PNG, JPG, or WebP
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
-          aria-label="Browse and upload a screenshot"
+        {/* Frosted action pill */}
+        <div
+          className="frosted-pill"
           style={{
-            height: '36px',
-            padding: '0 20px',
-            background: 'var(--color-app-accent)',
-            color: '#FFFFFF',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '14px',
-            fontWeight: 600,
-            fontFamily: 'inherit',
-            cursor: 'pointer',
-            marginTop: '4px',
-            transition: 'background 150ms var(--ease-out), transform 100ms var(--ease-out)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2px',
+            padding: '4px',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-app-accent-hover)'; e.currentTarget.style.transform = 'scale(1.02)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-app-accent)'; e.currentTarget.style.transform = 'scale(1)' }}
-          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1.02)' }}
         >
-          Browse files
-        </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
+            aria-label="Upload image"
+            style={{
+              background: '#222222',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '16px',
+              padding: '8px 18px',
+              fontSize: '13px',
+              fontWeight: 600,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+              transition: 'background 100ms var(--ease-out), transform 100ms var(--ease-out)',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#333' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#222222'; e.currentTarget.style.transform = 'none' }}
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
+            onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
+          >
+            Upload image
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); loadDemo() }}
+            aria-label="Try demo"
+            style={{
+              background: 'transparent',
+              color: 'var(--color-text-secondary)',
+              border: 'none',
+              borderRadius: '16px',
+              padding: '8px 18px',
+              fontSize: '13px',
+              fontWeight: 500,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+              transition: 'color 100ms var(--ease-out), background 100ms var(--ease-out)',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'transparent' }}
+          >
+            Try demo
+          </button>
+        </div>
 
-        <span style={{ fontSize: '12px', color: '#AAAAAA', marginTop: '-4px' }}>
+        <span style={{ fontSize: '12px', color: '#BBB' }}>
           or paste with{' '}
           <kbd style={{
             background: '#F5F5F5',
-            border: '1px solid #DDDDDD',
+            border: '1px solid #DDD',
             borderRadius: '4px',
             padding: '1px 5px',
             fontSize: '11px',
             fontFamily: 'system-ui',
           }}>&#8984;V</kbd>
         </span>
-      </div>
-
-      <span style={{ marginTop: '16px', fontSize: '12px', color: '#AAAAAA', letterSpacing: '0.01em' }}>
-        PNG, JPG, or WebP
-      </span>
-
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        marginTop: '20px',
-      }}>
-        {['Product launches', 'Case studies', 'Social posts', 'Portfolio'].map(tag => (
-          <span
-            key={tag}
-            style={{
-              fontSize: '12px',
-              color: '#717171',
-              background: '#F0F0EE',
-              border: '1px solid #E2E2E0',
-              borderRadius: '100px',
-              padding: '4px 12px',
-              fontWeight: 400,
-              letterSpacing: '0.01em',
-            }}
-          >
-            {tag}
-          </span>
-        ))}
       </div>
 
       <input

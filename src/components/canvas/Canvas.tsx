@@ -4,7 +4,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip
 import { useEditorStore } from '@/store/useEditorStore'
 import { SHADOW_PRESETS, ASPECT_RATIO_PRESETS } from '@/lib/presets'
 import { DropZone } from './DropZone'
-import { FrameOverlay } from './FrameOverlay'
+import { FrameOverlay, getFrameTopPadding, getFrameRadius } from './FrameOverlay'
 import { CanvasLoading } from './CanvasLoading'
 import { useImageUpload } from '@/hooks/useImageUpload'
 import { useZoom } from '@/hooks/useZoom'
@@ -28,8 +28,10 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const { handleFile } = useImageUpload()
   const setImageLoaded = useEditorStore((s) => s.setImageLoaded)
   const imgRef = useRef<HTMLImageElement>(null)
+  const replaceInputRef = useRef<HTMLInputElement>(null)
   const [popKey, setPopKey] = useState(0)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isImageHovered, setIsImageHovered] = useState(false)
   const prevShuffle = useRef(lastShuffle)
   const canvasRef = useRef<HTMLDivElement>(null)
   const workspaceRef = useRef<HTMLDivElement>(null)
@@ -85,8 +87,8 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const displayBg = hoveredBackground ?? background
   const shadowStyle = SHADOW_PRESETS.find((p) => p.id === shadow)?.style ?? ''
   const ratioPreset = ASPECT_RATIO_PRESETS.find((p) => p.id === aspectRatio)
-  const framePaddingTop = frame.startsWith('macos') ? 28 : 0
-  const frameRadius = frame === 'iphone' ? 50 : frame !== 'none' ? 10 : 0
+  const framePaddingTop = getFrameTopPadding(frame)
+  const frameRadius = getFrameRadius(frame)
 
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const canvasStyle: React.CSSProperties = {
@@ -140,7 +142,11 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
           flexShrink: 0,
         }}
       >
-        <div style={{ position: 'relative', display: 'inline-flex' }}>
+        <div
+          style={{ position: 'relative', display: 'inline-flex' }}
+          onMouseEnter={() => setIsImageHovered(true)}
+          onMouseLeave={() => setIsImageHovered(false)}
+        >
           <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
             {/* Background image layer — own overflow clip so canvas doesn't need it */}
             {isImageBg && (
@@ -191,6 +197,85 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
               </div>
             </div>
           </div>
+          {/* Hover menu — Replace / Clear */}
+          <div
+            data-export-ignore
+            style={{
+              position: 'absolute',
+              top: '12px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 25,
+              opacity: isImageHovered ? 1 : 0,
+              pointerEvents: isImageHovered ? 'auto' : 'none',
+              transition: 'opacity 150ms var(--ease-out)',
+            }}
+          >
+            <div
+              className="frosted-pill"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2px',
+                padding: '3px',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => replaceInputRef.current?.click()}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '5px 12px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  fontFamily: 'inherit',
+                  color: 'var(--color-text-secondary)',
+                  borderRadius: '14px',
+                  transition: 'color 100ms var(--ease-out), background 100ms var(--ease-out)',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.background = 'rgba(0,0,0,0.05)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'transparent' }}
+              >
+                Replace
+              </button>
+              <div style={{ width: '1px', height: '14px', background: 'rgba(0,0,0,0.1)', flexShrink: 0 }} />
+              <button
+                type="button"
+                onClick={reset}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '5px 12px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  fontFamily: 'inherit',
+                  color: 'var(--color-text-secondary)',
+                  borderRadius: '14px',
+                  transition: 'color 100ms var(--ease-out), background 100ms var(--ease-out)',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-danger)'; e.currentTarget.style.background = 'rgba(220,38,38,0.05)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'transparent' }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          {/* Hidden file input for replace */}
+          <input
+            ref={replaceInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFile(file); e.target.value = '' }}
+            style={{ display: 'none' }}
+            aria-hidden="true"
+          />
+
           <Tooltip>
             <TooltipTrigger
               render={
