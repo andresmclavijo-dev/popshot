@@ -51,9 +51,33 @@ export function useKeyboardShortcuts({ onExportOpen, onCopyClipboard, onShuffle 
         return
       }
 
+      // Zoom: Cmd+0 = fit to screen
       if (mod && e.key === '0') {
         e.preventDefault()
-        console.log('fit to canvas — coming in v1.5')
+        useEditorStore.getState().requestFit()
+        return
+      }
+
+      // Zoom: Cmd+1 = actual size (100%)
+      if (mod && e.key === '1') {
+        e.preventDefault()
+        useEditorStore.getState().setZoom(1)
+        return
+      }
+
+      // Zoom: Cmd+= or Cmd++ = zoom in
+      if (mod && (e.key === '=' || e.key === '+')) {
+        e.preventDefault()
+        const z = useEditorStore.getState().zoom
+        useEditorStore.getState().setZoom(Math.min(4, z + 0.1))
+        return
+      }
+
+      // Zoom: Cmd+- = zoom out
+      if (mod && e.key === '-') {
+        e.preventDefault()
+        const z = useEditorStore.getState().zoom
+        useEditorStore.getState().setZoom(Math.max(0.25, z - 0.1))
         return
       }
 

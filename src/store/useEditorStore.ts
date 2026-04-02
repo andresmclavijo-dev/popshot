@@ -11,6 +11,10 @@ interface StoreExtras {
   setIsLoading: (v: boolean) => void
   imageLoaded: boolean
   setImageLoaded: (v: boolean) => void
+  zoom: number
+  setZoom: (v: number) => void
+  fitRequested: number
+  requestFit: () => void
 }
 
 const initialState: EditorState = {
@@ -51,5 +55,9 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   setDemoMode: (v: boolean) => set({ isDemoMode: v }),
   setIsLoading: (v: boolean) => set({ isLoading: v }),
   triggerShuffle: () => set({ lastShuffle: Date.now() }),
-  reset: () => set({ ...initialState, lastShuffle: 0, isDemoMode: false, isLoading: false, imageLoaded: false }),
+  zoom: 1,
+  setZoom: (v: number) => set({ zoom: Math.max(0.25, Math.min(4, v)) }),
+  fitRequested: 0,
+  requestFit: () => set({ fitRequested: Date.now() }),
+  reset: () => set({ ...initialState, lastShuffle: 0, isDemoMode: false, isLoading: false, imageLoaded: false, zoom: 1, fitRequested: Date.now() }),
 }))
