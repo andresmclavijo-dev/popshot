@@ -46,7 +46,7 @@ function PlatformIcon({ icon }: { icon: string }) {
 
 function TemplateCard({ template, active, onSelect }: { template: Template; active: boolean; onSelect: () => void }) {
   return (
-    <button type="button" onClick={onSelect} aria-pressed={active} aria-label={`${template.name} ${template.width}\u00d7${template.height}`}
+    <button type="button" onClick={onSelect} aria-pressed={active} aria-label={`${template.name} ${template.width}×${template.height}`}
       style={{
         width: '100%', background: 'transparent', border: 'none', cursor: 'pointer',
         padding: '0', fontFamily: 'inherit', textAlign: 'left',
@@ -64,7 +64,7 @@ function TemplateCard({ template, active, onSelect }: { template: Template; acti
         <span style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>{template.ratioLabel}</span>
       </div>
       <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--ps-text-primary)', display: 'block', lineHeight: 1.3 }}>{template.name}</span>
-      <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-tertiary)' }}>{template.width} \u00d7 {template.height}</span>
+      <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-tertiary)' }}>{template.width} × {template.height}</span>
     </button>
   )
 }

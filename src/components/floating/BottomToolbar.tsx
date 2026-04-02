@@ -8,10 +8,10 @@ import type { AspectRatioType } from '@/types'
 
 const CANVAS_SIZES: { id: AspectRatioType; label: string; dims?: string }[] = [
   { id: 'free', label: 'Free' },
-  { id: '16:9', label: '16:9', dims: '1280 \u00d7 720' },
-  { id: '4:3', label: '4:3', dims: '1024 \u00d7 768' },
-  { id: '1:1', label: '1:1', dims: '1080 \u00d7 1080' },
-  { id: '4:5' as AspectRatioType, label: '4:5', dims: '1080 \u00d7 1350' },
+  { id: '16:9', label: '16:9', dims: '1280 × 720' },
+  { id: '4:3', label: '4:3', dims: '1024 × 768' },
+  { id: '1:1', label: '1:1', dims: '1080 × 1080' },
+  { id: '4:5' as AspectRatioType, label: '4:5', dims: '1080 × 1350' },
 ]
 
 const ZOOM_PRESETS = [
@@ -139,7 +139,7 @@ export function BottomToolbar() {
         <>
           <div style={sep} />
           <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', whiteSpace: 'nowrap', padding: '0 4px' }}>
-            {activeTemplateName.name} · {activeTemplateName.width}\u00d7{activeTemplateName.height}
+            {activeTemplateName.name} · {activeTemplateName.width}×{activeTemplateName.height}
           </span>
         </>
       )}
