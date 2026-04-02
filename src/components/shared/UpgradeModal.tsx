@@ -102,8 +102,8 @@ export function UpgradeModal() {
             textDecoration: 'none',
             transition: 'background 150ms ease-out',
           }}
-          onMouseEnter={(e) => { (e.target as HTMLElement).style.background = '#333' }}
-          onMouseLeave={(e) => { (e.target as HTMLElement).style.background = 'var(--ps-text-primary)' }}
+          onMouseEnter={(e) => { (e.target as HTMLElement).style.opacity = '0.85' }}
+          onMouseLeave={(e) => { (e.target as HTMLElement).style.opacity = '1' }}
         >
           Get Pro — $19
         </a>

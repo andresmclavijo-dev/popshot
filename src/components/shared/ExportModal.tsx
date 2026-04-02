@@ -91,8 +91,8 @@ export function ExportModal() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button type="button" onClick={handleDownload}
             style={{ ...actionBtn, background: 'var(--ps-text-primary)', color: 'var(--ps-text-on-dark)' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#333' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ps-text-primary)' }}>
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}>
             <ArrowDownToLine size={14} aria-hidden="true" /> Download
           </button>
           <button type="button" onClick={handleCopy}

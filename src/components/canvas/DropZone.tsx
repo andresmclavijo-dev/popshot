@@ -82,7 +82,7 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
           alignItems: 'center',
           gap: '24px',
           padding: '48px 40px',
-          border: dragging ? '2px dashed var(--color-app-accent)' : '1.5px dashed rgba(0,0,0,0.12)',
+          border: dragging ? '2px dashed var(--color-app-accent)' : `1.5px dashed var(--ps-border-strong)`,
           borderRadius: '20px',
           background: dragging ? 'rgba(124, 93, 250, 0.04)' : 'transparent',
           transition: 'border 150ms var(--ease-out), background 150ms var(--ease-out)',
@@ -103,7 +103,7 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
               <div style={{ width: '60px', height: '40px', borderRadius: '2px', background: '#F0F0F0', border: '1px solid #DDD' }} />
               <span style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '8px', color: '#999', fontWeight: 500 }}>raw</span>
             </div>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#CCC' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: 'var(--ps-text-tertiary)' }}>
               <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             {/* After: beautified */}
@@ -120,10 +120,10 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
         )}
 
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <span style={{ fontSize: '17px', fontWeight: 600, color: '#222222', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
+          <span style={{ fontSize: '17px', fontWeight: 600, color: 'var(--ps-text-primary)', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
             {dragging ? 'Drop to beautify' : 'Make your screenshots beautiful'}
           </span>
-          <span style={{ fontSize: '13px', fontWeight: 400, color: '#6b6b6b', lineHeight: 1.4 }}>
+          <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--ps-text-secondary)', lineHeight: 1.4 }}>
             {dragging ? 'Release to upload' : 'Paste, drop, or upload — then export in seconds'}
           </span>
         </div>
@@ -143,8 +143,8 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
             onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
             aria-label="Upload image"
             style={{
-              background: '#222222',
-              color: '#FFFFFF',
+              background: 'var(--ps-text-primary)',
+              color: 'var(--ps-bg-page)',
               border: 'none',
               borderRadius: '16px',
               padding: '8px 18px',
@@ -155,8 +155,8 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
               transition: 'background 100ms var(--ease-out), transform 100ms var(--ease-out)',
               whiteSpace: 'nowrap',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#333' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#222222'; e.currentTarget.style.transform = 'none' }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none' }}
             onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
             onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
           >
@@ -186,11 +186,11 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
           </button>
         </div>
 
-        <span style={{ fontSize: '12px', color: '#6b6b6b' }}>
+        <span style={{ fontSize: '12px', color: 'var(--ps-text-secondary)' }}>
           or paste with{' '}
           <kbd style={{
-            background: '#F5F5F5',
-            border: '1px solid #DDD',
+            background: 'var(--ps-bg-hover)',
+            border: '1px solid var(--ps-border)',
             borderRadius: '4px',
             padding: '1px 5px',
             fontSize: '11px',
