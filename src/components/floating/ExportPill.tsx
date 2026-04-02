@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react'
-import { ArrowDownToLine, Copy, Check, Loader2, Share2, Lock } from 'lucide-react'
+import { ArrowDownToLine, Copy, Check, Loader2, Share2, Lock, Sparkles } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useExport } from '@/hooks/useExport'
 import { useEditorStore } from '@/store/useEditorStore'
 import { ExportGate } from '@/components/shared/ExportGate'
 import { showToast } from '@/components/shared/Toast'
+import { openUpgradeModal } from '@/components/shared/UpgradeModal'
 import type { ExportFormat, ExportScale } from '@/lib/exportImage'
 
 const dividerStyle: React.CSSProperties = {
@@ -150,10 +151,44 @@ export function ExportPill() {
             {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
             <span>{copied ? 'Copied' : 'Copy'}</span>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Copy PNG 2× · ⌘C</TooltipContent>
+          <TooltipContent side="bottom">Copy PNG 2×</TooltipContent>
         </Tooltip>
 
         <div style={dividerStyle} />
+
+        {/* Go Pro */}
+        {!useEditorStore.getState().proUnlocked && (
+          <>
+            <button
+              type="button"
+              onClick={openUpgradeModal}
+              style={{
+                background: 'transparent',
+                border: `1px solid var(--ps-border-strong)`,
+                borderRadius: 'var(--ps-radius-pill)',
+                cursor: 'pointer',
+                padding: '5px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '12px',
+                fontWeight: 500,
+                fontFamily: 'inherit',
+                color: 'var(--ps-text-secondary)',
+                transition: 'all 150ms ease-out',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ps-border-selected)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}
+            >
+              <Sparkles size={12} aria-hidden="true" />
+              Go Pro
+            </button>
+            <div style={dividerStyle} />
+          </>
+        )}
+
+
 
         {/* Export — primary dark CTA with popover */}
         <Popover open={exportOpen} onOpenChange={setExportOpen}>

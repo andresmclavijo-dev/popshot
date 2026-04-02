@@ -1,17 +1,16 @@
 import { useState } from 'react'
-import { LayoutGrid, Undo2, Redo2, Minus, Plus } from 'lucide-react'
+import { Undo2, Redo2, Minus, Plus } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useEditorStore } from '@/store/useEditorStore'
-import { PresetGallery } from './PresetGallery'
 import type { AspectRatioType } from '@/types'
 
 const CANVAS_SIZES: { id: AspectRatioType; label: string; dims?: string }[] = [
   { id: 'free', label: 'Free' },
-  { id: '16:9', label: '16:9', dims: '1280 × 720' },
-  { id: '4:3', label: '4:3', dims: '1024 × 768' },
-  { id: '1:1', label: '1:1', dims: '1080 × 1080' },
-  { id: '4:5' as AspectRatioType, label: '4:5', dims: '1080 × 1350' },
+  { id: '16:9', label: '16:9', dims: '1280 \u00d7 720' },
+  { id: '4:3', label: '4:3', dims: '1024 \u00d7 768' },
+  { id: '1:1', label: '1:1', dims: '1080 \u00d7 1080' },
+  { id: '4:5' as AspectRatioType, label: '4:5', dims: '1080 \u00d7 1350' },
 ]
 
 const ZOOM_PRESETS = [
@@ -23,57 +22,29 @@ const ZOOM_PRESETS = [
   { label: '200%', value: 2 },
 ]
 
-const separatorStyle: React.CSSProperties = {
-  width: '1px',
-  height: '20px',
-  background: 'rgba(0, 0, 0, 0.08)',
-  flexShrink: 0,
-  margin: '0 4px',
-}
+const sep: React.CSSProperties = { width: '1px', height: '20px', background: 'var(--ps-border)', flexShrink: 0, margin: '0 4px' }
 
-const pillBtnStyle = (active: boolean): React.CSSProperties => ({
-  background: active ? '#222222' : 'transparent',
-  color: active ? '#FFFFFF' : 'var(--color-text-secondary)',
-  border: 'none',
-  cursor: 'pointer',
-  padding: '5px 12px',
-  fontSize: '12px',
-  fontWeight: 500,
-  fontFamily: 'inherit',
-  borderRadius: '12px',
-  transition: 'all 100ms var(--ease-out)',
-  whiteSpace: 'nowrap' as const,
-  lineHeight: 1.3,
+const pillBtn = (active: boolean): React.CSSProperties => ({
+  background: active ? 'var(--ps-text-primary)' : 'transparent',
+  color: active ? 'var(--ps-text-on-dark)' : 'var(--ps-text-secondary)',
+  border: 'none', cursor: 'pointer', padding: '5px 12px',
+  fontSize: '12px', fontWeight: 500, fontFamily: 'inherit',
+  borderRadius: 'var(--ps-radius-md)', transition: 'all 150ms ease-out',
+  whiteSpace: 'nowrap' as const, lineHeight: '1.3',
 })
 
-const iconBtnStyle: React.CSSProperties = {
-  background: 'transparent',
-  border: 'none',
-  cursor: 'pointer',
-  padding: '6px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius: '10px',
-  color: 'var(--color-text-secondary)',
-  transition: 'color 100ms var(--ease-out), background 100ms var(--ease-out)',
+const iconBtn: React.CSSProperties = {
+  background: 'transparent', border: 'none', cursor: 'pointer',
+  padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+  borderRadius: 'var(--ps-radius-sm)', color: 'var(--ps-text-secondary)',
+  transition: 'all 150ms ease-out',
 }
 
-const menuItemStyle: React.CSSProperties = {
-  padding: '6px 12px',
-  fontSize: '12px',
-  fontWeight: 500,
-  fontFamily: 'inherit',
-  background: 'transparent',
-  border: 'none',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  textAlign: 'left',
-  color: 'var(--color-text-primary)',
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
+const menuItem: React.CSSProperties = {
+  padding: '6px 12px', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit',
+  background: 'transparent', border: 'none', borderRadius: '6px', cursor: 'pointer',
+  textAlign: 'left', color: 'var(--ps-text-primary)', width: '100%',
+  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
 }
 
 export function BottomToolbar() {
@@ -82,248 +53,103 @@ export function BottomToolbar() {
   const zoom = useEditorStore((s) => s.zoom)
   const setZoom = useEditorStore((s) => s.setZoom)
   const requestFit = useEditorStore((s) => s.requestFit)
-  const [galleryOpen, setGalleryOpen] = useState(false)
   const [zoomOpen, setZoomOpen] = useState(false)
 
   const zoomPercent = Math.round(zoom * 100)
 
   return (
-    <>
-      <div
-        className="frosted-pill"
-        style={{
-          position: 'absolute',
-          bottom: '18px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 50,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '2px',
-          padding: '4px 6px',
-        }}
-      >
-        {/* Zoom controls */}
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                onClick={() => setZoom(Math.max(0.25, zoom - 0.1))}
-                aria-label="Zoom out"
-                style={iconBtnStyle}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
-              />
-            }
-          >
-            <Minus size={14} aria-hidden="true" />
-          </TooltipTrigger>
-          <TooltipContent side="top">Zoom out · ⌘-</TooltipContent>
-        </Tooltip>
+    <div className="frosted-pill" style={{
+      position: 'absolute', bottom: '18px', left: '50%', transform: 'translateX(-50%)',
+      zIndex: 10, display: 'flex', alignItems: 'center', gap: '2px', padding: '4px 6px',
+    }}>
+      {/* Zoom */}
+      <Tooltip>
+        <TooltipTrigger render={
+          <button type="button" onClick={() => setZoom(Math.max(0.25, zoom - 0.1))} aria-label="Zoom out" style={iconBtn}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
+        }><Minus size={14} aria-hidden="true" /></TooltipTrigger>
+        <TooltipContent side="top">Zoom out</TooltipContent>
+      </Tooltip>
 
-        {/* Zoom level pill with popover */}
-        <Popover open={zoomOpen} onOpenChange={setZoomOpen}>
-          <PopoverTrigger
-            render={
-              <button
-                type="button"
-                aria-label={`Zoom ${zoomPercent}%`}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '5px 4px',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-                  color: 'var(--color-text-secondary)',
-                  borderRadius: '8px',
-                  transition: 'all 100ms var(--ease-out)',
-                  minWidth: '48px',
-                  textAlign: 'center',
-                  fontVariantNumeric: 'tabular-nums',
-                  lineHeight: 1.3,
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
-              />
-            }
-          >
-            {zoomPercent}%
-          </PopoverTrigger>
-          <PopoverContent
-            side="top"
-            sideOffset={8}
-            align="center"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              padding: '4px',
-              width: 'auto',
-              minWidth: '140px',
-            }}
-          >
-            {ZOOM_PRESETS.map((preset) => (
-              <button
-                key={preset.value}
-                type="button"
-                onClick={() => { setZoom(preset.value); setZoomOpen(false) }}
-                style={{
-                  ...menuItemStyle,
-                  fontWeight: Math.abs(zoom - preset.value) < 0.01 ? 600 : 500,
-                  color: Math.abs(zoom - preset.value) < 0.01 ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-              >
-                {preset.label}
-                {Math.abs(zoom - preset.value) < 0.01 && <span style={{ fontSize: '10px' }}>&#10003;</span>}
-              </button>
-            ))}
-            <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '4px 0' }} />
-            <button
-              type="button"
-              onClick={() => { requestFit(); setZoomOpen(false) }}
-              style={menuItemStyle}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-            >
-              Fit to screen
-              <span style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>⌘0</span>
+      <Popover open={zoomOpen} onOpenChange={setZoomOpen}>
+        <PopoverTrigger render={
+          <button type="button" aria-label={`Zoom ${zoomPercent}%`}
+            style={{ ...iconBtn, padding: '5px 4px', minWidth: '48px', textAlign: 'center', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: '12px', fontVariantNumeric: 'tabular-nums' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
+        }>{zoomPercent}%</PopoverTrigger>
+        <PopoverContent side="top" sideOffset={8} align="center" style={{ display: 'flex', flexDirection: 'column', padding: '4px', width: 'auto', minWidth: '140px' }}>
+          {ZOOM_PRESETS.map((p) => (
+            <button key={p.value} type="button" onClick={() => { setZoom(p.value); setZoomOpen(false) }}
+              style={{ ...menuItem, fontWeight: Math.abs(zoom - p.value) < 0.01 ? 600 : 500, color: Math.abs(zoom - p.value) < 0.01 ? 'var(--ps-text-primary)' : 'var(--ps-text-secondary)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+              {p.label}
             </button>
-            <button
-              type="button"
-              onClick={() => { setZoom(1); setZoomOpen(false) }}
-              style={menuItemStyle}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-            >
-              Actual size
-              <span style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>⌘1</span>
-            </button>
-          </PopoverContent>
-        </Popover>
+          ))}
+          <div style={{ height: '1px', background: 'var(--ps-border)', margin: '4px 0' }} />
+          <button type="button" onClick={() => { requestFit(); setZoomOpen(false) }} style={menuItem}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+            Fit to screen <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>\u2318 0</span>
+          </button>
+          <button type="button" onClick={() => { setZoom(1); setZoomOpen(false) }} style={menuItem}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+            Actual size <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>\u2318 1</span>
+          </button>
+        </PopoverContent>
+      </Popover>
 
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                onClick={() => setZoom(Math.min(4, zoom + 0.1))}
-                aria-label="Zoom in"
-                style={iconBtnStyle}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
-              />
-            }
-          >
-            <Plus size={14} aria-hidden="true" />
-          </TooltipTrigger>
-          <TooltipContent side="top">Zoom in · ⌘+</TooltipContent>
-        </Tooltip>
+      <Tooltip>
+        <TooltipTrigger render={
+          <button type="button" onClick={() => setZoom(Math.min(4, zoom + 0.1))} aria-label="Zoom in" style={iconBtn}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
+        }><Plus size={14} aria-hidden="true" /></TooltipTrigger>
+        <TooltipContent side="top">Zoom in</TooltipContent>
+      </Tooltip>
 
-        <div style={separatorStyle} />
+      <div style={sep} />
 
-        {/* Canvas size pills */}
-        {CANVAS_SIZES.map((size) => {
-          const active = aspectRatio === size.id
-          return (
-            <Tooltip key={size.id}>
-              <TooltipTrigger
-                render={
-                  <button
-                    type="button"
-                    onClick={() => setAspectRatio(size.id)}
-                    aria-pressed={active}
-                    aria-label={`${size.label} canvas size`}
-                    style={pillBtnStyle(active)}
-                    onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
-                    onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' } }}
-                  />
-                }
-              >
-                {size.label}
-              </TooltipTrigger>
-              {size.dims && <TooltipContent side="top">{size.dims}</TooltipContent>}
-            </Tooltip>
-          )
-        })}
+      {/* Ratio pills */}
+      {CANVAS_SIZES.map((size) => {
+        const active = aspectRatio === size.id
+        return (
+          <Tooltip key={size.id}>
+            <TooltipTrigger render={
+              <button type="button" onClick={() => setAspectRatio(size.id)} aria-pressed={active} aria-label={`${size.label} canvas`}
+                style={pillBtn(active)}
+                onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
+                onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' } }} />
+            }>{size.label}</TooltipTrigger>
+            {size.dims && <TooltipContent side="top">{size.dims}</TooltipContent>}
+          </Tooltip>
+        )
+      })}
 
-        <div style={separatorStyle} />
+      <div style={sep} />
 
-        {/* Examples / Presets */}
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                onClick={() => setGalleryOpen(true)}
-                aria-label="Style presets"
-                style={{
-                  ...iconBtnStyle,
-                  padding: '5px 10px',
-                  gap: '5px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '12px',
-                  fontWeight: 500,
-                  fontFamily: 'inherit',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
-              />
-            }
-          >
-            <LayoutGrid size={14} aria-hidden="true" />
-            Examples
-          </TooltipTrigger>
-          <TooltipContent side="top">Style presets</TooltipContent>
-        </Tooltip>
-
-        <div style={separatorStyle} />
-
-        {/* Undo */}
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                aria-label="Undo"
-                onClick={() => useEditorStore.getState().undo()}
-                style={{ ...iconBtnStyle, opacity: useEditorStore.getState().canUndo() ? 1 : 0.35, cursor: useEditorStore.getState().canUndo() ? 'pointer' : 'default' }}
-                onMouseEnter={(e) => { if (useEditorStore.getState().canUndo()) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
-              />
-            }
-          >
-            <Undo2 size={15} aria-hidden="true" />
-          </TooltipTrigger>
-          <TooltipContent side="top">Undo · ⌘Z</TooltipContent>
-        </Tooltip>
-
-        {/* Redo */}
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                aria-label="Redo"
-                onClick={() => useEditorStore.getState().redo()}
-                style={{ ...iconBtnStyle, opacity: useEditorStore.getState().canRedo() ? 1 : 0.35, cursor: useEditorStore.getState().canRedo() ? 'pointer' : 'default' }}
-                onMouseEnter={(e) => { if (useEditorStore.getState().canRedo()) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
-              />
-            }
-          >
-            <Redo2 size={15} aria-hidden="true" />
-          </TooltipTrigger>
-          <TooltipContent side="top">Redo · ⌘⇧Z</TooltipContent>
-        </Tooltip>
-      </div>
-
-      {/* Preset gallery modal */}
-      <PresetGallery open={galleryOpen} onClose={() => setGalleryOpen(false)} />
-    </>
+      {/* Undo/Redo */}
+      <Tooltip>
+        <TooltipTrigger render={
+          <button type="button" aria-label="Undo" onClick={() => useEditorStore.getState().undo()}
+            style={{ ...iconBtn, opacity: useEditorStore.getState().canUndo() ? 1 : 0.35, cursor: useEditorStore.getState().canUndo() ? 'pointer' : 'default' }}
+            onMouseEnter={(e) => { if (useEditorStore.getState().canUndo()) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
+        }><Undo2 size={15} aria-hidden="true" /></TooltipTrigger>
+        <TooltipContent side="top">Undo</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger render={
+          <button type="button" aria-label="Redo" onClick={() => useEditorStore.getState().redo()}
+            style={{ ...iconBtn, opacity: useEditorStore.getState().canRedo() ? 1 : 0.35, cursor: useEditorStore.getState().canRedo() ? 'pointer' : 'default' }}
+            onMouseEnter={(e) => { if (useEditorStore.getState().canRedo()) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
+        }><Redo2 size={15} aria-hidden="true" /></TooltipTrigger>
+        <TooltipContent side="top">Redo</TooltipContent>
+      </Tooltip>
+    </div>
   )
 }

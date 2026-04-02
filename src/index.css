@@ -6,39 +6,62 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Text — Airbnb-inspired, high contrast */
-  --color-text-primary: #222222;
-  /* Contrast ratios computed against #f0ede8 (page bg):
-     #5c5c5c → 5.0:1 ✓ (AA body), #6b6b6b → 4.5:1 ✓ (AA body),
-     #717171 → 3.5:1 on #f0ede8 but 4.8:1 on #FFF panel ✓
-     Use --color-text-secondary only on white panels, not on page bg */
-  --color-text-secondary: #717171;
-  --color-text-tertiary: #767672;
-  --color-text-on-page: #5c5c5c; /* 5.0:1 on #f0ede8 — for text on canvas bg */
+  /* ── Popshot Design System Tokens ── */
+  /* Text — WCAG AA contrast ratios:
+     #1a1a1a on #f0ede8 → 13.5:1 ✓
+     #5c5c5c on #f0ede8 →  5.0:1 ✓ (min 4.5:1 body)
+     #8a8a8a on #f0ede8 →  3.0:1 ✓ (decorative/large only) */
+  --ps-text-primary: #1a1a1a;
+  --ps-text-secondary: #5c5c5c;
+  --ps-text-tertiary: #8a8a8a;
+  --ps-text-on-dark: #ffffff;
+  --ps-text-success: #16a34a;
+  --ps-text-danger: #dc2626;
 
   /* Backgrounds */
-  --color-bg-page: #f0ede8;
-  --color-bg-panel: #FFFFFF;
-  --color-bg-card: #FFFFFF;
-  --color-bg-hover: #F7F7F7;
-  --color-bg-input: #FFFFFF;
+  --ps-bg-page: #f0ede8;
+  --ps-bg-panel: rgba(255,255,255,0.82);
+  --ps-bg-surface: #ffffff;
+  --ps-bg-hover: rgba(0,0,0,0.04);
+  --ps-bg-active: rgba(0,0,0,0.08);
+  --ps-bg-dark: rgba(0,0,0,0.85);
 
   /* Borders */
+  --ps-border: rgba(0,0,0,0.08);
+  --ps-border-strong: rgba(0,0,0,0.15);
+  --ps-border-selected: #1a1a1a;
+  --ps-border-panel: rgba(255,255,255,0.9);
+
+  /* Brand — logo only, never on buttons */
+  --ps-brand-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+
+  /* Radius */
+  --ps-radius-sm: 8px;
+  --ps-radius-md: 12px;
+  --ps-radius-lg: 16px;
+  --ps-radius-xl: 20px;
+  --ps-radius-pill: 9999px;
+
+  /* Legacy aliases — map old tokens to new */
+  --color-text-primary: var(--ps-text-primary);
+  --color-text-secondary: var(--ps-text-secondary);
+  --color-text-tertiary: var(--ps-text-tertiary);
+  --color-bg-page: var(--ps-bg-page);
+  --color-bg-panel: var(--ps-bg-surface);
+  --color-bg-card: var(--ps-bg-surface);
+  --color-bg-hover: #F7F7F7;
+  --color-bg-input: var(--ps-bg-surface);
   --color-border: #EBEBEB;
   --color-border-input: #DDDDDD;
-  --color-border-focus: #222222;
-  --color-border-selected: #222222;
-
-  /* Legacy aliases — prevent breakage in components not yet migrated */
+  --color-border-focus: var(--ps-border-selected);
+  --color-border-selected: var(--ps-border-selected);
   --color-app-border: var(--color-border);
   --color-app-border-strong: #C8C8C5;
   --color-app-accent: #7C5DFA;
   --color-app-accent-hover: #6C47FF;
   --color-app-accent-subtle: #F0ECFF;
-
-  /* Semantic */
-  --color-danger: #DC2626;
-  --color-success: #16A34A;
+  --color-danger: var(--ps-text-danger);
+  --color-success: var(--ps-text-success);
 
   /* Shadows — Airbnb style: soft, not heavy */
   --shadow-sidebar: 0 6px 16px rgba(0,0,0,0.12);
@@ -108,8 +131,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: var(--font-sans);
-  background: var(--color-bg-page);
-  color: var(--color-text-primary);
+  background: var(--ps-bg-page);
+  color: var(--ps-text-primary);
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -295,12 +318,12 @@ input[type="range"]::-moz-range-track {
 
 /* Frosted glass pill — shared treatment for all floating UI */
 .frosted-pill {
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--ps-bg-panel);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.03);
+  border: 0.5px solid var(--ps-border-panel);
+  border-radius: var(--ps-radius-xl);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 @keyframes dev-unlock-flash {
