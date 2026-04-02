@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Canvas } from '@/components/canvas/Canvas'
-import { LogoPill } from '@/components/floating/LogoPill'
-import { ExportPill } from '@/components/floating/ExportPill'
+import { LeftPanel } from '@/components/panels/LeftPanel'
+import { RightPanel } from '@/components/panels/RightPanel'
 import { BottomToolbar } from '@/components/floating/BottomToolbar'
-import { LeftPill } from '@/components/floating/LeftPill'
-import { FloatingPanel } from '@/components/floating/FloatingPanel'
-import { PresetGallery } from '@/components/floating/PresetGallery'
 import { UpgradeModal } from '@/components/shared/UpgradeModal'
+import { ExportModal } from '@/components/shared/ExportModal'
 import { ToastProvider, showToast } from '@/components/shared/Toast'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useExport } from '@/hooks/useExport'
@@ -38,9 +36,7 @@ function ShortcutBridge() {
 
 export function App() {
   const [hoveredBackground, setHoveredBackground] = useState<Background | null>(null)
-  const [galleryOpen, setGalleryOpen] = useState(false)
   const setProUnlocked = useEditorStore((s) => s.setProUnlocked)
-  const imageUrl = useEditorStore((s) => s.imageUrl)
 
   useEffect(() => {
     if (isProUnlocked()) setProUnlocked(true)
@@ -51,26 +47,24 @@ export function App() {
     if (checkUpgradeSuccess()) showToast('Check your email for the license key')
   }, [setProUnlocked])
 
-  const hasImage = !!imageUrl
-
   return (
     <TooltipProvider delay={600}>
-      <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
-        {/* Canvas — always rendered, shows drop zone when no image */}
-        <Canvas hoveredBackground={hoveredBackground} />
+      <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative' }}>
+        {/* Left panel — templates */}
+        <LeftPanel />
 
-        {/* Floating UI — always mounted, fade in when image loaded */}
-        <LogoPill />
-        <div style={{ opacity: hasImage ? 1 : 0, pointerEvents: hasImage ? 'auto' : 'none', transition: 'opacity 200ms ease-out' }}>
-          <ExportPill />
-          <FloatingPanel onHoverBackground={setHoveredBackground} />
+        {/* Center — canvas + bottom toolbar */}
+        <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+          <Canvas hoveredBackground={hoveredBackground} />
           <BottomToolbar />
-          <LeftPill onOpenGallery={() => setGalleryOpen(true)} />
         </div>
 
+        {/* Right panel — customize */}
+        <RightPanel onHoverBackground={setHoveredBackground} />
+
         {/* Modals */}
-        <PresetGallery open={galleryOpen} onClose={() => setGalleryOpen(false)} />
         <UpgradeModal />
+        <ExportModal />
 
         <ShortcutBridge />
         <ToastProvider />

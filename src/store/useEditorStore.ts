@@ -44,6 +44,15 @@ interface StoreExtras {
   // Export badge
   badgeEnabled: boolean
   setBadgeEnabled: (v: boolean) => void
+  // Template
+  activeTemplate: string | null
+  setActiveTemplate: (id: string | null) => void
+  // Theme
+  theme: 'light' | 'dark'
+  setTheme: (t: 'light' | 'dark') => void
+  // Left panel
+  leftPanelCollapsed: boolean
+  setLeftPanelCollapsed: (v: boolean) => void
 }
 
 const MAX_HISTORY = 50
@@ -171,6 +180,25 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
     localStorage.setItem('popshot_badge', v ? '1' : '0')
     set({ badgeEnabled: v })
   },
+
+  // Template
+  activeTemplate: null,
+  setActiveTemplate: (id: string | null) => {
+    set({ activeTemplate: id })
+    // Auto-fit after template change
+    setTimeout(() => set({ fitRequested: Date.now() }), 50)
+  },
+
+  // Theme
+  theme: (localStorage.getItem('ps_theme') as 'light' | 'dark') || 'light',
+  setTheme: (t: 'light' | 'dark') => {
+    localStorage.setItem('ps_theme', t)
+    set({ theme: t })
+  },
+
+  // Left panel
+  leftPanelCollapsed: false,
+  setLeftPanelCollapsed: (v: boolean) => set({ leftPanelCollapsed: v }),
 
   undo: () => {
     const { past, future } = get()
