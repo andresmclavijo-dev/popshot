@@ -193,20 +193,27 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
               </div>
               <Slider value={[cornerRadius]} onValueChange={(v) => setCornerRadius(Array.isArray(v) ? v[0] : v)} min={0} max={48} step={2} aria-label="Corner radius" />
             </div>
-            {/* Position */}
+            {/* Position — dot grid sets offsets for immediate visual effect */}
             <div>
               <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Position</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 24px)', gap: '6px', justifyContent: 'center' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 24px)', gap: '6px', justifyContent: 'center', marginBottom: '12px' }}>
                 {IMAGE_POSITIONS.map((pos) => {
-                  const active = imagePosition === pos
+                  const active = imagePosition === pos && imageOffsetX === 0 && imageOffsetY === 0
                   return (
-                    <button key={pos} type="button" onClick={() => setImagePosition(pos)} aria-label={`Position ${pos}`} aria-pressed={active}
+                    <button key={pos} type="button" onClick={() => {
+                      setImagePosition(pos)
+                      // Also set offsets for immediate visual feedback
+                      const xMap: Record<string, number> = { 'top-left': -120, 'left': -120, 'bottom-left': -120, 'top': 0, 'center': 0, 'bottom': 0, 'top-right': 120, 'right': 120, 'bottom-right': 120 }
+                      const yMap: Record<string, number> = { 'top-left': -80, 'top': -80, 'top-right': -80, 'left': 0, 'center': 0, 'right': 0, 'bottom-left': 80, 'bottom': 80, 'bottom-right': 80 }
+                      setImageOffsetX(xMap[pos] ?? 0)
+                      setImageOffsetY(yMap[pos] ?? 0)
+                    }} aria-label={`Position ${pos}`} aria-pressed={active}
                       style={{ width: '24px', height: '24px', borderRadius: '50%', border: active ? 'none' : `0.5px solid var(--ps-border)`, background: active ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)', cursor: 'pointer', padding: 0, transition: 'background 150ms ease-out' }} />
                   )
                 })}
               </div>
             </div>
-            {/* Offset sliders */}
+            {/* Fine offset sliders */}
             <div style={sliderRow}>
               <div style={sliderLabelRow}>
                 <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>X offset</span>
