@@ -260,11 +260,19 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
   )
 }
 
+const IMAGE_POSITIONS: import('@/types').ImagePosition[] = [
+  'top-left', 'top', 'top-right',
+  'left', 'center', 'right',
+  'bottom-left', 'bottom', 'bottom-right',
+]
+
 function LayoutTab() {
   const padding = useEditorStore((s) => s.padding)
   const setPadding = useEditorStore((s) => s.setPadding)
   const cornerRadius = useEditorStore((s) => s.cornerRadius)
   const setCornerRadius = useEditorStore((s) => s.setCornerRadius)
+  const imagePosition = useEditorStore((s) => s.imagePosition)
+  const setImagePosition = useEditorStore((s) => s.setImagePosition)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -281,6 +289,35 @@ function LayoutTab() {
           <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontVariantNumeric: 'tabular-nums' }}>{cornerRadius}px</span>
         </div>
         <Slider value={[cornerRadius]} onValueChange={(val) => setCornerRadius(Array.isArray(val) ? val[0] : val)} min={0} max={48} step={2} aria-label="Corner radius" />
+      </div>
+
+      {/* Position */}
+      <div>
+        <SectionLabel>Position</SectionLabel>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 28px)', gap: '6px', justifyContent: 'center' }}>
+          {IMAGE_POSITIONS.map((pos) => {
+            const active = imagePosition === pos
+            return (
+              <button
+                key={pos}
+                type="button"
+                onClick={() => setImagePosition(pos)}
+                aria-label={`Position ${pos}`}
+                aria-pressed={active}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  border: active ? 'none' : '0.5px solid rgba(0,0,0,0.1)',
+                  background: active ? 'var(--color-text-primary)' : 'rgba(0,0,0,0.04)',
+                  cursor: 'pointer',
+                  padding: 0,
+                  transition: 'background 100ms var(--ease-out)',
+                }}
+              />
+            )
+          })}
+        </div>
       </div>
     </div>
   )

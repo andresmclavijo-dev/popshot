@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react'
-import { toBlob } from 'html-to-image'
 import { ArrowDownToLine, Copy, Check, Loader2, Share2 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useExport } from '@/hooks/useExport'
 import { useEditorStore } from '@/store/useEditorStore'
 import { ExportGate } from '@/components/shared/ExportGate'
+import { showToast } from '@/components/shared/Toast'
+import type { ExportFormat, ExportScale } from '@/lib/exportImage'
 
 const dividerStyle: React.CSSProperties = {
   width: '1px',
@@ -31,17 +32,35 @@ const actionBtnStyle: React.CSSProperties = {
   whiteSpace: 'nowrap' as const,
 }
 
+const menuItemStyle: React.CSSProperties = {
+  padding: '8px 12px',
+  fontSize: '13px',
+  fontWeight: 500,
+  fontFamily: 'inherit',
+  background: 'transparent',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  textAlign: 'left' as const,
+  color: 'var(--color-text-primary)',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  width: '100%',
+}
+
 export function ExportPill() {
-  const { exportPng, copyImage, isExporting, copied, showGate, proceedWithWatermark, dismissGate } = useExport()
+  const { exportImage, copyImage, isExporting, copied, showGate, proceedWithWatermark, dismissGate } = useExport()
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const imageLoaded = useEditorStore((s) => s.imageLoaded)
   const [exportOpen, setExportOpen] = useState(false)
+  const [format, setFormat] = useState<ExportFormat>('png')
 
   const disabled = isExporting || !imageUrl || !imageLoaded
 
-  const handleExport = async (scale: 1 | 2) => {
+  const handleExport = async (scale: ExportScale) => {
     setExportOpen(false)
-    await exportPng(scale)
+    await exportImage(scale, format)
   }
 
   const handleCopy = useCallback(async () => {
@@ -49,23 +68,28 @@ export function ExportPill() {
   }, [copyImage])
 
   const handleShare = useCallback(async () => {
-    // Use Web Share API if available, otherwise copy
-    if (navigator.share) {
-      try {
-        const el = document.getElementById('export-canvas')
-        if (!el) return
-        const blob = await toBlob(el, { cacheBust: true, skipFonts: true })
-        if (!blob) return
-        const file = new File([blob], 'popshot.png', { type: 'image/png' })
-        await navigator.share({ files: [file] })
-      } catch {
-        // Fallback to copy
-        await copyImage()
-      }
-    } else {
-      await copyImage()
+    try {
+      await navigator.clipboard.writeText('https://popshot.app')
+      showToast('Link copied')
+    } catch {
+      showToast('Failed to copy link', 'error')
     }
-  }, [copyImage])
+  }, [])
+
+  const formatToggleStyle = (active: boolean): React.CSSProperties => ({
+    flex: 1,
+    background: active ? '#222' : 'transparent',
+    color: active ? '#FFF' : 'var(--color-text-secondary)',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '5px 0',
+    fontSize: '12px',
+    fontWeight: active ? 600 : 500,
+    fontFamily: 'inherit',
+    borderRadius: '6px',
+    transition: 'all 100ms var(--ease-out)',
+    textAlign: 'center' as const,
+  })
 
   return (
     <>
@@ -102,12 +126,12 @@ export function ExportPill() {
             <Share2 size={14} aria-hidden="true" />
             <span>Share</span>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Share image</TooltipContent>
+          <TooltipContent side="bottom">Copy link</TooltipContent>
         </Tooltip>
 
         <div style={dividerStyle} />
 
-        {/* Copy */}
+        {/* Copy — always PNG 2× */}
         <Tooltip>
           <TooltipTrigger
             render={
@@ -124,12 +148,12 @@ export function ExportPill() {
             {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
             <span>{copied ? 'Copied' : 'Copy'}</span>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Copy to clipboard · ⌘C</TooltipContent>
+          <TooltipContent side="bottom">Copy PNG 2× · ⌘C</TooltipContent>
         </Tooltip>
 
         <div style={dividerStyle} />
 
-        {/* Export — primary dark CTA */}
+        {/* Export — primary dark CTA with popover */}
         <Popover open={exportOpen} onOpenChange={setExportOpen}>
           <PopoverTrigger
             render={
@@ -137,8 +161,8 @@ export function ExportPill() {
                 type="button"
                 disabled={disabled}
                 style={{
-                  background: '#222222',
-                  color: '#FFFFFF',
+                  background: '#222',
+                  color: '#FFF',
                   border: 'none',
                   cursor: 'pointer',
                   padding: '6px 14px',
@@ -152,8 +176,8 @@ export function ExportPill() {
                   transition: 'background 100ms var(--ease-out), transform 100ms var(--ease-out)',
                   whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#333333' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = '#222222'; e.currentTarget.style.transform = 'none' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#333' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#222'; e.currentTarget.style.transform = 'none' }}
                 onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
                 onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
               />
@@ -171,59 +195,37 @@ export function ExportPill() {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              padding: '4px',
+              padding: '8px',
               width: 'auto',
-              minWidth: '160px',
+              minWidth: '180px',
+              gap: '4px',
             }}
           >
-            <button
-              type="button"
-              onClick={() => handleExport(1)}
-              style={{
-                padding: '8px 12px',
-                fontSize: '13px',
-                fontWeight: 500,
-                fontFamily: 'inherit',
-                background: 'transparent',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                textAlign: 'left',
-                color: 'var(--color-text-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-hover)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-            >
-              <ArrowDownToLine size={14} aria-hidden="true" />
-              Download 1x
-            </button>
-            <button
-              type="button"
-              onClick={() => handleExport(2)}
-              style={{
-                padding: '8px 12px',
-                fontSize: '13px',
-                fontWeight: 500,
-                fontFamily: 'inherit',
-                background: 'transparent',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                textAlign: 'left',
-                color: 'var(--color-text-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-hover)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-            >
-              <ArrowDownToLine size={14} aria-hidden="true" />
-              Download 2x
-            </button>
+            {/* Format toggle */}
+            <div style={{ padding: '0 4px 4px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '6px' }}>Format</span>
+              <div style={{ display: 'flex', gap: '2px', background: 'rgba(0,0,0,0.04)', borderRadius: '8px', padding: '2px' }}>
+                <button type="button" onClick={() => setFormat('png')} style={formatToggleStyle(format === 'png')}>PNG</button>
+                <button type="button" onClick={() => setFormat('jpg')} style={formatToggleStyle(format === 'jpg')}>JPG</button>
+              </div>
+            </div>
+
+            <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)' }} />
+
+            {/* Download options */}
+            {([1, 2, 3] as ExportScale[]).map((scale) => (
+              <button
+                key={scale}
+                type="button"
+                onClick={() => handleExport(scale)}
+                style={menuItemStyle}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-hover)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+              >
+                <ArrowDownToLine size={14} aria-hidden="true" />
+                Download {scale}×
+              </button>
+            ))}
           </PopoverContent>
         </Popover>
       </div>

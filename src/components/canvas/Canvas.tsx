@@ -96,11 +96,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   }, [handleFile])
 
   const positionMap: Record<string, { justifyContent: string; alignItems: string }> = {
-    center: { justifyContent: 'center', alignItems: 'center' },
-    top: { justifyContent: 'center', alignItems: 'flex-start' },
-    bottom: { justifyContent: 'center', alignItems: 'flex-end' },
-    'top-left': { justifyContent: 'flex-start', alignItems: 'flex-start' },
-    'top-right': { justifyContent: 'flex-end', alignItems: 'flex-start' },
+    'top-left':     { justifyContent: 'flex-start', alignItems: 'flex-start' },
+    'top':          { justifyContent: 'center',     alignItems: 'flex-start' },
+    'top-right':    { justifyContent: 'flex-end',   alignItems: 'flex-start' },
+    'left':         { justifyContent: 'flex-start', alignItems: 'center' },
+    'center':       { justifyContent: 'center',     alignItems: 'center' },
+    'right':        { justifyContent: 'flex-end',   alignItems: 'center' },
+    'bottom-left':  { justifyContent: 'flex-start', alignItems: 'flex-end' },
+    'bottom':       { justifyContent: 'center',     alignItems: 'flex-end' },
+    'bottom-right': { justifyContent: 'flex-end',   alignItems: 'flex-end' },
   }
   const pos = positionMap[imagePosition] ?? positionMap.center
 

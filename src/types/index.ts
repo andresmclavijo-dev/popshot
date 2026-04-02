@@ -1,5 +1,5 @@
 export type BackgroundType = 'solid' | 'gradient' | 'transparent' | 'image'
-export type ImagePosition = 'center' | 'top' | 'bottom' | 'top-left' | 'top-right'
+export type ImagePosition = 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right'
 export type ShadowType = 'none' | 'soft' | 'deep'
 export type FrameType = 'none' | 'macos-light' | 'macos-dark' | 'safari' | 'arc' | 'card' | 'stack'
 export type AspectRatioType = 'free' | '16:9' | '1:1' | '4:3' | '4:5' | 'twitter' | 'linkedin' | 'dribbble' | 'behance' | 'og' | 'pinterest'

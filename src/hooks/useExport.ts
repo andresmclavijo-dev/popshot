@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react'
-import { exportAsPng, copyToClipboard } from '@/lib/exportImage'
+import { exportAsImage, copyToClipboard } from '@/lib/exportImage'
 import { showToast } from '@/components/shared/Toast'
 import { IS_PRO } from '@/lib/config'
+import type { ExportFormat, ExportScale } from '@/lib/exportImage'
 
 function isProUser(): boolean {
   return IS_PRO || localStorage.getItem('popshot_pro') === 'true'
@@ -11,13 +12,13 @@ export function useExport() {
   const [isExporting, setIsExporting] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showGate, setShowGate] = useState(false)
-  const [pendingAction, setPendingAction] = useState<{ type: 'copy' } | { type: 'png'; scale: 1 | 2 } | null>(null)
+  const [pendingAction, setPendingAction] = useState<{ type: 'copy' } | { type: 'export'; scale: ExportScale; format: ExportFormat } | null>(null)
 
-  const doExportPng = useCallback(async (scale: 1 | 2) => {
+  const doExport = useCallback(async (scale: ExportScale, format: ExportFormat) => {
     setIsExporting(true)
     try {
-      await exportAsPng(scale)
-      showToast(`Saved · ${scale}x`)
+      await exportAsImage(scale, format)
+      showToast(`Saved · ${scale}x ${format.toUpperCase()}`)
     } catch {
       showToast('Export failed — try again', 'error')
     } finally {
@@ -30,7 +31,7 @@ export function useExport() {
     try {
       await copyToClipboard()
       setCopied(true)
-      showToast('Image copied')
+      showToast('Copied to clipboard')
       setTimeout(() => setCopied(false), 2000)
     } catch {
       showToast('Export failed — try again', 'error')
@@ -39,14 +40,19 @@ export function useExport() {
     }
   }, [])
 
-  const exportPng = useCallback(async (scale: 1 | 2) => {
+  const exportImage = useCallback(async (scale: ExportScale, format: ExportFormat) => {
     if (!isProUser()) {
-      setPendingAction({ type: 'png', scale })
+      setPendingAction({ type: 'export', scale, format })
       setShowGate(true)
       return
     }
-    await doExportPng(scale)
-  }, [doExportPng])
+    await doExport(scale, format)
+  }, [doExport])
+
+  // Legacy wrapper
+  const exportPng = useCallback(async (scale: 1 | 2) => {
+    await exportImage(scale, 'png')
+  }, [exportImage])
 
   const copyImage = useCallback(async () => {
     if (!isProUser()) {
@@ -61,16 +67,16 @@ export function useExport() {
     setShowGate(false)
     if (pendingAction?.type === 'copy') {
       await doCopyImage()
-    } else if (pendingAction?.type === 'png') {
-      await doExportPng(pendingAction.scale)
+    } else if (pendingAction?.type === 'export') {
+      await doExport(pendingAction.scale, pendingAction.format)
     }
     setPendingAction(null)
-  }, [pendingAction, doCopyImage, doExportPng])
+  }, [pendingAction, doCopyImage, doExport])
 
   const dismissGate = useCallback(() => {
     setShowGate(false)
     setPendingAction(null)
   }, [])
 
-  return { exportPng, copyImage, isExporting, copied, showGate, proceedWithWatermark, dismissGate }
+  return { exportImage, exportPng, copyImage, isExporting, copied, showGate, proceedWithWatermark, dismissGate }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 type ToastVariant = 'success' | 'error'
 
@@ -16,10 +16,17 @@ export function showToast(message: string, variant: ToastVariant = 'success') {
 
 export function ToastProvider() {
   const [toast, setToast] = useState<ToastData | null>(null)
+  const [visible, setVisible] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const fadeRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     showToastGlobal = (message: string, variant: ToastVariant = 'success') => {
+      // Cancel previous timers
+      if (timerRef.current) clearTimeout(timerRef.current)
+      if (fadeRef.current) clearTimeout(fadeRef.current)
       setToast({ message, variant, id: Date.now() })
+      setVisible(true)
     }
     return () => { showToastGlobal = null }
   }, [])
@@ -27,13 +34,18 @@ export function ToastProvider() {
   useEffect(() => {
     if (!toast) return
     const duration = toast.variant === 'error' ? 4000 : 2000
-    const timer = setTimeout(() => setToast(null), duration)
-    return () => clearTimeout(timer)
+    // Start fade-out before removal
+    timerRef.current = setTimeout(() => {
+      setVisible(false)
+      fadeRef.current = setTimeout(() => setToast(null), 200)
+    }, duration)
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+      if (fadeRef.current) clearTimeout(fadeRef.current)
+    }
   }, [toast])
 
   if (!toast) return null
-
-  const isError = toast.variant === 'error'
 
   return (
     <div
@@ -42,28 +54,23 @@ export function ToastProvider() {
       aria-live="polite"
       style={{
         position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        background: isError ? 'var(--color-danger)' : 'var(--color-text-primary)',
+        bottom: '72px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: toast.variant === 'error' ? 'var(--color-danger)' : 'rgba(0,0,0,0.85)',
         color: '#FFFFFF',
         fontSize: '13px',
+        fontWeight: 500,
         fontFamily: 'var(--font-sans)',
-        padding: '8px 16px',
-        borderRadius: 'var(--radius-full)',
+        padding: '8px 18px',
+        borderRadius: '20px',
         zIndex: 9999,
-        animation: 'toast-in 200ms var(--ease-out)',
+        opacity: visible ? 1 : 0,
+        transition: visible ? 'opacity 150ms var(--ease-out)' : 'opacity 200ms var(--ease-out)',
         pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
+        whiteSpace: 'nowrap',
       }}
     >
-      {!isError && (
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <circle cx="7" cy="7" r="7" fill="#16A34A" />
-          <path d="M4 7l2 2 4-4" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
       {toast.message}
     </div>
   )
