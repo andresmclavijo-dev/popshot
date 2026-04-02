@@ -84,8 +84,8 @@ export const BACKGROUND_PRESETS: BackgroundPreset[] = [
 
 export const SHADOW_PRESETS: ShadowPreset[] = [
   { id: 'none', label: 'None', style: '' },
-  { id: 'soft', label: 'Soft', style: '0 20px 60px rgba(0,0,0,0.12)' },
-  { id: 'deep', label: 'Deep', style: '0 2px 8px rgba(0,0,0,0.18), 0 32px 64px rgba(0,0,0,0.22)' },
+  { id: 'soft', label: 'Soft', style: '0 4px 24px rgba(0,0,0,0.10)' },
+  { id: 'deep', label: 'Deep', style: '0 8px 40px rgba(0,0,0,0.28)' },
 ]
 
 export const ASPECT_RATIO_PRESETS: AspectRatioPreset[] = [

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { RotateCcw, Lock } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
@@ -51,6 +51,16 @@ const sliderLabelRow: React.CSSProperties = {
   alignItems: 'center',
 }
 
+function hexFromBg(bg: Background): string {
+  if (bg.type === 'solid') return bg.value.replace('#', '').toUpperCase()
+  return ''
+}
+
+function isCustomColor(bg: Background): boolean {
+  if (bg.type !== 'solid') return false
+  return !BACKGROUND_PRESETS.some((p) => p.background.value === bg.value)
+}
+
 function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   const background = useEditorStore((s) => s.background)
   const setBackground = useEditorStore((s) => s.setBackground)
@@ -59,8 +69,54 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const proUnlocked = useEditorStore((s) => s.proUnlocked)
 
+  const colorInputRef = useRef<HTMLInputElement>(null)
+  const [customHex, setCustomHex] = useState('F4F4F4')
+  const [customOpacity, setCustomOpacity] = useState(100)
+
   const isActive = (preset: typeof BACKGROUND_PRESETS[number]) =>
     background.value === preset.background.value
+
+  const customActive = isCustomColor(background)
+
+  const applyCustomColor = useCallback((hex: string, opacity: number) => {
+    const r = parseInt(hex.slice(0, 2), 16)
+    const g = parseInt(hex.slice(2, 4), 16)
+    const b = parseInt(hex.slice(4, 6), 16)
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return
+    if (opacity >= 100) {
+      setBackground({ type: 'solid', value: `#${hex}` })
+    } else {
+      const a = Math.round((opacity / 100) * 100) / 100
+      setBackground({ type: 'solid', value: `rgba(${r},${g},${b},${a})` })
+    }
+  }, [setBackground])
+
+  const handleColorPickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const hex = e.target.value.replace('#', '').toUpperCase()
+    setCustomHex(hex)
+    applyCustomColor(hex, customOpacity)
+  }, [customOpacity, applyCustomColor])
+
+  const handleHexInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace('#', '').toUpperCase()
+    if (val.length > 6) val = val.slice(0, 6)
+    setCustomHex(val)
+    if (/^[0-9A-F]{6}$/.test(val)) {
+      applyCustomColor(val, customOpacity)
+    }
+  }, [customOpacity, applyCustomColor])
+
+  const handleOpacityInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '')
+    let val = parseInt(raw, 10)
+    if (isNaN(val)) val = 100
+    if (val > 100) val = 100
+    if (val < 0) val = 0
+    setCustomOpacity(val)
+    if (/^[0-9A-F]{6}$/.test(customHex)) {
+      applyCustomColor(customHex, val)
+    }
+  }, [customHex, applyCustomColor])
 
   const handleAutoColorToggle = async (checked: boolean) => {
     setAutoColor(checked)
@@ -72,7 +128,7 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
     }
   }
 
-  // Premium swatches (last 3: Moss, Blush + transparent stays free)
+  // Premium swatches
   const premiumIds = new Set(['forest', 'rose'])
 
   return (
@@ -133,6 +189,116 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
               </Tooltip>
             )
           })}
+        </div>
+      </div>
+
+      {/* Custom color row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {/* Color swatch trigger */}
+        <button
+          type="button"
+          onClick={() => colorInputRef.current?.click()}
+          aria-label="Pick custom color"
+          style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '8px',
+            border: '0.5px solid rgba(0,0,0,0.12)',
+            background: customActive ? background.value : `#${customHex}`,
+            cursor: 'pointer',
+            flexShrink: 0,
+            padding: 0,
+            outline: customActive ? '2px solid #222222' : 'none',
+            outlineOffset: customActive ? '2px' : undefined,
+            transition: 'outline 100ms var(--ease-out)',
+            position: 'relative',
+          }}
+        >
+          <input
+            ref={colorInputRef}
+            type="color"
+            value={`#${customHex}`}
+            onChange={handleColorPickerChange}
+            aria-label="Color picker"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              opacity: 0,
+              cursor: 'pointer',
+              border: 'none',
+              padding: 0,
+            }}
+          />
+        </button>
+
+        {/* Hex input */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          flex: 1,
+          height: '32px',
+          border: '1px solid var(--color-border-input)',
+          borderRadius: '8px',
+          padding: '0 8px',
+          background: '#FFFFFF',
+          gap: '2px',
+        }}>
+          <span style={{ fontSize: '12px', color: '#999', userSelect: 'none' }}>#</span>
+          <input
+            type="text"
+            value={customActive ? hexFromBg(background) || customHex : customHex}
+            onChange={handleHexInput}
+            placeholder="F4F4F4"
+            maxLength={6}
+            aria-label="Hex color value"
+            style={{
+              flex: 1,
+              border: 'none',
+              outline: 'none',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              color: '#222',
+              background: 'transparent',
+              width: '100%',
+              minWidth: 0,
+              textTransform: 'uppercase',
+            }}
+          />
+        </div>
+
+        {/* Opacity input */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          height: '32px',
+          width: '52px',
+          border: '1px solid var(--color-border-input)',
+          borderRadius: '8px',
+          padding: '0 6px',
+          background: '#FFFFFF',
+          gap: '1px',
+        }}>
+          <input
+            type="text"
+            value={customOpacity}
+            onChange={handleOpacityInput}
+            maxLength={3}
+            aria-label="Background opacity"
+            style={{
+              width: '100%',
+              border: 'none',
+              outline: 'none',
+              fontSize: '12px',
+              fontFamily: 'monospace',
+              color: '#222',
+              background: 'transparent',
+              textAlign: 'right',
+              minWidth: 0,
+            }}
+          />
+          <span style={{ fontSize: '11px', color: '#999', userSelect: 'none' }}>%</span>
         </div>
       </div>
 

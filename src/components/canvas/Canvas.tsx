@@ -80,7 +80,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
-    overflow: 'hidden',
     transition: 'background 200ms var(--ease-out)',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
     ...(ratioPreset?.width
@@ -117,44 +116,51 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       <CanvasLoading />
       <div style={{ position: 'relative', display: 'inline-flex' }}>
         <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
-          {/* Background image layer */}
+          {/* Background image layer — own overflow clip so canvas doesn't need it */}
           {isImageBg && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: `-${backgroundImageBlur * 2}px`,
-                backgroundImage: `url(${backgroundImageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                filter: backgroundImageBlur > 0 ? `blur(${backgroundImageBlur}px)` : undefined,
-              }}
-            />
+            <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: `-${backgroundImageBlur * 2}px`,
+                  backgroundImage: `url(${backgroundImageUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  filter: backgroundImageBlur > 0 ? `blur(${backgroundImageBlur}px)` : undefined,
+                }}
+              />
+            </div>
           )}
-          <div style={{ position: 'relative', borderRadius: frameRadius > 0 ? `${frameRadius}px` : `${cornerRadius}px`, overflow: 'hidden' }}>
-            <FrameOverlay frame={frame} />
-            <img
-              ref={imgRef}
-              src={imageUrl}
-              alt="Screenshot preview"
-              onLoad={(e) => {
-                const img = e.target as HTMLImageElement
-                console.log('[Popshot] Image loaded:', img.naturalWidth, 'x', img.naturalHeight)
-                setImageLoaded(true)
-              }}
-              onError={(e) => {
-                console.error('[Popshot] Image load failed:', e)
-                setImageLoaded(false)
-              }}
-              style={{
-                display: 'block',
-                width: '100%',
-                height: 'auto',
-                maxWidth: '100%',
-                borderRadius: frameRadius > 0 ? `${frameRadius}px` : `${cornerRadius}px`,
-                boxShadow: shadowStyle,
-                paddingTop: framePaddingTop > 0 ? `${framePaddingTop}px` : undefined,
-              }}
-            />
+          {/* Shadow wrapper — sits outside overflow:hidden so shadow is visible */}
+          <div style={{
+            position: 'relative',
+            borderRadius: frameRadius > 0 ? `${frameRadius}px` : `${cornerRadius}px`,
+            boxShadow: shadowStyle,
+          }}>
+            <div style={{ borderRadius: 'inherit', overflow: 'hidden' }}>
+              <FrameOverlay frame={frame} />
+              <img
+                ref={imgRef}
+                src={imageUrl}
+                alt="Screenshot preview"
+                onLoad={(e) => {
+                  const img = e.target as HTMLImageElement
+                  console.log('[Popshot] Image loaded:', img.naturalWidth, 'x', img.naturalHeight)
+                  setImageLoaded(true)
+                }}
+                onError={(e) => {
+                  console.error('[Popshot] Image load failed:', e)
+                  setImageLoaded(false)
+                }}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  height: 'auto',
+                  maxWidth: '100%',
+                  paddingTop: framePaddingTop > 0 ? `${framePaddingTop}px` : undefined,
+                }}
+              />
+            </div>
           </div>
         </div>
         <Tooltip>
