@@ -74,6 +74,10 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
   const setCornerRadius = useEditorStore((s) => s.setCornerRadius)
   const imagePosition = useEditorStore((s) => s.imagePosition)
   const setImagePosition = useEditorStore((s) => s.setImagePosition)
+  const imageOffsetX = useEditorStore((s) => s.imageOffsetX)
+  const setImageOffsetX = useEditorStore((s) => s.setImageOffsetX)
+  const imageOffsetY = useEditorStore((s) => s.imageOffsetY)
+  const setImageOffsetY = useEditorStore((s) => s.setImageOffsetY)
   const shadow = useEditorStore((s) => s.shadow)
   const setShadow = useEditorStore((s) => s.setShadow)
   const frame = useEditorStore((s) => s.frame)
@@ -99,9 +103,9 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
     <div style={{
       position: 'absolute', right: '12px', top: '12px', bottom: '12px',
       width: `${PANEL_WIDTH}px`, borderRadius: '16px',
-      background: 'rgba(255,255,255,0.88)',
+      background: 'var(--ps-bg-panel)',
       backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-      border: '0.5px solid rgba(255,255,255,0.95)',
+      border: '0.5px solid var(--ps-border-panel)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
       {/* Header */}
@@ -199,6 +203,21 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   )
                 })}
               </div>
+            </div>
+            {/* Offset sliders */}
+            <div style={sliderRow}>
+              <div style={sliderLabelRow}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>X offset</span>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', fontVariantNumeric: 'tabular-nums' }}>{imageOffsetX}px</span>
+              </div>
+              <Slider value={[imageOffsetX]} onValueChange={(v) => setImageOffsetX(Array.isArray(v) ? v[0] : v)} min={-300} max={300} step={1} aria-label="X offset" />
+            </div>
+            <div style={sliderRow}>
+              <div style={sliderLabelRow}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>Y offset</span>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', fontVariantNumeric: 'tabular-nums' }}>{imageOffsetY}px</span>
+              </div>
+              <Slider value={[imageOffsetY]} onValueChange={(v) => setImageOffsetY(Array.isArray(v) ? v[0] : v)} min={-300} max={300} step={1} aria-label="Y offset" />
             </div>
           </div>
         </Section>

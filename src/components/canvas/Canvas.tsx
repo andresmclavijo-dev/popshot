@@ -37,6 +37,8 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const reset = useEditorStore((s) => s.reset)
   const lastShuffle = useEditorStore((s) => s.lastShuffle)
   const imagePosition = useEditorStore((s) => s.imagePosition)
+  const imageOffsetX = useEditorStore((s) => s.imageOffsetX)
+  const imageOffsetY = useEditorStore((s) => s.imageOffsetY)
   const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
   const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
   const requestFit = useEditorStore((s) => s.requestFit)
@@ -130,6 +132,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
+    overflow: 'hidden',
     transition: 'background 200ms var(--ease-out)',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
     ...(ratioPreset?.width
@@ -143,7 +146,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--color-bg-page)',
+    background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
     overflow: 'auto',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
@@ -195,12 +198,13 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
                 />
               </div>
             )}
-            {/* Shadow wrapper — sits outside overflow:hidden so shadow is visible */}
+            {/* Shadow wrapper — offset via translate for bleed positioning */}
             <div style={{
               position: 'relative',
               borderRadius: frameRadius > 0 ? `${frameRadius}px` : `${cornerRadius}px`,
               boxShadow: shadowStyle,
-              transition: 'border-radius 200ms var(--ease-out), box-shadow 200ms var(--ease-out)',
+              transform: (imageOffsetX || imageOffsetY) ? `translate(${imageOffsetX}px, ${imageOffsetY}px)` : undefined,
+              transition: 'border-radius 200ms var(--ease-out), box-shadow 200ms var(--ease-out), transform 150ms ease-out',
             }}>
               <div style={{ borderRadius: 'inherit', overflow: 'hidden' }}>
                 <FrameOverlay frame={frame} />

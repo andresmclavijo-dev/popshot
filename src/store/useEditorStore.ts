@@ -10,6 +10,8 @@ interface Snapshot {
   shadow: ShadowType
   frame: FrameType
   imagePosition: ImagePosition
+  imageOffsetX: number
+  imageOffsetY: number
   watermarkUrl: string | null
   watermarkPosition: WatermarkPosition
   watermarkOpacity: number
@@ -64,6 +66,8 @@ const initialState: EditorState = {
   autoColor: true,
   proUnlocked: IS_PRO,
   imagePosition: 'center',
+  imageOffsetX: 0,
+  imageOffsetY: 0,
   backgroundImageUrl: null,
   backgroundImageBlur: 0,
   watermarkUrl: null,
@@ -80,6 +84,8 @@ function takeSnapshot(s: EditorState): Snapshot {
     shadow: s.shadow,
     frame: s.frame,
     imagePosition: s.imagePosition,
+    imageOffsetX: s.imageOffsetX,
+    imageOffsetY: s.imageOffsetY,
     watermarkUrl: s.watermarkUrl,
     watermarkPosition: s.watermarkPosition,
     watermarkOpacity: s.watermarkOpacity,
@@ -115,10 +121,12 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   setCornerRadius: (v: number) => set({ ...pushHistory(get), cornerRadius: v }),
   setShadow: (v: ShadowType) => set({ ...pushHistory(get), shadow: v }),
   setFrame: (v: FrameType) => set({ ...pushHistory(get), frame: v }),
-  setAspectRatio: (v: AspectRatioType) => set({ aspectRatio: v }), // No history — not a style change
+  setAspectRatio: (v: AspectRatioType) => set({ aspectRatio: v, activeTemplate: null }), // Clears template selection
   setAutoColor: (v: boolean) => set({ autoColor: v }),
   setProUnlocked: (v: boolean) => set({ proUnlocked: v }),
-  setImagePosition: (v: ImagePosition) => set({ ...pushHistory(get), imagePosition: v }),
+  setImagePosition: (v: ImagePosition) => set({ ...pushHistory(get), imagePosition: v, imageOffsetX: 0, imageOffsetY: 0 }),
+  setImageOffsetX: (v: number) => set({ ...pushHistory(get), imageOffsetX: v }),
+  setImageOffsetY: (v: number) => set({ ...pushHistory(get), imageOffsetY: v }),
   setBackgroundImageUrl: (v: string | null) => set({ backgroundImageUrl: v }),
   setBackgroundImageBlur: (v: number) => set({ backgroundImageBlur: v }),
   setWatermarkUrl: (v: string | null) => set({ ...pushHistory(get), watermarkUrl: v }),
@@ -152,6 +160,7 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   theme: (localStorage.getItem('ps_theme') as 'light' | 'dark') || 'light',
   setTheme: (t: 'light' | 'dark') => {
     localStorage.setItem('ps_theme', t)
+    document.documentElement.classList.toggle('dark', t === 'dark')
     set({ theme: t })
   },
 

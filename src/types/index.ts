@@ -30,6 +30,8 @@ export interface EditorState extends WatermarkState {
   autoColor: boolean
   proUnlocked: boolean
   imagePosition: ImagePosition
+  imageOffsetX: number
+  imageOffsetY: number
   backgroundImageUrl: string | null
   backgroundImageBlur: number
 }
@@ -57,6 +59,8 @@ export interface EditorActions {
   setAutoColor: (v: boolean) => void
   setProUnlocked: (v: boolean) => void
   setImagePosition: (v: ImagePosition) => void
+  setImageOffsetX: (v: number) => void
+  setImageOffsetY: (v: number) => void
   setBackgroundImageUrl: (v: string | null) => void
   setBackgroundImageBlur: (v: number) => void
   setWatermarkUrl: (v: string | null) => void
