@@ -89,13 +89,12 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   }
 
   const workspaceStyle: React.CSSProperties = {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--color-bg-page)',
-    backgroundImage: isDragOver ? 'none' : 'radial-gradient(circle, #D8D8D8 1px, transparent 1px)',
-    backgroundSize: '20px 20px',
     overflow: 'auto',
     padding: 'var(--space-8)',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',

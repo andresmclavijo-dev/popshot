@@ -93,6 +93,7 @@ export const ASPECT_RATIO_PRESETS: AspectRatioPreset[] = [
   { id: '16:9', label: '16:9', width: 1280, height: 720 },
   { id: '1:1', label: '1:1', width: 1080, height: 1080 },
   { id: '4:3', label: '4:3', width: 1024, height: 768 },
+  { id: '4:5', label: '4:5', width: 1080, height: 1350 },
   { id: 'twitter', label: 'Twitter', width: 1600, height: 900 },
   { id: 'linkedin', label: 'LinkedIn', width: 1200, height: 627 },
   { id: 'dribbble', label: 'Dribbble', width: 1600, height: 1200 },
