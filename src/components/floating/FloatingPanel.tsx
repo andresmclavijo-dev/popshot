@@ -109,7 +109,8 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
       const a = Math.round((opacity / 100) * 100) / 100
       setBackground({ type: 'solid', value: `rgba(${r},${g},${b},${a})` })
     }
-  }, [setBackground])
+    if (autoColor) setAutoColor(false)
+  }, [setBackground, autoColor, setAutoColor])
 
   const handleColorPickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const hex = e.target.value.replace('#', '').toUpperCase()
@@ -164,7 +165,17 @@ function StyleTab({ onHoverBackground }: { onHoverBackground: (bg: Background | 
                   render={
                     <button
                       type="button"
-                      onClick={() => !locked && setBackground(preset.background)}
+                      onClick={() => {
+                        if (locked) return
+                        setBackground(preset.background)
+                        // Sync hex input for solid colors
+                        if (preset.background.type === 'solid') {
+                          setCustomHex(preset.background.value.replace('#', '').toUpperCase())
+                          setCustomOpacity(100)
+                        }
+                        // Turn off auto-color on manual selection
+                        if (autoColor) setAutoColor(false)
+                      }}
                       onMouseEnter={() => !locked && onHoverBackground(preset.background)}
                       onMouseLeave={() => onHoverBackground(null)}
                       aria-label={`${preset.label} background${locked ? ' — Pro only' : ''}`}
@@ -328,6 +339,7 @@ function LayoutTab() {
 const FRAME_OPTIONS: { id: import('@/types').FrameType; label: string; pro?: boolean }[] = [
   { id: 'none', label: 'None' },
   { id: 'macos-light', label: 'macOS' },
+  { id: 'macos-dark', label: 'Dark' },
   { id: 'safari', label: 'Safari' },
   { id: 'arc', label: 'Arc', pro: true },
   { id: 'card', label: 'Card', pro: true },
@@ -338,6 +350,7 @@ function FramePreviewIcon({ type }: { type: import('@/types').FrameType }) {
   const w = 36, h = 26
   if (type === 'none') return <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true"><rect x="1" y="1" width="34" height="24" rx="3" stroke="#BBB" strokeWidth="1.2" fill="none" /></svg>
   if (type === 'macos-light') return <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="35" height="25" rx="3" fill="#F5F5F5" stroke="#DDD" /><circle cx="5" cy="4.5" r="1.8" fill="#FF5F57" /><circle cx="9.5" cy="4.5" r="1.8" fill="#FFBD2E" /><circle cx="14" cy="4.5" r="1.8" fill="#28C840" /><line x1=".5" y1="8.5" x2="35.5" y2="8.5" stroke="#DDD" strokeWidth=".5" /></svg>
+  if (type === 'macos-dark') return <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="35" height="25" rx="3" fill="#2D2D2D" stroke="#444" /><circle cx="5" cy="4.5" r="1.8" fill="#FF5F57" /><circle cx="9.5" cy="4.5" r="1.8" fill="#FFBD2E" /><circle cx="14" cy="4.5" r="1.8" fill="#28C840" /><line x1=".5" y1="8.5" x2="35.5" y2="8.5" stroke="#444" strokeWidth=".5" /></svg>
   if (type === 'safari') return <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="35" height="25" rx="3" fill="#F5F5F5" stroke="#DDD" /><circle cx="5" cy="4" r="1.5" fill="#FF5F57" /><circle cx="9" cy="4" r="1.5" fill="#FFBD2E" /><circle cx="13" cy="4" r="1.5" fill="#28C840" /><rect x="8" y="8" width="20" height="4" rx="2" fill="#E8E8E8" /><line x1=".5" y1="14" x2="35.5" y2="14" stroke="#DDD" strokeWidth=".5" /></svg>
   if (type === 'arc') return <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true"><rect x=".5" y=".5" width="35" height="25" rx="3" fill="#1A1A2E" stroke="#333" /><rect x="3" y="4" width="2" height="10" rx="1" fill="url(#ag)" /><rect x="8" y="5" width="12" height="4" rx="2" fill="rgba(255,255,255,.12)" /><rect x="22" y="5" width="8" height="4" rx="2" fill="rgba(255,255,255,.06)" /><defs><linearGradient id="ag" x1="4" y1="4" x2="4" y2="14" gradientUnits="userSpaceOnUse"><stop stopColor="#7C5DFA" /><stop offset="1" stopColor="#EC4899" /></linearGradient></defs></svg>
   if (type === 'card') return <svg width={w} height={h} viewBox="0 0 36 26" fill="none" aria-hidden="true"><rect x="1" y="1" width="34" height="24" rx="5" fill="white" stroke="#DDD" strokeWidth="1" /><rect x="4" y="4" width="28" height="18" rx="2" fill="#F0F0F0" /></svg>
@@ -418,6 +431,7 @@ function PolishTab() {
         <div style={{ display: 'flex', gap: '6px' }}>
           {SHADOW_PRESETS.map((opt) => {
             const active = shadow === opt.id
+            const previewShadow = opt.id === 'soft' ? '0 2px 8px rgba(0,0,0,0.10)' : opt.id === 'deep' ? '0 4px 16px rgba(0,0,0,0.28)' : 'none'
             return (
               <button
                 key={opt.id}
@@ -431,17 +445,22 @@ function PolishTab() {
                   color: active ? '#FFF' : 'var(--color-text-secondary)',
                   border: 'none',
                   cursor: 'pointer',
-                  padding: '8px 4px',
-                  fontSize: '12px',
+                  padding: '6px 4px 6px',
+                  fontSize: '11px',
                   fontWeight: active ? 600 : 500,
                   fontFamily: 'inherit',
                   borderRadius: '10px',
                   transition: 'all 100ms var(--ease-out)',
                   textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
                 }}
                 onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
                 onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'rgba(0,0,0,0.04)' }}
               >
+                <div style={{ width: '24px', height: '16px', borderRadius: '4px', background: active ? 'rgba(255,255,255,0.9)' : '#FFF', boxShadow: previewShadow }} />
                 {opt.label}
               </button>
             )

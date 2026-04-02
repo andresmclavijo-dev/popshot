@@ -76,7 +76,7 @@ export async function exportAsPng(scale: 1 | 2): Promise<void> {
 export async function copyToClipboard(): Promise<void> {
   const node = getCanvasNode()
   await prepareForExport(node)
-  const ratio = getPixelRatio(node, 2 * 2) // Always 2x for clipboard
+  const ratio = getPixelRatio(node, 2) // Always 2x for clipboard
   const blob = await toBlob(node, { ...COMMON_OPTIONS, pixelRatio: ratio })
   if (!blob) throw new Error('Failed to create image blob')
   await navigator.clipboard.write([

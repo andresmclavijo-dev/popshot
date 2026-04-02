@@ -8,12 +8,12 @@ import { openCheckout } from '@/lib/lemonSqueezy'
 import { showToast } from '@/components/shared/Toast'
 import type { AspectRatioType } from '@/types'
 
-const CANVAS_SIZES: { id: AspectRatioType; label: string }[] = [
+const CANVAS_SIZES: { id: AspectRatioType; label: string; dims?: string }[] = [
   { id: 'free', label: 'Free' },
-  { id: '16:9', label: '16:9' },
-  { id: '4:3', label: '4:3' },
-  { id: '1:1', label: '1:1' },
-  { id: '4:5' as AspectRatioType, label: '4:5' },
+  { id: '16:9', label: '16:9', dims: '1280 × 720' },
+  { id: '4:3', label: '4:3', dims: '1024 × 768' },
+  { id: '1:1', label: '1:1', dims: '1080 × 1080' },
+  { id: '4:5' as AspectRatioType, label: '4:5', dims: '1080 × 1350' },
 ]
 
 const ZOOM_PRESETS = [
@@ -247,18 +247,24 @@ export function BottomToolbar() {
         {CANVAS_SIZES.map((size) => {
           const active = aspectRatio === size.id
           return (
-            <button
-              key={size.id}
-              type="button"
-              onClick={() => setAspectRatio(size.id)}
-              aria-pressed={active}
-              aria-label={`${size.label} canvas size`}
-              style={pillBtnStyle(active)}
-              onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
-              onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' } }}
-            >
-              {size.label}
-            </button>
+            <Tooltip key={size.id}>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    onClick={() => setAspectRatio(size.id)}
+                    aria-pressed={active}
+                    aria-label={`${size.label} canvas size`}
+                    style={pillBtnStyle(active)}
+                    onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
+                    onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' } }}
+                  />
+                }
+              >
+                {size.label}
+              </TooltipTrigger>
+              {size.dims && <TooltipContent side="top">{size.dims}</TooltipContent>}
+            </Tooltip>
           )
         })}
 
@@ -302,7 +308,10 @@ export function BottomToolbar() {
               <button
                 type="button"
                 aria-label="Undo"
-                style={{ ...iconBtnStyle, opacity: 0.4, cursor: 'default' }}
+                onClick={() => useEditorStore.getState().undo()}
+                style={{ ...iconBtnStyle, opacity: useEditorStore.getState().canUndo() ? 1 : 0.35, cursor: useEditorStore.getState().canUndo() ? 'pointer' : 'default' }}
+                onMouseEnter={(e) => { if (useEditorStore.getState().canUndo()) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
               />
             }
           >
@@ -318,7 +327,10 @@ export function BottomToolbar() {
               <button
                 type="button"
                 aria-label="Redo"
-                style={{ ...iconBtnStyle, opacity: 0.4, cursor: 'default' }}
+                onClick={() => useEditorStore.getState().redo()}
+                style={{ ...iconBtnStyle, opacity: useEditorStore.getState().canRedo() ? 1 : 0.35, cursor: useEditorStore.getState().canRedo() ? 'pointer' : 'default' }}
+                onMouseEnter={(e) => { if (useEditorStore.getState().canRedo()) { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = 'var(--color-text-primary)' } }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
               />
             }
           >

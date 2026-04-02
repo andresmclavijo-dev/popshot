@@ -45,6 +45,7 @@ function ShortcutBridge() {
 export function App() {
   const [hoveredBackground, setHoveredBackground] = useState<Background | null>(null)
   const setProUnlocked = useEditorStore((s) => s.setProUnlocked)
+  const imageUrl = useEditorStore((s) => s.imageUrl)
 
   useEffect(() => {
     // Restore Pro from localStorage
@@ -78,8 +79,8 @@ export function App() {
         {/* Floating UI overlays */}
         <LogoPill />
         <ExportPill />
-        <FloatingPanel onHoverBackground={setHoveredBackground} />
-        <BottomToolbar />
+        {imageUrl && <FloatingPanel onHoverBackground={setHoveredBackground} />}
+        {imageUrl && <BottomToolbar />}
 
         {/* Keyboard shortcuts bridge */}
         <ShortcutBridge />

@@ -39,15 +39,15 @@ export function useKeyboardShortcuts({ onExportOpen, onCopyClipboard, onShuffle 
         return
       }
 
-      if (mod && e.shiftKey && e.key === 'z') {
+      if (mod && e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
         e.preventDefault()
-        console.log('redo — coming in v1.5')
+        useEditorStore.getState().redo()
         return
       }
 
       if (mod && e.key === 'z') {
         e.preventDefault()
-        console.log('undo — coming in v1.5')
+        useEditorStore.getState().undo()
         return
       }
 

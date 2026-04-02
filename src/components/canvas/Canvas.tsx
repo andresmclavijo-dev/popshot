@@ -115,8 +115,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const frameRadius = getFrameRadius(frame)
 
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
+  const isTransparentBg = displayBg.type === 'transparent'
+  const checkerboardBg = 'linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)'
   const canvasStyle: React.CSSProperties = {
-    background: isImageBg ? 'transparent' : displayBg.type === 'transparent' ? 'transparent' : displayBg.value,
+    background: isImageBg ? 'transparent' : isTransparentBg ? 'transparent' : displayBg.value,
+    ...(isTransparentBg && !isImageBg ? {
+      backgroundImage: checkerboardBg,
+      backgroundSize: '16px 16px',
+      backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
+    } : {}),
     padding: `${padding}px`,
     display: 'inline-flex',
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
@@ -136,7 +143,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     alignItems: 'center',
     justifyContent: 'center',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--color-bg-page)',
-    overflow: 'hidden',
+    overflow: 'auto',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
     transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
@@ -145,7 +152,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
 
   if (!imageUrl) {
     return (
-      <div ref={workspaceRef} style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <div ref={workspaceRef} className="canvas-workspace" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
         <CanvasLoading />
         <DropZone isDragOver={isDragOver} />
       </div>
@@ -153,7 +160,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   }
 
   return (
-    <div ref={workspaceRef} style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+    <div ref={workspaceRef} className="canvas-workspace" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <CanvasLoading />
       {/* Zoom wrapper — transform applied here, floating panels are outside */}
       <div
@@ -192,6 +199,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
               position: 'relative',
               borderRadius: frameRadius > 0 ? `${frameRadius}px` : `${cornerRadius}px`,
               boxShadow: shadowStyle,
+              transition: 'border-radius 200ms var(--ease-out), box-shadow 200ms var(--ease-out)',
             }}>
               <div style={{ borderRadius: 'inherit', overflow: 'hidden' }}>
                 <FrameOverlay frame={frame} />
@@ -215,7 +223,8 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
                     width: '100%',
                     height: 'auto',
                     maxWidth: '100%',
-                    paddingTop: framePaddingTop > 0 ? `${framePaddingTop}px` : undefined,
+                    paddingTop: framePaddingTop > 0 ? `${framePaddingTop}px` : '0px',
+                    transition: 'padding-top 200ms var(--ease-out)',
                   }}
                 />
               </div>

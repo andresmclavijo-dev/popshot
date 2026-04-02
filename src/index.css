@@ -235,7 +235,13 @@ input[type="range"] {
   appearance: none;
   height: 4px;
   border-radius: 2px;
-  background: #DDDDDD;
+  background: linear-gradient(
+    to right,
+    #222222 0%,
+    #222222 var(--slider-fill, 50%),
+    #DDDDDD var(--slider-fill, 50%),
+    #DDDDDD 100%
+  );
   cursor: pointer;
   width: 100%;
 }
@@ -271,6 +277,15 @@ input[type="range"]::-moz-range-track {
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hide scrollbars on canvas workspace */
+.canvas-workspace {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.canvas-workspace::-webkit-scrollbar {
+  display: none;
 }
 
 /* Frosted glass pill — shared treatment for all floating UI */

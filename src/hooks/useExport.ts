@@ -19,7 +19,8 @@ export function useExport() {
     try {
       await exportAsImage(scale, format)
       showToast(`Saved · ${scale}x ${format.toUpperCase()}`)
-    } catch {
+    } catch (err) {
+      console.error('[Popshot export error]', err)
       showToast('Export failed — try again', 'error')
     } finally {
       setIsExporting(false)
@@ -33,7 +34,8 @@ export function useExport() {
       setCopied(true)
       showToast('Copied to clipboard')
       setTimeout(() => setCopied(false), 2000)
-    } catch {
+    } catch (err) {
+      console.error('[Popshot export error]', err)
       showToast('Export failed — try again', 'error')
     } finally {
       setIsExporting(false)

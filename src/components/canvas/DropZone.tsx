@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ImagePlus } from 'lucide-react'
 import { useImageUpload } from '@/hooks/useImageUpload'
 
 export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
@@ -23,8 +22,24 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
 
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
+      // Check files first (drag-drop pastes)
       const file = e.clipboardData?.files[0]
-      if (file && file.type.startsWith('image/')) handleFile(file)
+      if (file && file.type.startsWith('image/')) {
+        handleFile(file)
+        return
+      }
+      // Check items for macOS screenshots (Cmd+Shift+3/4) and copied images
+      const items = e.clipboardData?.items
+      if (!items) return
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith('image/')) {
+          const f = item.getAsFile()
+          if (f) {
+            handleFile(f)
+            break
+          }
+        }
+      }
     }
     document.addEventListener('paste', onPaste)
     return () => document.removeEventListener('paste', onPaste)
@@ -75,24 +90,41 @@ export function DropZone({ isDragOver = false }: { isDragOver?: boolean }) {
           width: '100%',
         }}
       >
-        <div style={{ animation: mounted ? 'iconPulse 1.8s ease-in-out 3' : 'none' }}>
-          <ImagePlus
-            size={40}
-            strokeWidth={1.2}
-            style={{
-              color: dragging ? 'var(--color-app-accent)' : '#BBBBBB',
-              transition: 'color 150ms var(--ease-out)',
-            }}
-            aria-hidden="true"
-          />
-        </div>
+        {/* Before / After visual */}
+        {!dragging && (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }} aria-hidden="true">
+            {/* Before: raw screenshot */}
+            <div style={{
+              width: '80px', height: '56px', borderRadius: '4px',
+              background: '#FFF', border: '1px solid #E0E0E0',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden', position: 'relative',
+            }}>
+              <div style={{ width: '60px', height: '40px', borderRadius: '2px', background: '#F0F0F0', border: '1px solid #DDD' }} />
+              <span style={{ position: 'absolute', bottom: '2px', right: '4px', fontSize: '8px', color: '#BBB', fontWeight: 500 }}>raw</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: '#CCC' }}>
+              <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {/* After: beautified */}
+            <div style={{
+              width: '80px', height: '56px', borderRadius: '6px',
+              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              padding: '8px',
+            }}>
+              <div style={{ width: '56px', height: '36px', borderRadius: '3px', background: 'rgba(255,255,255,0.9)', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }} />
+            </div>
+          </div>
+        )}
 
         <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <span style={{ fontSize: '17px', fontWeight: 600, color: '#222222', letterSpacing: '-0.01em', lineHeight: 1.3 }}>
-            {dragging ? 'Drop to beautify' : 'Drop your screenshot'}
+            {dragging ? 'Drop to beautify' : 'Make your screenshots beautiful'}
           </span>
           <span style={{ fontSize: '13px', fontWeight: 400, color: '#999', lineHeight: 1.4 }}>
-            PNG, JPG, or WebP
+            {dragging ? 'Release to upload' : 'Paste, drop, or upload — then export in seconds'}
           </span>
         </div>
 
