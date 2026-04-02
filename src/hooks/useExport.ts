@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { exportAsImage, copyToClipboard } from '@/lib/exportImage'
 import { showToast } from '@/components/shared/Toast'
+import { capture } from '@/lib/analytics'
 import { IS_PRO } from '@/lib/config'
 import type { ExportFormat, ExportScale } from '@/lib/exportImage'
 
@@ -16,8 +17,10 @@ export function useExport() {
 
   const doExport = useCallback(async (scale: ExportScale, format: ExportFormat) => {
     setIsExporting(true)
+    capture('export_started', { format, scale })
     try {
       await exportAsImage(scale, format)
+      capture('export_completed', { format, scale })
       showToast(`Saved · ${scale}x ${format.toUpperCase()}`)
     } catch (err) {
       console.error('[Popshot export error]', err)

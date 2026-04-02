@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { capture } from '@/lib/analytics'
 
 const CHECKOUT_URL = 'https://popshot.app/#pro'
 
-// Shared state for opening the modal from anywhere
 let openUpgradeGlobal: (() => void) | null = null
 
-export function openUpgradeModal() {
+export function openUpgradeModal(triggerOrEvent?: string | unknown) {
+  const trigger = typeof triggerOrEvent === 'string' ? triggerOrEvent : undefined
+  capture('pro_modal_shown', { trigger })
   openUpgradeGlobal?.()
 }
 

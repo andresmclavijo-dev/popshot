@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { ChevronLeft, Sun, Moon, Search, FolderOpen } from 'lucide-react'
+import { ChevronLeft, Sun, Moon, Search, FolderOpen, ChevronsLeft } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { openUpgradeModal } from '@/components/shared/UpgradeModal'
 import { TEMPLATES, type Template, type TemplateCategory } from '@/data/templates'
@@ -229,19 +229,48 @@ export function LeftPanel() {
         </div>
       )}
 
-      {/* Theme toggle */}
-      <div style={{ padding: '10px 14px', borderTop: `0.5px solid var(--ps-border)`, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', gap: '2px', background: 'var(--ps-bg-hover)', borderRadius: 'var(--ps-radius-sm)', padding: '2px' }}>
-          <button type="button" onClick={() => setTheme('light')} aria-label="Light mode"
-            style={{ width: '28px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: '6px', cursor: 'pointer', background: theme === 'light' ? 'var(--ps-bg-surface)' : 'transparent', color: theme === 'light' ? 'var(--ps-text-primary)' : 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out', boxShadow: theme === 'light' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>
-            <Sun size={14} aria-hidden="true" />
-          </button>
-          <button type="button" onClick={() => setTheme('dark')} aria-label="Dark mode"
-            style={{ width: '28px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: '6px', cursor: 'pointer', background: theme === 'dark' ? 'var(--ps-bg-surface)' : 'transparent', color: theme === 'dark' ? 'var(--ps-text-primary)' : 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out', boxShadow: theme === 'dark' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>
-            <Moon size={14} aria-hidden="true" />
-          </button>
+      {/* Bottom section */}
+      <div style={{ borderTop: `0.5px solid var(--ps-border)`, flexShrink: 0, padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {/* Theme toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '2px', background: 'var(--ps-bg-hover)', borderRadius: 'var(--ps-radius-sm)', padding: '2px' }}>
+            <button type="button" onClick={() => setTheme('light')} aria-label="Light mode"
+              style={{ width: '28px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: '6px', cursor: 'pointer', background: theme === 'light' ? 'var(--ps-bg-surface)' : 'transparent', color: theme === 'light' ? 'var(--ps-text-primary)' : 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out', boxShadow: theme === 'light' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>
+              <Sun size={14} aria-hidden="true" />
+            </button>
+            <button type="button" onClick={() => setTheme('dark')} aria-label="Dark mode"
+              style={{ width: '28px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: '6px', cursor: 'pointer', background: theme === 'dark' ? 'var(--ps-bg-surface)' : 'transparent', color: theme === 'dark' ? 'var(--ps-text-primary)' : 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out', boxShadow: theme === 'dark' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>
+              <Moon size={14} aria-hidden="true" />
+            </button>
+          </div>
+          <span style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)' }}>Appearance</span>
         </div>
-        <span style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)' }}>Appearance</span>
+
+        {/* Legal links */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <a href="https://popshot.app/privacy" target="_blank" rel="noopener noreferrer"
+            style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
+            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>
+            Privacy
+          </a>
+          <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>&middot;</span>
+          <a href="https://popshot.app/terms" target="_blank" rel="noopener noreferrer"
+            style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
+            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>
+            Terms
+          </a>
+        </div>
+
+        {/* Collapse */}
+        <button type="button" onClick={() => setCollapsed(true)}
+          style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 0', fontSize: '12px', fontFamily: 'inherit', color: 'var(--ps-text-tertiary)', transition: 'color 150ms ease-out' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-secondary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
+          <ChevronsLeft size={14} aria-hidden="true" />
+          Collapse
+        </button>
       </div>
     </div>
   )
