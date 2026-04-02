@@ -105,18 +105,58 @@ export function LeftPanel() {
 
   if (collapsed) {
     return (
-      <div style={{ ...floatingBase, width: `${COLLAPSED_WIDTH}px`, alignItems: 'center', justifyContent: 'space-between', padding: '14px 0' }}>
-        {/* Logo — expand on click */}
+      <div style={{
+        position: 'absolute', left: '12px', top: '12px', bottom: '12px',
+        width: `${COLLAPSED_WIDTH}px`, borderRadius: '16px',
+        background: 'var(--ps-bg-panel)', backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '0.5px solid var(--ps-border-panel)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'space-between', padding: '10px 0 10px',
+        zIndex: 10, transition: 'width 220ms ease',
+      }}>
+        {/* Logo mark — click to expand */}
         <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
-          style={{ width: '28px', height: '28px', borderRadius: 'var(--ps-radius-sm)', background: 'var(--ps-brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" /></svg>
+          style={{
+            width: '28px', height: '28px', borderRadius: 'var(--ps-radius-sm)',
+            background: 'var(--ps-brand-gradient)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', cursor: 'pointer', flexShrink: 0,
+            transition: 'transform 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" />
+          </svg>
         </button>
-        {/* Theme toggle */}
+
+        {/* Expand chevron hint */}
+        <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
+          style={{
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            color: 'var(--ps-text-tertiary)', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', padding: '4px', borderRadius: 'var(--ps-radius-sm)',
+            transition: 'all 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M4.5 2.5L8 6L4.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        {/* Theme toggle — functional when collapsed */}
         <button type="button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
           aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer', background: 'transparent', color: 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out' }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+          style={{
+            width: '28px', height: '28px', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', border: 'none', borderRadius: 'var(--ps-radius-sm)',
+            cursor: 'pointer', background: 'transparent', color: 'var(--ps-text-tertiary)',
+            flexShrink: 0, transition: 'all 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
           {theme === 'light' ? <Sun size={14} aria-hidden="true" /> : <Moon size={14} aria-hidden="true" />}
         </button>
       </div>
@@ -124,7 +164,7 @@ export function LeftPanel() {
   }
 
   return (
-    <div style={{ ...floatingBase, width: `${PANEL_WIDTH}px` }}>
+    <div style={{ ...floatingBase, width: `${PANEL_WIDTH}px`, transition: 'width 220ms ease' }}>
       {/* Header */}
       <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
