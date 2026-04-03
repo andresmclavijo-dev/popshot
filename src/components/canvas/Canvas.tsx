@@ -188,6 +188,8 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
     overflow: 'hidden',
+    borderRadius: '8px',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
     transition: 'background 200ms var(--ease-out)',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
   }
