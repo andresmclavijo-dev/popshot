@@ -37,9 +37,9 @@ function Section({ label, locked, defaultOpen = true, children }: { label: strin
       </button>
       <div style={{
         overflow: 'hidden',
-        maxHeight: open ? '800px' : '0px',
+        maxHeight: open ? '500px' : '0px',
         opacity: open ? 1 : 0,
-        transition: 'max-height 250ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease',
+        transition: 'max-height 200ms ease-in-out, opacity 200ms ease-in-out',
       }}>
         {children}
       </div>
