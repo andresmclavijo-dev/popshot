@@ -55,11 +55,26 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const [popKey, setPopKey] = useState(0)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isImageHovered, setIsImageHovered] = useState(false)
+  const [containerSize, setContainerSize] = useState({ w: 800, h: 600 })
   const prevShuffle = useRef(lastShuffle)
   const canvasRef = useRef<HTMLDivElement>(null)
   const workspaceRef = useRef<HTMLDivElement>(null)
 
   const { zoom } = useZoom(workspaceRef, canvasRef)
+
+  // Track container size for fit calculation
+  useEffect(() => {
+    const el = workspaceRef.current
+    if (!el) return
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect
+        if (width > 0 && height > 0) setContainerSize({ w: width, h: height })
+      }
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   useEffect(() => {
     setImageLoaded(false)
@@ -117,6 +132,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const framePaddingTop = getFrameTopPadding(frame)
   const frameRadius = getFrameRadius(frame)
 
+  // Compute fit scale: canvas must fit within container with padding
+  const canvasW = ratioPreset?.width ?? 800
+  const canvasH = ratioPreset?.height ?? 600
+  const fitPad = 48 // breathing room
+  const availW = containerSize.w - fitPad * 2
+  const availH = containerSize.h - fitPad * 2
+  const fitScale = Math.min(availW / canvasW, availH / canvasH, 1)
+  const combinedScale = fitScale * zoom
+
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const isTransparentBg = displayBg.type === 'transparent'
   const checkerboardBg = 'linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)'
@@ -133,11 +157,10 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
     overflow: 'hidden',
+    width: `${canvasW}px`,
+    height: `${canvasH}px`,
     transition: 'background 200ms var(--ease-out)',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
-    ...(ratioPreset?.width
-      ? { width: `${ratioPreset.width}px`, height: `${ratioPreset.height}px` }
-      : {}),
   }
 
   const workspaceStyle: React.CSSProperties = {
@@ -147,7 +170,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     alignItems: 'center',
     justifyContent: 'center',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
-    overflow: 'auto',
+    overflow: 'hidden',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
     transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
@@ -169,7 +192,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       {/* Zoom wrapper — transform applied here, floating panels are outside */}
       <div
         style={{
-          transform: `scale(${zoom})`,
+          transform: `scale(${combinedScale})`,
           transformOrigin: 'center center',
           transition: 'transform 150ms var(--ease-out)',
           display: 'inline-flex',
