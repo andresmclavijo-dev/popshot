@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { User } from '@supabase/supabase-js'
 import type { EditorState, EditorActions, Background, ShadowType, FrameType, AspectRatioType, ImagePosition, WatermarkPosition } from '@/types'
 import { IS_PRO } from '@/lib/config'
 
@@ -50,6 +51,9 @@ interface StoreExtras {
   // Left panel
   leftPanelCollapsed: boolean
   setLeftPanelCollapsed: (v: boolean) => void
+  // Auth
+  user: User | null
+  setUser: (user: User | null) => void
 }
 
 const MAX_HISTORY = 50
@@ -167,6 +171,10 @@ export const useEditorStore = create<EditorState & EditorActions & StoreExtras>(
   // Left panel
   leftPanelCollapsed: false,
   setLeftPanelCollapsed: (v: boolean) => set({ leftPanelCollapsed: v }),
+
+  // Auth
+  user: null,
+  setUser: (user: User | null) => set({ user }),
 
   undo: () => {
     const { past, future } = get()

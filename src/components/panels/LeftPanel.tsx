@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react'
-import { ChevronLeft, Sun, Moon, Search, FolderOpen, ChevronsLeft } from 'lucide-react'
+import { ChevronLeft, Sun, Moon, Search, FolderOpen, ChevronsLeft, LogOut } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { openUpgradeModal } from '@/components/shared/UpgradeModal'
+import { signInWithGoogle, signOut } from '@/lib/auth'
 import { TEMPLATES, type Template, type TemplateCategory } from '@/data/templates'
 
 const PANEL_WIDTH = 220
@@ -76,7 +77,7 @@ export function LeftPanel() {
   const setActiveTemplate = useEditorStore((s) => s.setActiveTemplate)
   const theme = useEditorStore((s) => s.theme)
   const setTheme = useEditorStore((s) => s.setTheme)
-  const proUnlocked = useEditorStore((s) => s.proUnlocked)
+  const user = useEditorStore((s) => s.user)
 
   const [tab, setTab] = useState<'templates' | 'assets'>('templates')
   const [search, setSearch] = useState('')
@@ -181,13 +182,28 @@ export function LeftPanel() {
         </button>
       </div>
 
-      {/* License CTA */}
-      {!proUnlocked && (
-        <button type="button" onClick={openUpgradeModal}
-          style={{ margin: '0 14px 8px', padding: '8px 12px', background: 'transparent', border: `1px solid var(--ps-border)`, borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--ps-text-secondary)', textAlign: 'left', transition: 'border-color 150ms ease-out' }}
+      {/* Auth — sign in or user profile */}
+      {user ? (
+        <div style={{ margin: '0 14px 8px', padding: '8px 10px', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: 'var(--ps-radius-sm)', border: `1px solid var(--ps-border)` }}>
+          {user.user_metadata?.avatar_url && (
+            <img src={user.user_metadata.avatar_url} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0 }} />
+          )}
+          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {user.email}
+          </span>
+          <button type="button" onClick={signOut} aria-label="Sign out"
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px', color: 'var(--ps-text-tertiary)', display: 'flex', transition: 'color 150ms ease-out' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
+            <LogOut size={14} aria-hidden="true" />
+          </button>
+        </div>
+      ) : (
+        <button type="button" onClick={signInWithGoogle}
+          style={{ margin: '0 14px 8px', padding: '8px 12px', background: 'transparent', border: `1px solid var(--ps-border)`, borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--ps-text-secondary)', textAlign: 'left', transition: 'border-color 150ms ease-out', width: 'calc(100% - 28px)' }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ps-border-selected)' }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = '' }}>
-          Activate your license key &rarr;
+          Sign in with Google &rarr;
         </button>
       )}
 
