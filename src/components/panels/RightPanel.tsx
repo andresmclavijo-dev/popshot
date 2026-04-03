@@ -104,6 +104,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
 
   const wmInputRef = useRef<HTMLInputElement>(null)
 
+  const user = useEditorStore((s) => s.user)
   const hasImage = !!imageUrl
   const dimmed = !hasImage
 
@@ -116,13 +117,50 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       border: '0.5px solid var(--ps-border-panel)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
-      {/* Header — Go Pro + Export buttons */}
-      <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
-        {!proUnlocked && (
+      {/* Header — Pro user or Free user state */}
+      {user ? (
+        <>
+          {/* Pro user: avatar + name */}
+          <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
+            {user.user_metadata?.avatar_url ? (
+              <img src={user.user_metadata.avatar_url} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0 }} />
+            ) : (
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--ps-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '14px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>
+                {(user.email?.[0] || 'U').toUpperCase()}
+              </div>
+            )}
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ps-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user.user_metadata?.full_name || user.email || 'User'}
+              </span>
+              <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--ps-text-secondary)' }}>Pro user</span>
+            </div>
+          </div>
+          {/* Export only */}
+          <div style={{ padding: '16px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
+            <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
+              style={{
+                width: '100%', height: '36px', background: 'var(--ps-text-primary)',
+                color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
+                fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
+                cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                transition: 'transform 100ms ease',
+              }}
+              onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+              Export <ChevronDown size={14} aria-hidden="true" />
+            </button>
+          </div>
+        </>
+      ) : (
+        /* Free user: Go Pro + Export */
+        <div style={{ padding: '16px', display: 'flex', gap: '8px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
           <button type="button" onClick={openUpgradeModal}
             style={{
-              flex: 1, padding: '8px 0', background: 'transparent',
-              border: '0.5px solid var(--ps-border-strong)', borderRadius: 'var(--ps-radius-pill)',
+              flex: 1, height: '36px', background: 'transparent',
+              border: '0.5px solid var(--ps-border-strong)', borderRadius: '100px',
               fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
               color: 'var(--ps-text-primary)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -132,22 +170,22 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
             Go Pro
           </button>
-        )}
-        <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
-          style={{
-            flex: 1, padding: '8px 0', background: 'var(--ps-text-primary)',
-            color: 'var(--ps-bg-page)', border: 'none', borderRadius: 'var(--ps-radius-pill)',
-            fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
-            cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-            transition: 'transform 100ms ease',
-          }}
-          onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-          Export <ChevronDown size={14} aria-hidden="true" />
-        </button>
-      </div>
+          <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
+            style={{
+              flex: 1, height: '36px', background: 'var(--ps-text-primary)',
+              color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
+              fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
+              cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+              transition: 'transform 100ms ease',
+            }}
+            onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
+            onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+            Export <ChevronDown size={14} aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       {/* Scrollable sections */}
       <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 0, opacity: dimmed ? 0.35 : 1, pointerEvents: dimmed ? 'none' : 'auto', transition: 'opacity 200ms ease-out' }}>

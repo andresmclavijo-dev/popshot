@@ -47,26 +47,27 @@ function PlatformIcon({ icon }: { icon: string }) {
 
 function TemplateCard({ template, active, onSelect }: { template: Template; active: boolean; onSelect: () => void }) {
   return (
-    <button type="button" onClick={onSelect} aria-pressed={active} aria-label={`${template.name} ${template.width}×${template.height}`}
-      style={{
-        width: '100%', background: 'transparent', border: 'none', cursor: 'pointer',
-        padding: '0', fontFamily: 'inherit', textAlign: 'left',
-        outline: active ? `1.5px solid var(--ps-border-selected)` : 'none',
-        outlineOffset: '2px', borderRadius: 'var(--ps-radius-sm)',
-        transition: 'outline 150ms ease-out',
-      }}>
-      {/* Thumbnail */}
-      <div style={{
-        width: '100%', aspectRatio: `${template.width}/${template.height}`,
-        maxHeight: '80px', background: '#2a2a2a', borderRadius: 'var(--ps-radius-sm)', border: '1px solid var(--ps-border)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: '4px', overflow: 'hidden',
-      }}>
-        <span style={{ fontSize: '11px', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>{template.ratioLabel}</span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'stretch' }}>
+      <button type="button" onClick={onSelect} aria-pressed={active} aria-label={`${template.name} ${template.width}×${template.height}`}
+        style={{
+          width: '100%', height: '60px', background: 'var(--ps-bg-surface)',
+          border: active ? '1px solid var(--ps-bg-active)' : '1px solid var(--ps-border)',
+          borderRadius: '12px', cursor: 'pointer', padding: 0, fontFamily: 'inherit',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden', transition: 'border-color 150ms ease-out', outline: 'none',
+        }}>
+        {/* Proportional gray preview */}
+        <div style={{
+          width: '70%', maxHeight: '40px', aspectRatio: `${template.width}/${template.height}`,
+          background: 'var(--ps-bg-hover)', borderRadius: '4px',
+        }} />
+      </button>
+      <div style={{ textAlign: 'center' }}>
+        <span style={{ fontSize: '12px', fontWeight: active ? 600 : 400, color: 'var(--ps-text-primary)', display: 'block', lineHeight: 1.3 }}>{template.name}</span>
+        <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--ps-text-tertiary)', display: 'block' }}>{template.width} × {template.height}</span>
+        <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--ps-text-tertiary)' }}>{template.ratioLabel}</span>
       </div>
-      <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--ps-text-primary)', display: 'block', lineHeight: 1.3 }}>{template.name}</span>
-      <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-tertiary)' }}>{template.width} × {template.height}</span>
-    </button>
+    </div>
   )
 }
 
@@ -208,19 +209,19 @@ export function LeftPanel() {
         </button>
       )}
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '2px', padding: '0 14px 8px', flexShrink: 0 }}>
+      {/* Tabs — segmented control */}
+      <div style={{ margin: '0 14px 8px', padding: '3px', background: 'var(--ps-bg-hover)', borderRadius: '100px', display: 'flex', gap: '2px', flexShrink: 0 }}>
         {(['templates', 'assets'] as const).map((t) => (
           <button key={t} type="button" onClick={() => setTab(t)}
             style={{
-              flex: 1, padding: '6px 0', fontSize: '12px', fontWeight: tab === t ? 600 : 500,
-              fontFamily: 'inherit', background: tab === t ? 'var(--ps-text-primary)' : 'transparent',
-              color: tab === t ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)',
-              border: 'none', borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer',
+              flex: 1, height: '30px', fontSize: '12px', fontWeight: tab === t ? 600 : 400,
+              fontFamily: 'inherit',
+              background: tab === t ? 'var(--ps-bg-surface)' : 'transparent',
+              color: tab === t ? 'var(--ps-text-primary)' : 'var(--ps-text-secondary)',
+              border: 'none', borderRadius: '100px', cursor: 'pointer',
               transition: 'all 150ms ease-out', textAlign: 'center',
-            }}
-            onMouseEnter={(e) => { if (tab !== t) e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
-            onMouseLeave={(e) => { if (tab !== t) e.currentTarget.style.background = 'transparent' }}>
+              boxShadow: tab === t ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
+            }}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -261,7 +262,7 @@ export function LeftPanel() {
                   <span style={{ color: 'var(--ps-text-secondary)' }}><PlatformIcon icon={templates[0].platformIcon} /></span>
                   <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>{platform}</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                   {templates.map((t) => (
                     <TemplateCard key={t.id} template={t} active={activeTemplate === t.id}
                       onSelect={() => setActiveTemplate(activeTemplate === t.id ? null : t.id)} />
