@@ -156,7 +156,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
 
   if (!imageUrl) {
     return (
-      <div ref={workspaceRef} className="canvas-workspace" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <div ref={workspaceRef} className="canvas-workspace" role="main" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
         <CanvasLoading />
         <DropZone isDragOver={isDragOver} />
       </div>
@@ -164,7 +164,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   }
 
   return (
-    <div ref={workspaceRef} className="canvas-workspace" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+    <div ref={workspaceRef} className="canvas-workspace" role="main" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <CanvasLoading />
       {/* Zoom wrapper — transform applied here, floating panels are outside */}
       <div
