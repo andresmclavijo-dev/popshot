@@ -25,7 +25,7 @@ const actionBtn: React.CSSProperties = {
 
 export function ExportModal() {
   const [open, setOpen] = useState(false)
-  const [format, setFormat] = useState<ExportFormat>('png')
+  const [format, setFormat] = useState<ExportFormat>('jpg')
   const [scale, setScale] = useState<ExportScale>(2)
   const { exportImage, copyImage } = useExport()
   const badgeEnabled = useEditorStore((s) => s.badgeEnabled)
@@ -84,7 +84,7 @@ export function ExportModal() {
         <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', cursor: 'pointer', fontSize: '12px', color: 'var(--ps-text-secondary)' }}>
           <input type="checkbox" checked={badgeEnabled} onChange={(e) => setBadgeEnabled(e.target.checked)}
             style={{ width: '14px', height: '14px', accentColor: 'var(--ps-text-primary)', cursor: 'pointer' }} />
-          Add "popshot.app" badge
+          Made with Popshot badge
         </label>
 
         {/* Actions */}
@@ -94,7 +94,7 @@ export function ExportModal() {
             onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
             onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-            <ArrowDownToLine size={14} aria-hidden="true" /> Download
+            <ArrowDownToLine size={14} aria-hidden="true" /> Export {format.toUpperCase()} {scale}×
           </button>
           <button type="button" onClick={handleCopy}
             style={{ ...actionBtn, background: 'transparent', border: `1px solid var(--ps-border-strong)`, color: 'var(--ps-text-primary)' }}
