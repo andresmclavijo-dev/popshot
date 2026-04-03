@@ -272,22 +272,22 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             {/* Frame */}
             <div>
               <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Frame</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                 {FRAME_OPTIONS.map((f) => {
                   const active = frame === f.id
                   const locked = f.pro && !proUnlocked
                   return (
                     <button key={f.id} type="button" onClick={() => { if (locked) { openUpgradeModal(); return }; setFrame(f.id) }} aria-pressed={active} aria-label={`${f.label} frame`}
                       style={{
-                        height: '36px', borderRadius: '6px',
+                        height: '52px', borderRadius: '6px',
                         border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
                         background: 'var(--ps-bg-surface)', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        gap: '4px', outline: 'none', fontFamily: 'inherit',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: '3px', outline: 'none', fontFamily: 'inherit',
                         opacity: locked ? 0.45 : 1, transition: 'border-color 150ms ease-out',
                       }}>
                       <FrameThumb type={f.id} />
-                      <span style={{ fontSize: '10px', fontWeight: 500, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 500, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', gap: '2px', textAlign: 'center' }}>
                         {f.label}
                         {locked && <Lock size={7} strokeWidth={2.5} aria-hidden="true" />}
                       </span>
