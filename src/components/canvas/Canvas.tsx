@@ -90,15 +90,17 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   }, [lastShuffle])
 
   // Auto-fit when aspect ratio changes
+  // Reset zoom to 100% (fitted) when ratio or template changes
+  const setZoom = useEditorStore((s) => s.setZoom)
   const prevAspect = useRef(aspectRatio)
+  const prevTemplate = useRef(activeTemplate)
   useEffect(() => {
-    if (imageUrl && aspectRatio !== prevAspect.current) {
-      // Small delay to let the canvas re-render at new size
-      const t = setTimeout(() => requestFit(), 50)
+    if (aspectRatio !== prevAspect.current || activeTemplate !== prevTemplate.current) {
+      setZoom(1)
       prevAspect.current = aspectRatio
-      return () => clearTimeout(t)
+      prevTemplate.current = activeTemplate
     }
-  }, [aspectRatio, imageUrl, requestFit])
+  }, [aspectRatio, activeTemplate, setZoom])
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -145,20 +147,32 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
 
   // Fit canvas into available space (object-fit: contain)
   const canvasAspect = canvasW / canvasH
-  const availAspect = availW > 0 && availH > 0 ? availW / availH : 1
+  const safeAvailW = Math.max(availW, 100)
+  const safeAvailH = Math.max(availH, 100)
+  const availAspect = safeAvailW / safeAvailH
   let renderW: number, renderH: number
   if (canvasAspect > availAspect) {
-    renderW = availW
-    renderH = availW / canvasAspect
+    // Wider than container — constrain by width
+    renderW = safeAvailW
+    renderH = safeAvailW / canvasAspect
   } else {
-    renderH = availH
-    renderW = availH * canvasAspect
+    // Taller than container — constrain by height
+    renderH = safeAvailH
+    renderW = safeAvailH * canvasAspect
   }
-  // Clamp to positive values
-  renderW = Math.max(renderW, 100)
-  renderH = Math.max(renderH, 100)
+  // Hard clamp: never exceed available space
+  if (renderW > safeAvailW) {
+    renderW = safeAvailW
+    renderH = renderW / canvasAspect
+  }
+  if (renderH > safeAvailH) {
+    renderH = safeAvailH
+    renderW = renderH * canvasAspect
+  }
+  renderW = Math.max(renderW, 50)
+  renderH = Math.max(renderH, 50)
 
-  // Apply zoom on top of fitted size
+  // Zoom: 1.0 = "fitted to container", >1 zooms in, <1 zooms out
   const displayW = renderW * zoom
   const displayH = renderH * zoom
 
