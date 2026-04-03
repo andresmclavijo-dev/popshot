@@ -152,7 +152,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: '18px', opacity: dimmed ? 0.35 : 1, pointerEvents: dimmed ? 'none' : 'auto', transition: 'opacity 200ms ease-out' }}>
         {/* Background */}
         <Section label="Background">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '10px' }}>
             {BACKGROUND_PRESETS.map((preset, i) => {
               const active = background.value === preset.background.value && !backgroundImageUrl
               const isTransparent = preset.id === 'transparent'
@@ -169,12 +169,12 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   onMouseLeave={() => onHoverBackground(null)}
                   aria-label={`${preset.label} background`} aria-pressed={active}
                   style={{
-                    width: '100%', height: '52px', borderRadius: '8px',
+                    height: '36px', borderRadius: '6px',
                     border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
                     background: isTransparent ? CHECKERBOARD : preset.background.value,
                     cursor: 'pointer', opacity: locked ? 0.45 : 1,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'border-color 150ms ease-out',
+                    transition: 'border-color 150ms ease-out', padding: 0,
                   }}>
                   {locked && <Lock size={10} strokeWidth={2.5} style={{ color: LIGHT_SWATCHES.has(preset.id) ? '#666' : '#FFF' }} aria-hidden="true" />}
                   {active && !locked && <Check size={12} strokeWidth={3} style={{ color: LIGHT_SWATCHES.has(preset.id) ? 'var(--ps-text-primary)' : '#FFF' }} aria-hidden="true" />}
@@ -250,21 +250,19 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             {/* Shadow */}
             <div>
               <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Shadow</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {SHADOW_PRESETS.map((opt) => {
                   const active = shadow === opt.id
-                  const previewShadow = opt.id === 'soft' ? '0 2px 8px rgba(0,0,0,0.10)' : opt.id === 'deep' ? '0 4px 16px rgba(0,0,0,0.28)' : 'none'
                   return (
                     <button key={opt.id} type="button" onClick={() => setShadow(opt.id)} aria-pressed={active} aria-label={`${opt.label} shadow`}
                       style={{
-                        width: '100%', height: '52px', borderRadius: '8px',
+                        height: '36px', borderRadius: '6px',
                         border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
                         background: 'var(--ps-bg-surface)', color: 'var(--ps-text-secondary)',
                         cursor: 'pointer', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        gap: '4px', transition: 'border-color 150ms ease-out',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'border-color 150ms ease-out',
                       }}>
-                      <div style={{ width: '24px', height: '16px', borderRadius: '4px', background: 'var(--ps-bg-hover)', boxShadow: previewShadow }} />
                       {opt.label}
                     </button>
                   )
@@ -274,22 +272,22 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             {/* Frame */}
             <div>
               <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Frame</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {FRAME_OPTIONS.map((f) => {
                   const active = frame === f.id
                   const locked = f.pro && !proUnlocked
                   return (
                     <button key={f.id} type="button" onClick={() => { if (locked) { openUpgradeModal(); return }; setFrame(f.id) }} aria-pressed={active} aria-label={`${f.label} frame`}
                       style={{
-                        width: '100%', height: '52px', borderRadius: '8px',
+                        height: '36px', borderRadius: '6px',
                         border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
                         background: 'var(--ps-bg-surface)', cursor: 'pointer',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        gap: '2px', outline: 'none', fontFamily: 'inherit',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        gap: '4px', outline: 'none', fontFamily: 'inherit',
                         opacity: locked ? 0.45 : 1, transition: 'border-color 150ms ease-out',
                       }}>
                       <FrameThumb type={f.id} />
-                      <span style={{ fontSize: '11px', fontWeight: 500, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: 500, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', gap: '2px' }}>
                         {f.label}
                         {locked && <Lock size={7} strokeWidth={2.5} aria-hidden="true" />}
                       </span>
