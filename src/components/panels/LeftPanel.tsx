@@ -305,14 +305,14 @@ export function LeftPanel() {
 
         {/* Legal links */}
         <div style={{ display: 'flex', gap: '8px' }}>
-          <a href="https://popshot.app/privacy" target="_blank" rel="noopener noreferrer"
+          <a href="/privacy"
             style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
             onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
             onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>
             Privacy
           </a>
           <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>&middot;</span>
-          <a href="https://popshot.app/terms" target="_blank" rel="noopener noreferrer"
+          <a href="/terms"
             style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
             onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
             onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>

@@ -21,15 +21,21 @@ supabase.auth.onAuthStateChange((_event, session) => {
   useEditorStore.getState().setUser(session?.user ?? null)
 })
 
-// Simple routing: /auth/callback renders the callback page
-if (window.location.pathname === '/auth/callback') {
+// Simple client-side routing
+const path = window.location.pathname
+
+if (path === '/auth/callback') {
   import('./pages/AuthCallback').then(({ default: AuthCallback }) => {
-    createRoot(document.getElementById('root')!).render(
-      <StrictMode><AuthCallback /></StrictMode>
-    )
+    createRoot(document.getElementById('root')!).render(<StrictMode><AuthCallback /></StrictMode>)
+  })
+} else if (path === '/privacy') {
+  import('./pages/Privacy').then(({ default: Privacy }) => {
+    createRoot(document.getElementById('root')!).render(<StrictMode><Privacy /></StrictMode>)
+  })
+} else if (path === '/terms') {
+  import('./pages/Terms').then(({ default: Terms }) => {
+    createRoot(document.getElementById('root')!).render(<StrictMode><Terms /></StrictMode>)
   })
 } else {
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode><App /></StrictMode>
-  )
+  createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)
 }
