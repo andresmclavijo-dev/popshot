@@ -110,8 +110,9 @@ export function UpgradeModal() {
             fontSize: '14px', fontWeight: 500, fontFamily: 'inherit',
             cursor: 'pointer', transition: 'opacity 150ms ease-out',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
         >
           Upgrade to Pro &rarr;
         </button>

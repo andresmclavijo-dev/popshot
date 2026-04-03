@@ -25,9 +25,9 @@ function Section({ label, locked, defaultOpen = true, children }: { label: strin
       <button type="button" onClick={() => !locked && setOpen(!open)}
         style={{
           width: '100%', background: 'transparent', border: 'none',
-          cursor: locked ? 'default' : 'pointer', padding: '11px 0 8px',
+          cursor: locked ? 'default' : 'pointer', padding: '8px 0 8px',
           fontFamily: 'inherit', display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'space-between', minHeight: '32px',
         }}>
         <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
           {label}
@@ -139,10 +139,11 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
             cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-            transition: 'opacity 150ms ease-out',
+            transition: 'transform 100ms ease',
           }}
-          onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
+          onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
           Export <ChevronDown size={14} aria-hidden="true" />
         </button>
       </div>

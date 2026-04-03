@@ -125,7 +125,8 @@ export function LeftPanel() {
             border: 'none', cursor: 'pointer', flexShrink: 0,
             transition: 'transform 150ms ease-out',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
             <path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" />
@@ -274,7 +275,7 @@ export function LeftPanel() {
         /* Assets — empty state */
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center' }}>
           <div style={{ width: '48px', height: '48px', borderRadius: 'var(--ps-radius-md)', background: 'var(--ps-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-            <FolderOpen size={24} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />
+            <FolderOpen size={16} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />
           </div>
           <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-primary)', marginBottom: '4px' }}>No assets yet</p>
           <p style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)', marginBottom: '16px', lineHeight: 1.4 }}>Save logos, watermarks, and brand colors to reuse across all your screenshots.</p>
