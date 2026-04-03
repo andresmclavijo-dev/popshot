@@ -169,12 +169,12 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   onMouseLeave={() => onHoverBackground(null)}
                   aria-label={`${preset.label} background`} aria-pressed={active}
                   style={{
-                    width: '100%', aspectRatio: '1', borderRadius: 'var(--ps-radius-md)', border: '1.5px solid var(--ps-border)',
+                    width: '100%', height: '52px', borderRadius: '8px',
+                    border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
                     background: isTransparent ? CHECKERBOARD : preset.background.value,
-                    cursor: 'pointer', outline: active ? `2px solid var(--ps-border-selected)` : 'none',
-                    outlineOffset: active ? '2px' : undefined, opacity: locked ? 0.45 : 1,
+                    cursor: 'pointer', opacity: locked ? 0.45 : 1,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'transform 150ms ease-out',
+                    transition: 'border-color 150ms ease-out',
                   }}>
                   {locked && <Lock size={10} strokeWidth={2.5} style={{ color: LIGHT_SWATCHES.has(preset.id) ? '#666' : '#FFF' }} aria-hidden="true" />}
                   {active && !locked && <Check size={12} strokeWidth={3} style={{ color: LIGHT_SWATCHES.has(preset.id) ? 'var(--ps-text-primary)' : '#FFF' }} aria-hidden="true" />}
@@ -256,8 +256,15 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   const previewShadow = opt.id === 'soft' ? '0 2px 8px rgba(0,0,0,0.10)' : opt.id === 'deep' ? '0 4px 16px rgba(0,0,0,0.28)' : 'none'
                   return (
                     <button key={opt.id} type="button" onClick={() => setShadow(opt.id)} aria-pressed={active} aria-label={`${opt.label} shadow`}
-                      style={{ background: active ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)', color: active ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)', border: 'none', cursor: 'pointer', padding: '6px 4px', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit', borderRadius: 'var(--ps-radius-sm)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', transition: 'all 150ms ease-out' }}>
-                      <div style={{ width: '20px', height: '14px', borderRadius: '3px', background: active ? 'rgba(255,255,255,0.9)' : 'var(--ps-bg-surface)', boxShadow: previewShadow }} />
+                      style={{
+                        width: '100%', height: '52px', borderRadius: '8px',
+                        border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
+                        background: 'var(--ps-bg-surface)', color: 'var(--ps-text-secondary)',
+                        cursor: 'pointer', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: '4px', transition: 'border-color 150ms ease-out',
+                      }}>
+                      <div style={{ width: '24px', height: '16px', borderRadius: '4px', background: 'var(--ps-bg-hover)', boxShadow: previewShadow }} />
                       {opt.label}
                     </button>
                   )
@@ -273,9 +280,16 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   const locked = f.pro && !proUnlocked
                   return (
                     <button key={f.id} type="button" onClick={() => { if (locked) { openUpgradeModal(); return }; setFrame(f.id) }} aria-pressed={active} aria-label={`${f.label} frame`}
-                      style={{ border: active ? `2px solid var(--ps-border-selected)` : `1px solid var(--ps-border-strong)`, borderRadius: 'var(--ps-radius-sm)', background: 'var(--ps-bg-surface)', padding: '6px 2px 4px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', outline: 'none', fontFamily: 'inherit', opacity: locked ? 0.45 : 1, transition: 'border-color 150ms ease-out' }}>
+                      style={{
+                        width: '100%', height: '52px', borderRadius: '8px',
+                        border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
+                        background: 'var(--ps-bg-surface)', cursor: 'pointer',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: '2px', outline: 'none', fontFamily: 'inherit',
+                        opacity: locked ? 0.45 : 1, transition: 'border-color 150ms ease-out',
+                      }}>
                       <FrameThumb type={f.id} />
-                      <span style={{ fontSize: '11px', fontWeight: active ? 600 : 500, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 500, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', gap: '2px' }}>
                         {f.label}
                         {locked && <Lock size={7} strokeWidth={2.5} aria-hidden="true" />}
                       </span>
