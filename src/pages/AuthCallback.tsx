@@ -4,8 +4,8 @@ import { supabase } from '../lib/supabase'
 export default function AuthCallback() {
   useEffect(() => {
     supabase.auth.getSession().then(() => {
-      const isProd = window.location.hostname === 'popshot.app'
-      window.location.replace(isProd ? 'https://popshot.app' : 'http://localhost:5173')
+      // Always redirect to the origin we're currently on
+      window.location.replace(window.location.origin)
     })
   }, [])
 
