@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { SHADOW_PRESETS, ASPECT_RATIO_PRESETS } from '@/lib/presets'
+import { TEMPLATES } from '@/data/templates'
 import { DropZone } from './DropZone'
 import { FrameOverlay, getFrameTopPadding, getFrameRadius } from './FrameOverlay'
 import { CanvasLoading } from './CanvasLoading'
@@ -42,6 +43,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
   const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
   const requestFit = useEditorStore((s) => s.requestFit)
+  const activeTemplate = useEditorStore((s) => s.activeTemplate)
   const badgeEnabled = useEditorStore((s) => s.badgeEnabled)
   const watermarkUrl = useEditorStore((s) => s.watermarkUrl)
   const watermarkPosition = useEditorStore((s) => s.watermarkPosition)
@@ -133,8 +135,10 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const frameRadius = getFrameRadius(frame)
 
   // Compute fit scale: canvas must fit within container with padding
-  const canvasW = ratioPreset?.width ?? 800
-  const canvasH = ratioPreset?.height ?? 600
+  // Priority: active template > ratio preset > default 800×600
+  const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
+  const canvasW = activeTempl?.width ?? ratioPreset?.width ?? 800
+  const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
   const fitPad = 48 // breathing room
   const availW = containerSize.w - fitPad * 2
   const availH = containerSize.h - fitPad * 2

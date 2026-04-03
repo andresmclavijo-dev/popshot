@@ -51,11 +51,13 @@ function TemplateCard({ template, active, onSelect }: { template: Template; acti
       <button type="button" onClick={onSelect} aria-pressed={active} aria-label={`${template.name} ${template.width}×${template.height}`}
         style={{
           width: '100%', height: '60px', background: 'var(--ps-bg-surface)',
-          border: active ? '1px solid var(--ps-bg-active)' : '1px solid var(--ps-border)',
+          border: active ? '1.5px solid var(--ps-text-primary)' : '1px solid var(--ps-border)',
           borderRadius: '12px', cursor: 'pointer', padding: 0, fontFamily: 'inherit',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          overflow: 'hidden', transition: 'border-color 150ms ease-out', outline: 'none',
-        }}>
+          overflow: 'hidden', transition: 'all 150ms ease-out', outline: 'none',
+        }}
+        onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ps-bg-surface)' }}>
         {/* Proportional gray preview */}
         <div style={{
           width: '70%', maxHeight: '40px', aspectRatio: `${template.width}/${template.height}`,
