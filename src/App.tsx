@@ -10,7 +10,7 @@ import { ToastProvider, showToast } from '@/components/shared/Toast'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useExport } from '@/hooks/useExport'
 import { useEditorStore } from '@/store/useEditorStore'
-import { checkUpgradeSuccess, isProUnlocked } from '@/lib/lemonSqueezy'
+import { checkUpgradeSuccess, isProUnlocked } from '@/lib/checkout'
 import { BACKGROUND_PRESETS, SHADOW_PRESETS } from '@/lib/presets'
 import type { Background } from '@/types'
 
