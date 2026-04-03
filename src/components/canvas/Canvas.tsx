@@ -121,7 +121,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const framePaddingTop = getFrameTopPadding(frame)
   const frameRadius = getFrameRadius(frame)
 
-  // ── CANVAS SIZING — pure CSS approach ──
+  // ── CANVAS SIZING — Figma frame model ──
   const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
   const canvasW = activeTempl?.width ?? ratioPreset?.width ?? 800
   const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
@@ -130,13 +130,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const isTransparentBg = displayBg.type === 'transparent'
   const checkerboardBg = 'linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)'
 
-  // Canvas element — CSS aspect-ratio + max constraints = automatic contain
+  // Canvas wrapper — aspect-ratio + max constraints = CSS contain
   const canvasStyle: React.CSSProperties = {
+    position: 'relative',
     aspectRatio: `${canvasW} / ${canvasH}`,
-    maxWidth: '100%',
-    maxHeight: '100%',
-    width: 'auto',
-    height: 'auto',
+    maxWidth: 'calc(100% - 64px)',
+    maxHeight: 'calc(100% - 56px)',
+    borderRadius: '8px',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
+    overflow: 'hidden',
     background: isImageBg ? 'transparent' : isTransparentBg ? 'transparent' : displayBg.value,
     ...(isTransparentBg && !isImageBg ? {
       backgroundImage: checkerboardBg,
@@ -147,24 +149,17 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     display: 'flex',
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
-    position: 'relative',
-    overflow: 'hidden',
-    borderRadius: '8px',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
   }
 
-  // Workspace wrapper — inset creates exact safe zone, flex centers canvas
+  // The workspace is now the parent flex container (from App.tsx)
+  // This component just renders the canvas content directly
   const workspaceStyle: React.CSSProperties = {
-    position: 'absolute',
-    inset: 0,
+    width: '100%',
+    height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '24px 32px 32px 32px',
-    boxSizing: 'border-box',
     overflow: 'hidden',
-    minWidth: 0,
-    minHeight: 0,
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'transparent',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
@@ -190,8 +185,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
           transform: zoom !== 1 ? `scale(${zoom})` : undefined,
           transformOrigin: 'center center',
           transition: 'transform 150ms var(--ease-out)',
-          maxWidth: '100%',
-          maxHeight: '100%',
           position: 'relative',
         }}
       >

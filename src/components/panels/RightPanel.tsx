@@ -110,8 +110,8 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
 
   return (
     <div style={{
-      position: 'absolute', right: '12px', top: '12px', bottom: '12px',
-      width: `${PANEL_WIDTH}px`, borderRadius: '16px',
+      width: `${PANEL_WIDTH}px`, flexShrink: 0,
+      height: '100%', borderRadius: '16px',
       background: 'var(--ps-bg-panel)',
       backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
       border: '0.5px solid var(--ps-border-panel)',

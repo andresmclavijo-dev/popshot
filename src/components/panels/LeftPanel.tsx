@@ -9,10 +9,8 @@ const PANEL_WIDTH = 220
 const COLLAPSED_WIDTH = 44
 
 const floatingBase: React.CSSProperties = {
-  position: 'absolute',
-  left: '12px',
-  top: '12px',
-  bottom: '12px',
+  flexShrink: 0,
+  height: '100%',
   borderRadius: '16px',
   background: 'var(--ps-bg-panel)',
   backdropFilter: 'blur(16px)',
@@ -110,7 +108,7 @@ export function LeftPanel() {
   if (collapsed) {
     return (
       <div style={{
-        position: 'absolute', left: '12px', top: '12px', bottom: '12px',
+        flexShrink: 0, height: '100%',
         width: `${COLLAPSED_WIDTH}px`, borderRadius: '16px',
         background: 'var(--ps-bg-panel)', backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',

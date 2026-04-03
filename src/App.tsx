@@ -51,15 +51,18 @@ export function App() {
     <TooltipProvider delay={600}>
       <div style={{
         width: '100vw', height: '100vh', overflow: 'hidden',
-        position: 'relative', background: 'var(--ps-bg-page)',
+        display: 'flex', background: 'var(--ps-bg-page)',
+        position: 'relative',
       }}>
-        {/* Full-bleed canvas behind everything */}
-        <Canvas hoveredBackground={hoveredBackground} />
-
-        {/* Floating panels — absolutely positioned with insets */}
         <LeftPanel />
+
+        {/* Canvas container — takes remaining space between panels */}
+        <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 0, minHeight: 0 }}>
+          <Canvas hoveredBackground={hoveredBackground} />
+          <BottomToolbar />
+        </div>
+
         <RightPanel onHoverBackground={setHoveredBackground} />
-        <BottomToolbar />
 
         {/* Modals */}
         <UpgradeModal />
