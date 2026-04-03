@@ -53,6 +53,7 @@ export function App() {
         width: '100vw', height: '100vh', overflow: 'hidden',
         display: 'flex', background: 'var(--ps-bg-page)',
         position: 'relative',
+        padding: '8px', gap: '8px', boxSizing: 'border-box',
       }}>
         <LeftPanel />
 
