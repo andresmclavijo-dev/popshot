@@ -64,16 +64,17 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
 
   const { zoom } = useZoom(workspaceRef, canvasRef)
 
-  // Track container size for fit calculation
+  // Track container size (border box) for fit calculation
   useEffect(() => {
     const el = workspaceRef.current
     if (!el) return
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect
-        if (width > 0 && height > 0) setContainerSize({ w: width, h: height })
-      }
-    })
+    const measure = () => {
+      const w = el.clientWidth
+      const h = el.clientHeight
+      if (w > 0 && h > 0) setContainerSize({ w, h })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
@@ -198,6 +199,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    boxSizing: 'border-box',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
     overflow: 'hidden',
     padding: `${PAD_TOP}px ${PAD_SIDES}px ${PAD_BOTTOM}px`,
