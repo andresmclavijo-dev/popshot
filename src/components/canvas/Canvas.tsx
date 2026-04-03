@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { X } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -44,6 +44,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
   const requestFit = useEditorStore((s) => s.requestFit)
   const activeTemplate = useEditorStore((s) => s.activeTemplate)
+  const leftPanelCollapsed = useEditorStore((s) => s.leftPanelCollapsed)
   const badgeEnabled = useEditorStore((s) => s.badgeEnabled)
   const watermarkUrl = useEditorStore((s) => s.watermarkUrl)
   const watermarkPosition = useEditorStore((s) => s.watermarkPosition)
@@ -57,27 +58,11 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const [popKey, setPopKey] = useState(0)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isImageHovered, setIsImageHovered] = useState(false)
-  const [containerSize, setContainerSize] = useState({ w: 800, h: 600 })
   const prevShuffle = useRef(lastShuffle)
   const canvasRef = useRef<HTMLDivElement>(null)
   const workspaceRef = useRef<HTMLDivElement>(null)
 
   const { zoom } = useZoom(workspaceRef, canvasRef)
-
-  // Track container size for fit calculation
-  useEffect(() => {
-    const el = workspaceRef.current
-    if (!el) return
-    const measure = () => {
-      const w = el.clientWidth
-      const h = el.clientHeight
-      if (w > 0 && h > 0) setContainerSize({ w, h })
-    }
-    measure() // initial measurement
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
 
   useEffect(() => {
     setImageLoaded(false)
@@ -137,64 +122,29 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const framePaddingTop = getFrameTopPadding(frame)
   const frameRadius = getFrameRadius(frame)
 
-  // ── CANVAS SIZING ──
-  // The canvas is full-bleed (covers entire viewport), panels float on top.
-  // We must subtract panel widths + their insets + our own padding from available space.
-  const PANEL_W = 220      // each panel width
-  const PANEL_INSET = 12   // each panel's inset from edge
-  const TOOLBAR_H = 48     // bottom toolbar height
-  const TOOLBAR_INSET = 18 // toolbar inset from bottom
-  const PAD_TOP = 24       // breathing room above canvas
-  const PAD_SIDES = 32     // breathing room left/right of canvas
-  const PAD_BOTTOM = 32    // breathing room below canvas
-
-  // Canvas dimensions — template > ratio preset > 800×600
+  // ── CANVAS SIZING — pure CSS approach ──
   const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
   const canvasW = activeTempl?.width ?? ratioPreset?.width ?? 800
   const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
-
-  // Fit calculation — recalculates when container, canvas dims, or zoom change
-  const leftPanelCollapsed = useEditorStore((s) => s.leftPanelCollapsed)
-  const leftPanelW = leftPanelCollapsed ? 44 : PANEL_W
-  const { displayW, displayH, scaleFactor } = useMemo(() => {
-    // Available space = viewport minus panels, insets, and padding
-    const totalPanelW = (leftPanelW + PANEL_INSET) + (PANEL_W + PANEL_INSET)
-    const totalToolbarH = TOOLBAR_H + TOOLBAR_INSET
-    const aW = Math.max(containerSize.w - totalPanelW - PAD_SIDES * 2, 100)
-    const aH = Math.max(containerSize.h - totalToolbarH - PAD_TOP - PAD_BOTTOM, 100)
-    const r = canvasW / canvasH
-
-    let fW: number, fH: number
-    if (r >= aW / aH) {
-      fW = aW
-      fH = aW / r
-    } else {
-      fH = aH
-      fW = aH * r
-    }
-
-    return {
-      displayW: fW * zoom,
-      displayH: fH * zoom,
-      scaleFactor: fW / canvasW,
-    }
-  }, [containerSize.w, containerSize.h, canvasW, canvasH, zoom, leftPanelW])
 
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const isTransparentBg = displayBg.type === 'transparent'
   const checkerboardBg = 'linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)'
 
-  // Step 3: Canvas element — inline width/height from JS calculation
+  // Canvas element — CSS aspect-ratio + max constraints handle fitting
   const canvasStyle: React.CSSProperties = {
-    width: `${displayW}px`,
-    height: `${displayH}px`,
+    aspectRatio: `${canvasW} / ${canvasH}`,
+    maxWidth: '100%',
+    maxHeight: '100%',
+    width: 'auto',
+    height: 'auto',
     background: isImageBg ? 'transparent' : isTransparentBg ? 'transparent' : displayBg.value,
     ...(isTransparentBg && !isImageBg ? {
       backgroundImage: checkerboardBg,
       backgroundSize: '16px 16px',
       backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
     } : {}),
-    padding: `${padding * scaleFactor}px`,
+    padding: `${padding}px`,
     display: 'inline-flex',
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
@@ -202,25 +152,31 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     overflow: 'hidden',
     borderRadius: '8px',
     boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
+    flexShrink: 0,
     transition: 'background 200ms var(--ease-out)',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
   }
 
-  // Step 4: Container — centered, fixed padding, overflow hidden
+  // Workspace — fills all space, padding creates safe zone, CSS handles contain
   const workspaceStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
+    position: 'absolute',
+    inset: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxSizing: 'border-box',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
     overflow: 'hidden',
-    padding: `${PAD_TOP}px ${PAD_SIDES}px ${PAD_BOTTOM}px`,
+    // Padding accounts for floating panels + breathing room
+    // Left: panel(220/44) + inset(12) + gap(32)
+    // Right: panel(220) + inset(12) + gap(32) = 264
+    // Bottom: toolbar(48) + inset(18) + gap(32) = 98
+    paddingTop: '24px',
+    paddingRight: '264px',
+    paddingBottom: '98px',
+    paddingLeft: `${(leftPanelCollapsed ? 44 : 220) + 12 + 32}px`,
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
     transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
-    position: 'relative',
   }
 
   if (!imageUrl) {
@@ -235,12 +191,16 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   return (
     <div ref={workspaceRef} className="canvas-workspace" role="main" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <CanvasLoading />
-      {/* Canvas wrapper — centered in workspace */}
+      {/* Zoom wrapper */}
       <div
         style={{
+          transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+          transformOrigin: 'center center',
+          transition: 'transform 150ms var(--ease-out)',
           display: 'inline-flex',
           position: 'relative',
-          flexShrink: 0,
+          maxWidth: '100%',
+          maxHeight: '100%',
         }}
       >
         <div
