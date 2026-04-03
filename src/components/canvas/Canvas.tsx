@@ -130,7 +130,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const isTransparentBg = displayBg.type === 'transparent'
   const checkerboardBg = 'linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)'
 
-  // Canvas element — CSS aspect-ratio + max constraints handle fitting
+  // Canvas element — CSS aspect-ratio + max constraints = automatic contain
   const canvasStyle: React.CSSProperties = {
     aspectRatio: `${canvasW} / ${canvasH}`,
     maxWidth: '100%',
@@ -144,31 +144,26 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
     } : {}),
     padding: `${padding}px`,
-    display: 'inline-flex',
+    display: 'flex',
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
     overflow: 'hidden',
     borderRadius: '8px',
     boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
-    flexShrink: 0,
-    transition: 'background 200ms var(--ease-out)',
-    animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
   }
 
-  // Workspace — fills all space, padding creates safe zone, CSS handles contain
+  // Workspace wrapper — inset creates exact safe zone, flex centers canvas
   const workspaceStyle: React.CSSProperties = {
     position: 'absolute',
-    inset: 0,
+    inset: '24px 32px 32px 32px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
     overflow: 'hidden',
-    padding: '24px 32px 32px 32px',
+    background: isDragOver ? 'rgba(108,71,255,0.03)' : 'transparent',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
-    transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
   }
 
   if (!imageUrl) {
@@ -183,23 +178,19 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   return (
     <div ref={workspaceRef} className="canvas-workspace" role="main" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <CanvasLoading />
-      {/* Zoom wrapper */}
+      {/* Zoom + hover wrapper */}
       <div
+        onMouseEnter={() => setIsImageHovered(true)}
+        onMouseLeave={() => setIsImageHovered(false)}
         style={{
           transform: zoom !== 1 ? `scale(${zoom})` : undefined,
           transformOrigin: 'center center',
           transition: 'transform 150ms var(--ease-out)',
-          display: 'inline-flex',
-          position: 'relative',
           maxWidth: '100%',
           maxHeight: '100%',
+          position: 'relative',
         }}
       >
-        <div
-          style={{ position: 'relative', display: 'inline-flex' }}
-          onMouseEnter={() => setIsImageHovered(true)}
-          onMouseLeave={() => setIsImageHovered(false)}
-        >
           <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
             {/* Background image layer — own overflow clip so canvas doesn't need it */}
             {isImageBg && (
@@ -436,7 +427,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
             </TooltipTrigger>
             <TooltipContent>Remove image · ⌫</TooltipContent>
           </Tooltip>
-        </div>
       </div>
     </div>
   )
