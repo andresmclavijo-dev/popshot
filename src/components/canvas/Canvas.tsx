@@ -156,11 +156,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   // Workspace wrapper — inset creates exact safe zone, flex centers canvas
   const workspaceStyle: React.CSSProperties = {
     position: 'absolute',
-    inset: '24px 32px 32px 32px',
+    inset: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '24px 32px 32px 32px',
+    boxSizing: 'border-box',
     overflow: 'hidden',
+    minWidth: 0,
+    minHeight: 0,
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'transparent',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
