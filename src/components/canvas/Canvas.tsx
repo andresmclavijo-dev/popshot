@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { X } from 'lucide-react'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -64,7 +64,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
 
   const { zoom } = useZoom(workspaceRef, canvasRef)
 
-  // Track container size (border box) for fit calculation
+  // Track container size for fit calculation
   useEffect(() => {
     const el = workspaceRef.current
     if (!el) return
@@ -73,7 +73,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       const h = el.clientHeight
       if (w > 0 && h > 0) setContainerSize({ w, h })
     }
-    measure()
+    measure() // initial measurement
     const ro = new ResizeObserver(measure)
     ro.observe(el)
     return () => ro.disconnect()
@@ -137,36 +137,37 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const framePaddingTop = getFrameTopPadding(frame)
   const frameRadius = getFrameRadius(frame)
 
-  // ── CANVAS SIZING (from scratch) ──
-  // Step 2: Canvas dimensions — template > ratio preset > 800×600
-  const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
-  const canvasW = activeTempl?.width ?? ratioPreset?.width ?? 800
-  const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
-  const ratio = canvasW / canvasH
-
-  // Step 2: Available space with fixed insets
+  // ── CANVAS SIZING ──
   const PAD_TOP = 24
   const PAD_SIDES = 32
   const PAD_BOTTOM = 32
-  const availW = Math.max(containerSize.w - PAD_SIDES * 2, 100)
-  const availH = Math.max(containerSize.h - PAD_TOP - PAD_BOTTOM, 100)
 
-  // Step 2: Fit canvas maintaining aspect ratio
-  let fitW: number, fitH: number
-  if (ratio >= availW / availH) {
-    fitW = availW
-    fitH = availW / ratio
-  } else {
-    fitH = availH
-    fitW = availH * ratio
-  }
+  // Canvas dimensions — template > ratio preset > 800×600
+  const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
+  const canvasW = activeTempl?.width ?? ratioPreset?.width ?? 800
+  const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
 
-  // Step 3: Apply zoom (1.0 = fitted, >1 zooms in)
-  const displayW = fitW * zoom
-  const displayH = fitH * zoom
+  // Fit calculation — recalculates when container, canvas dims, or zoom change
+  const { displayW, displayH, scaleFactor } = useMemo(() => {
+    const aW = Math.max(containerSize.w - PAD_SIDES * 2, 100)
+    const aH = Math.max(containerSize.h - PAD_TOP - PAD_BOTTOM, 100)
+    const r = canvasW / canvasH
 
-  // Scale factor for internal elements (padding, etc.)
-  const scaleFactor = fitW / canvasW
+    let fW: number, fH: number
+    if (r >= aW / aH) {
+      fW = aW
+      fH = aW / r
+    } else {
+      fH = aH
+      fW = aH * r
+    }
+
+    return {
+      displayW: fW * zoom,
+      displayH: fH * zoom,
+      scaleFactor: fW / canvasW,
+    }
+  }, [containerSize.w, containerSize.h, canvasW, canvasH, zoom])
 
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const isTransparentBg = displayBg.type === 'transparent'
