@@ -251,21 +251,27 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             {/* Shadow */}
             <div>
               <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Shadow</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
                 {SHADOW_PRESETS.map((opt) => {
                   const active = shadow === opt.id
+                  const previewShadow = opt.id === 'soft' ? '0 2px 8px rgba(0,0,0,0.12)' : opt.id === 'deep' ? '0 3px 12px rgba(0,0,0,0.3)' : 'none'
                   return (
-                    <button key={opt.id} type="button" onClick={() => setShadow(opt.id)} aria-pressed={active} aria-label={`${opt.label} shadow`}
-                      style={{
-                        height: '60px', borderRadius: '12px',
-                        border: active ? '1px solid var(--ps-bg-active)' : '1px solid var(--ps-border)',
-                        background: 'var(--ps-bg-surface)', color: 'var(--ps-text-primary)',
-                        cursor: 'pointer', fontSize: '12px', fontWeight: active ? 600 : 400, fontFamily: 'inherit',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        gap: '4px', transition: 'border-color 150ms ease-out', overflow: 'hidden',
-                      }}>
-                      {opt.label}
-                    </button>
+                    <div key={opt.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
+                      <button type="button" onClick={() => setShadow(opt.id)} aria-pressed={active} aria-label={`${opt.label} shadow`}
+                        style={{
+                          width: '100%', height: '60px', borderRadius: '12px',
+                          border: active ? '1px solid var(--ps-bg-active)' : '1px solid var(--ps-border)',
+                          background: 'var(--ps-bg-surface)', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          outline: 'none', fontFamily: 'inherit',
+                          transition: 'border-color 150ms ease-out', overflow: 'hidden',
+                        }}>
+                        <div style={{ width: '28px', height: '18px', borderRadius: '4px', background: 'var(--ps-bg-page)', boxShadow: previewShadow }} />
+                      </button>
+                      <span style={{ fontSize: '12px', fontWeight: active ? 600 : 400, color: 'var(--ps-text-primary)', textAlign: 'center' }}>
+                        {opt.label}
+                      </span>
+                    </div>
                   )
                 })}
               </div>
