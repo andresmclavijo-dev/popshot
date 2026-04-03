@@ -136,68 +136,62 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const framePaddingTop = getFrameTopPadding(frame)
   const frameRadius = getFrameRadius(frame)
 
-  // Canvas dimensions — priority: active template > ratio preset > 800×600
+  // ── CANVAS SIZING (from scratch) ──
+  // Step 2: Canvas dimensions — template > ratio preset > 800×600
   const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
   const canvasW = activeTempl?.width ?? ratioPreset?.width ?? 800
   const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
+  const ratio = canvasW / canvasH
 
-  // Fixed insets: 32px left/right, 24px top, 32px bottom
-  const availW = containerSize.w - 32 - 32
-  const availH = containerSize.h - 24 - 32
+  // Step 2: Available space with fixed insets
+  const PAD_TOP = 24
+  const PAD_SIDES = 32
+  const PAD_BOTTOM = 32
+  const availW = Math.max(containerSize.w - PAD_SIDES * 2, 100)
+  const availH = Math.max(containerSize.h - PAD_TOP - PAD_BOTTOM, 100)
 
-  // Fit canvas into available space (object-fit: contain)
-  const canvasAspect = canvasW / canvasH
-  const safeAvailW = Math.max(availW, 100)
-  const safeAvailH = Math.max(availH, 100)
-  const availAspect = safeAvailW / safeAvailH
-  let renderW: number, renderH: number
-  if (canvasAspect > availAspect) {
-    // Wider than container — constrain by width
-    renderW = safeAvailW
-    renderH = safeAvailW / canvasAspect
+  // Step 2: Fit canvas maintaining aspect ratio
+  let fitW: number, fitH: number
+  if (ratio >= availW / availH) {
+    fitW = availW
+    fitH = availW / ratio
   } else {
-    // Taller than container — constrain by height
-    renderH = safeAvailH
-    renderW = safeAvailH * canvasAspect
+    fitH = availH
+    fitW = availH * ratio
   }
-  // Hard clamp: never exceed available space
-  if (renderW > safeAvailW) {
-    renderW = safeAvailW
-    renderH = renderW / canvasAspect
-  }
-  if (renderH > safeAvailH) {
-    renderH = safeAvailH
-    renderW = renderH * canvasAspect
-  }
-  renderW = Math.max(renderW, 50)
-  renderH = Math.max(renderH, 50)
 
-  // Zoom: 1.0 = "fitted to container", >1 zooms in, <1 zooms out
-  const displayW = renderW * zoom
-  const displayH = renderH * zoom
+  // Step 3: Apply zoom (1.0 = fitted, >1 zooms in)
+  const displayW = fitW * zoom
+  const displayH = fitH * zoom
+
+  // Scale factor for internal elements (padding, etc.)
+  const scaleFactor = fitW / canvasW
 
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const isTransparentBg = displayBg.type === 'transparent'
   const checkerboardBg = 'linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%)'
+
+  // Step 3: Canvas element — inline width/height from JS calculation
   const canvasStyle: React.CSSProperties = {
+    width: `${displayW}px`,
+    height: `${displayH}px`,
     background: isImageBg ? 'transparent' : isTransparentBg ? 'transparent' : displayBg.value,
     ...(isTransparentBg && !isImageBg ? {
       backgroundImage: checkerboardBg,
       backgroundSize: '16px 16px',
       backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
     } : {}),
-    padding: `${padding * (renderW / canvasW)}px`,
+    padding: `${padding * scaleFactor}px`,
     display: 'inline-flex',
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
     overflow: 'hidden',
-    width: `${displayW}px`,
-    height: `${displayH}px`,
-    transition: 'background 200ms var(--ease-out), width 150ms ease-out, height 150ms ease-out',
+    transition: 'background 200ms var(--ease-out)',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
   }
 
+  // Step 4: Container — centered, fixed padding, overflow hidden
   const workspaceStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
@@ -206,7 +200,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     justifyContent: 'center',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
     overflow: 'hidden',
-    padding: '24px 32px 32px 32px',
+    padding: `${PAD_TOP}px ${PAD_SIDES}px ${PAD_BOTTOM}px`,
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
     transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
