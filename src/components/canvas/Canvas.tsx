@@ -44,7 +44,6 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const backgroundImageBlur = useEditorStore((s) => s.backgroundImageBlur)
   const requestFit = useEditorStore((s) => s.requestFit)
   const activeTemplate = useEditorStore((s) => s.activeTemplate)
-  const leftPanelCollapsed = useEditorStore((s) => s.leftPanelCollapsed)
   const badgeEnabled = useEditorStore((s) => s.badgeEnabled)
   const watermarkUrl = useEditorStore((s) => s.watermarkUrl)
   const watermarkPosition = useEditorStore((s) => s.watermarkPosition)
@@ -166,14 +165,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     justifyContent: 'center',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
     overflow: 'hidden',
-    // Padding accounts for floating panels + breathing room
-    // Left: panel(220/44) + inset(12) + gap(32)
-    // Right: panel(220) + inset(12) + gap(32) = 264
-    // Bottom: toolbar(48) + inset(18) + gap(32) = 98
-    paddingTop: '24px',
-    paddingRight: '264px',
-    paddingBottom: '98px',
-    paddingLeft: `${(leftPanelCollapsed ? 44 : 220) + 12 + 32}px`,
+    padding: '24px 32px 32px 32px',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
     transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
