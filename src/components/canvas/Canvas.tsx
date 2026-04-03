@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { X } from 'lucide-react'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { SHADOW_PRESETS, ASPECT_RATIO_PRESETS } from '@/lib/presets'
 import { TEMPLATES } from '@/data/templates'
@@ -175,17 +174,17 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   }
 
   return (
-    <div ref={workspaceRef} className="canvas-workspace" role="main" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+    <div ref={workspaceRef} className="canvas-workspace" role="main" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}
+      onMouseEnter={() => setIsImageHovered(true)}
+      onMouseLeave={() => setIsImageHovered(false)}
+    >
       <CanvasLoading />
-      {/* Zoom + hover wrapper */}
+      {/* Canvas with zoom — only export content inside */}
       <div
-        onMouseEnter={() => setIsImageHovered(true)}
-        onMouseLeave={() => setIsImageHovered(false)}
         style={{
           transform: zoom !== 1 ? `scale(${zoom})` : undefined,
           transformOrigin: 'center center',
           transition: 'transform 150ms var(--ease-out)',
-          position: 'relative',
         }}
       >
           <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
@@ -299,18 +298,21 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
             popshot.app
           </div>
           </div>
-          {/* Hover menu — Replace / Clear */}
-          <div
-            data-export-ignore
-            style={{
-              position: 'absolute',
-              top: '12px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 25,
-              opacity: isImageHovered ? 1 : 0,
-              pointerEvents: isImageHovered ? 'auto' : 'none',
-              transition: 'opacity 150ms var(--ease-out)',
+      </div>
+      {/* === Overlay controls — outside zoom, fixed size === */}
+
+      {/* Hover menu — Replace / Clear */}
+      <div
+        data-export-ignore
+        style={{
+          position: 'absolute',
+          top: '12px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 25,
+          opacity: isImageHovered ? 1 : 0,
+          pointerEvents: isImageHovered ? 'auto' : 'none',
+          transition: 'opacity 150ms var(--ease-out)',
             }}
           >
             <div
@@ -378,53 +380,37 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
             aria-hidden="true"
           />
 
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <button
-                  type="button"
-                  onClick={reset}
-                  aria-label="Remove image"
-                  data-export-ignore
-                  style={{
-                    position: 'absolute',
-                    top: '-12px',
-                    right: '-12px',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    background: 'var(--color-bg-panel)',
-                    border: '1px solid var(--color-app-border)',
-                    color: 'var(--color-text-secondary)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: 0,
-                    zIndex: 20,
-                    transition: 'all 100ms var(--ease-out)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--color-danger)'
-                    e.currentTarget.style.color = '#FFFFFF'
-                    e.currentTarget.style.borderColor = 'var(--color-danger)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'var(--color-bg-panel)'
-                    e.currentTarget.style.color = 'var(--color-text-secondary)'
-                    e.currentTarget.style.borderColor = 'var(--color-app-border)'
-                    e.currentTarget.style.transform = 'none'
-                  }}
-                  onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.95)' }}
-                  onMouseUp={(e) => { e.currentTarget.style.transform = 'none' }}
-                />
-              }
-            >
-              <X size={12} aria-hidden="true" />
-            </TooltipTrigger>
-            <TooltipContent>Remove image · ⌫</TooltipContent>
-          </Tooltip>
-      </div>
+      {/* X close button — fixed size, top-right of workspace */}
+      <button
+        type="button"
+        onClick={reset}
+        aria-label="Remove image"
+        data-export-ignore
+        style={{
+          position: 'absolute',
+          top: '8px',
+          right: '8px',
+          width: '28px',
+          height: '28px',
+          borderRadius: '50%',
+          background: 'rgba(0,0,0,0.5)',
+          border: 'none',
+          color: '#FFFFFF',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 0,
+          zIndex: 20,
+          opacity: isImageHovered ? 1 : 0,
+          pointerEvents: isImageHovered ? 'auto' : 'none',
+          transition: 'opacity 150ms var(--ease-out), background 100ms var(--ease-out)',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220,38,38,0.9)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.5)' }}
+      >
+        <X size={12} aria-hidden="true" />
+      </button>
     </div>
   )
 }
