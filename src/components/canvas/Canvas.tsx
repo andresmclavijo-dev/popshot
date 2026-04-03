@@ -138,9 +138,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const frameRadius = getFrameRadius(frame)
 
   // ── CANVAS SIZING ──
-  const PAD_TOP = 24
-  const PAD_SIDES = 32
-  const PAD_BOTTOM = 32
+  // The canvas is full-bleed (covers entire viewport), panels float on top.
+  // We must subtract panel widths + their insets + our own padding from available space.
+  const PANEL_W = 220      // each panel width
+  const PANEL_INSET = 12   // each panel's inset from edge
+  const TOOLBAR_H = 48     // bottom toolbar height
+  const TOOLBAR_INSET = 18 // toolbar inset from bottom
+  const PAD_TOP = 24       // breathing room above canvas
+  const PAD_SIDES = 32     // breathing room left/right of canvas
+  const PAD_BOTTOM = 32    // breathing room below canvas
 
   // Canvas dimensions — template > ratio preset > 800×600
   const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
@@ -148,9 +154,14 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
 
   // Fit calculation — recalculates when container, canvas dims, or zoom change
+  const leftPanelCollapsed = useEditorStore((s) => s.leftPanelCollapsed)
+  const leftPanelW = leftPanelCollapsed ? 44 : PANEL_W
   const { displayW, displayH, scaleFactor } = useMemo(() => {
-    const aW = Math.max(containerSize.w - PAD_SIDES * 2, 100)
-    const aH = Math.max(containerSize.h - PAD_TOP - PAD_BOTTOM, 100)
+    // Available space = viewport minus panels, insets, and padding
+    const totalPanelW = (leftPanelW + PANEL_INSET) + (PANEL_W + PANEL_INSET)
+    const totalToolbarH = TOOLBAR_H + TOOLBAR_INSET
+    const aW = Math.max(containerSize.w - totalPanelW - PAD_SIDES * 2, 100)
+    const aH = Math.max(containerSize.h - totalToolbarH - PAD_TOP - PAD_BOTTOM, 100)
     const r = canvasW / canvasH
 
     let fW: number, fH: number
@@ -167,7 +178,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       displayH: fH * zoom,
       scaleFactor: fW / canvasW,
     }
-  }, [containerSize.w, containerSize.h, canvasW, canvasH, zoom])
+  }, [containerSize.w, containerSize.h, canvasW, canvasH, zoom, leftPanelW])
 
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const isTransparentBg = displayBg.type === 'transparent'
