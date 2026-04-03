@@ -134,16 +134,33 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const framePaddingTop = getFrameTopPadding(frame)
   const frameRadius = getFrameRadius(frame)
 
-  // Compute fit scale: canvas must fit within container with padding
-  // Priority: active template > ratio preset > default 800×600
+  // Canvas dimensions — priority: active template > ratio preset > 800×600
   const activeTempl = activeTemplate ? TEMPLATES.find(t => t.id === activeTemplate) : null
   const canvasW = activeTempl?.width ?? ratioPreset?.width ?? 800
   const canvasH = activeTempl?.height ?? ratioPreset?.height ?? 600
-  const fitPad = 48 // breathing room
-  const availW = containerSize.w - fitPad * 2
-  const availH = containerSize.h - fitPad * 2
-  const fitScale = Math.min(availW / canvasW, availH / canvasH, 1)
-  const combinedScale = fitScale * zoom
+
+  // Fixed insets: 32px left/right, 24px top, 32px bottom
+  const availW = containerSize.w - 32 - 32
+  const availH = containerSize.h - 24 - 32
+
+  // Fit canvas into available space (object-fit: contain)
+  const canvasAspect = canvasW / canvasH
+  const availAspect = availW > 0 && availH > 0 ? availW / availH : 1
+  let renderW: number, renderH: number
+  if (canvasAspect > availAspect) {
+    renderW = availW
+    renderH = availW / canvasAspect
+  } else {
+    renderH = availH
+    renderW = availH * canvasAspect
+  }
+  // Clamp to positive values
+  renderW = Math.max(renderW, 100)
+  renderH = Math.max(renderH, 100)
+
+  // Apply zoom on top of fitted size
+  const displayW = renderW * zoom
+  const displayH = renderH * zoom
 
   const isImageBg = displayBg.type === 'image' && backgroundImageUrl
   const isTransparentBg = displayBg.type === 'transparent'
@@ -155,15 +172,15 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       backgroundSize: '16px 16px',
       backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
     } : {}),
-    padding: `${padding}px`,
+    padding: `${padding * (renderW / canvasW)}px`,
     display: 'inline-flex',
     alignItems: pos.alignItems as React.CSSProperties['alignItems'],
     justifyContent: pos.justifyContent as React.CSSProperties['justifyContent'],
     position: 'relative',
     overflow: 'hidden',
-    width: `${canvasW}px`,
-    height: `${canvasH}px`,
-    transition: 'background 200ms var(--ease-out)',
+    width: `${displayW}px`,
+    height: `${displayH}px`,
+    transition: 'background 200ms var(--ease-out), width 150ms ease-out, height 150ms ease-out',
     animation: popKey > 0 ? 'canvasPop 300ms var(--ease-out)' : undefined,
   }
 
@@ -175,6 +192,7 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
     justifyContent: 'center',
     background: isDragOver ? 'rgba(108,71,255,0.03)' : 'var(--ps-bg-page)',
     overflow: 'hidden',
+    padding: '24px 32px 32px 32px',
     outline: isDragOver ? '2px solid var(--color-app-accent)' : 'none',
     outlineOffset: '-2px',
     transition: 'background 100ms var(--ease-out), outline 100ms var(--ease-out)',
@@ -193,12 +211,9 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   return (
     <div ref={workspaceRef} className="canvas-workspace" role="main" style={workspaceStyle} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
       <CanvasLoading />
-      {/* Zoom wrapper — transform applied here, floating panels are outside */}
+      {/* Canvas wrapper — centered in workspace */}
       <div
         style={{
-          transform: `scale(${combinedScale})`,
-          transformOrigin: 'center center',
-          transition: 'transform 150ms var(--ease-out)',
           display: 'inline-flex',
           position: 'relative',
           flexShrink: 0,
