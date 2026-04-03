@@ -18,28 +18,29 @@ const FREE_SWATCH_COUNT = 6
 const sliderRow: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '8px' }
 const sliderLabelRow: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
 
-function Section({ label, locked, defaultOpen = true, children }: { label: string; locked?: boolean; defaultOpen?: boolean; children: React.ReactNode }) {
+function Section({ label, locked, defaultOpen = true, isLast, children }: { label: string; locked?: boolean; defaultOpen?: boolean; isLast?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div>
+    <div style={{ borderBottom: isLast ? 'none' : '1px solid var(--ps-border)', padding: '0 16px' }}>
       <button type="button" onClick={() => !locked && setOpen(!open)}
         style={{
           width: '100%', background: 'transparent', border: 'none',
-          cursor: locked ? 'default' : 'pointer', padding: '8px 0 8px',
+          cursor: locked ? 'default' : 'pointer', padding: '4px 0',
           fontFamily: 'inherit', display: 'flex', alignItems: 'center',
           justifyContent: 'space-between', minHeight: '32px',
         }}>
-        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
           {label}
           {locked && <Lock size={10} strokeWidth={2.5} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
         </span>
-        {!locked && <ChevronDown size={14} style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 220ms ease', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
+        {!locked && <ChevronDown size={16} style={{ transform: open ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 220ms ease', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
       </button>
       <div style={{
         overflow: 'hidden',
-        maxHeight: open ? '500px' : '0px',
+        maxHeight: open ? '600px' : '0px',
         opacity: open ? 1 : 0,
         transition: 'max-height 200ms ease-in-out, opacity 200ms ease-in-out',
+        paddingBottom: open ? '16px' : '0px',
       }}>
         {children}
       </div>
@@ -116,7 +117,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
       {/* Header — Go Pro + Export buttons */}
-      <div style={{ padding: '12px 14px', display: 'flex', gap: '8px', flexShrink: 0, borderBottom: '0.5px solid var(--ps-border)' }}>
+      <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
         {!proUnlocked && (
           <button type="button" onClick={openUpgradeModal}
             style={{
@@ -149,7 +150,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       </div>
 
       {/* Scrollable sections */}
-      <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: '18px', opacity: dimmed ? 0.35 : 1, pointerEvents: dimmed ? 'none' : 'auto', transition: 'opacity 200ms ease-out' }}>
+      <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 0, opacity: dimmed ? 0.35 : 1, pointerEvents: dimmed ? 'none' : 'auto', transition: 'opacity 200ms ease-out' }}>
         {/* Background */}
         <Section label="Background">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '10px' }}>
@@ -169,12 +170,12 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                   onMouseLeave={() => onHoverBackground(null)}
                   aria-label={`${preset.label} background`} aria-pressed={active}
                   style={{
-                    height: '36px', borderRadius: '6px',
-                    border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
+                    height: '52px', borderRadius: '12px',
+                    border: active ? '1px solid var(--ps-bg-active)' : '1px solid var(--ps-border)',
                     background: isTransparent ? CHECKERBOARD : preset.background.value,
                     cursor: 'pointer', opacity: locked ? 0.45 : 1,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'border-color 150ms ease-out', padding: 0,
+                    transition: 'border-color 150ms ease-out', padding: 0, overflow: 'hidden',
                   }}>
                   {locked && <Lock size={10} strokeWidth={2.5} style={{ color: LIGHT_SWATCHES.has(preset.id) ? '#666' : '#FFF' }} aria-hidden="true" />}
                   {active && !locked && <Check size={12} strokeWidth={3} style={{ color: LIGHT_SWATCHES.has(preset.id) ? 'var(--ps-text-primary)' : '#FFF' }} aria-hidden="true" />}
@@ -250,18 +251,18 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             {/* Shadow */}
             <div>
               <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Shadow</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {SHADOW_PRESETS.map((opt) => {
                   const active = shadow === opt.id
                   return (
                     <button key={opt.id} type="button" onClick={() => setShadow(opt.id)} aria-pressed={active} aria-label={`${opt.label} shadow`}
                       style={{
-                        height: '36px', borderRadius: '6px',
-                        border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
-                        background: 'var(--ps-bg-surface)', color: 'var(--ps-text-secondary)',
-                        cursor: 'pointer', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'border-color 150ms ease-out',
+                        height: '60px', borderRadius: '12px',
+                        border: active ? '1px solid var(--ps-bg-active)' : '1px solid var(--ps-border)',
+                        background: 'var(--ps-bg-surface)', color: 'var(--ps-text-primary)',
+                        cursor: 'pointer', fontSize: '12px', fontWeight: active ? 600 : 400, fontFamily: 'inherit',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: '4px', transition: 'border-color 150ms ease-out', overflow: 'hidden',
                       }}>
                       {opt.label}
                     </button>
@@ -272,26 +273,28 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
             {/* Frame */}
             <div>
               <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Frame</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {FRAME_OPTIONS.map((f) => {
                   const active = frame === f.id
                   const locked = f.pro && !proUnlocked
                   return (
-                    <button key={f.id} type="button" onClick={() => { if (locked) { openUpgradeModal(); return }; setFrame(f.id) }} aria-pressed={active} aria-label={`${f.label} frame`}
-                      style={{
-                        height: '52px', borderRadius: '6px',
-                        border: active ? '1.5px solid var(--ps-text-primary)' : '1.5px solid var(--ps-border)',
-                        background: 'var(--ps-bg-surface)', cursor: 'pointer',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                        gap: '3px', outline: 'none', fontFamily: 'inherit',
-                        opacity: locked ? 0.45 : 1, transition: 'border-color 150ms ease-out',
-                      }}>
-                      <FrameThumb type={f.id} />
-                      <span style={{ fontSize: '11px', fontWeight: 500, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', gap: '2px', textAlign: 'center' }}>
+                    <div key={f.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
+                      <button type="button" onClick={() => { if (locked) { openUpgradeModal(); return }; setFrame(f.id) }} aria-pressed={active} aria-label={`${f.label} frame`}
+                        style={{
+                          width: '100%', height: '60px', borderRadius: '12px',
+                          border: active ? '1px solid var(--ps-bg-active)' : '1px solid var(--ps-border)',
+                          background: 'var(--ps-bg-surface)', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          outline: 'none', fontFamily: 'inherit',
+                          opacity: locked ? 0.45 : 1, transition: 'border-color 150ms ease-out', overflow: 'hidden',
+                        }}>
+                        <FrameThumb type={f.id} />
+                      </button>
+                      <span style={{ fontSize: '12px', fontWeight: active ? 600 : 400, color: locked ? 'var(--ps-text-tertiary)' : 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '2px', textAlign: 'center' }}>
                         {f.label}
                         {locked && <Lock size={7} strokeWidth={2.5} aria-hidden="true" />}
                       </span>
-                    </button>
+                    </div>
                   )
                 })}
               </div>
@@ -300,7 +303,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
         </Section>
 
         {/* Watermark */}
-        <Section label="Watermark" locked={!proUnlocked} defaultOpen={false}>
+        <Section label="Watermark" locked={!proUnlocked} defaultOpen={false} isLast>
           {!proUnlocked ? (
             <button type="button" onClick={openUpgradeModal}
               style={{ border: '1.5px dashed var(--ps-border)', borderRadius: 'var(--ps-radius-md)', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: 0.45, cursor: 'pointer', fontSize: '12px', color: 'var(--ps-text-tertiary)', background: 'transparent', fontFamily: 'inherit', width: '100%' }}>
@@ -351,7 +354,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
         {/* Reset */}
         <button type="button" onClick={() => { if (imageUrl) { const s = useEditorStore.getState(); s.setBackground({ type: 'gradient', value: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }); s.setPadding(48); s.setCornerRadius(12); s.setShadow('soft'); s.setFrame('none'); s.setWatermarkUrl(null) } else { reset() } }}
           aria-label="Reset styles"
-          style={{ width: '100%', background: 'var(--ps-bg-hover)', border: 'none', cursor: 'pointer', padding: '7px 0', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', borderRadius: 'var(--ps-radius-sm)', color: 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', flexShrink: 0 }}>
+          style={{ width: 'calc(100% - 32px)', margin: '0 16px', background: 'var(--ps-bg-hover)', border: 'none', cursor: 'pointer', padding: '7px 0', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', borderRadius: 'var(--ps-radius-sm)', color: 'var(--ps-text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', flexShrink: 0 }}>
           <RotateCcw size={12} aria-hidden="true" /> Reset
         </button>
       </div>
