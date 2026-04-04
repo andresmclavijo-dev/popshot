@@ -1,12 +1,13 @@
-import { useState, useMemo } from 'react'
-import { ChevronDown, Sun, Moon, FolderOpen, ChevronsLeft, LogOut } from 'lucide-react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Sun, Moon, FolderOpen, Shield, MoreHorizontal, ExternalLink } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
+import { DarkTooltip } from '@/components/shared/ToolTooltip'
 import { openUpgradeModal } from '@/components/shared/UpgradeModal'
-import { signInWithGoogle, signOut } from '@/lib/auth'
 import { TEMPLATES, type Template } from '@/data/templates'
 
 const PANEL_WIDTH = 220
-const COLLAPSED_WIDTH = 44
+const COLLAPSED_WIDTH = 64
 
 const floatingBase: React.CSSProperties = {
   flexShrink: 0,
@@ -77,6 +78,219 @@ function TemplateCard({ template, active, onSelect }: { template: Template; acti
   )
 }
 
+// ── Platform dropdown — custom popover, matches Paletta's HarmonyPicker ──
+function PlatformDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
+  const [dropPos, setDropPos] = useState({ top: 0, left: 0, width: 0 })
+
+  const activeLabel = value === 'all' ? 'All platforms' : value
+  const options = [{ value: 'all', label: 'All platforms' }, ...PLATFORMS.map(p => ({ value: p, label: p }))]
+
+  const handleToggle = useCallback(() => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect()
+      setDropPos({ top: rect.bottom + 4, left: rect.left, width: rect.width })
+    }
+    setOpen(o => !o)
+  }, [open])
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (btnRef.current?.contains(target) || dropRef.current?.contains(target)) return
+      setOpen(false)
+    }
+    const raf = requestAnimationFrame(() => document.addEventListener('mousedown', handler))
+    return () => { cancelAnimationFrame(raf); document.removeEventListener('mousedown', handler) }
+  }, [open])
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); btnRef.current?.focus() } }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [open])
+
+  return (
+    <div style={{ padding: '0 14px 10px', flexShrink: 0 }}>
+      <button ref={btnRef} type="button" onClick={handleToggle}
+        aria-haspopup="listbox" aria-expanded={open} aria-label={`Platform: ${activeLabel}`}
+        style={{
+          width: '100%', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 10px', border: '1px solid var(--ps-border)', borderRadius: '10px',
+          background: 'var(--ps-bg-surface)', cursor: 'pointer', fontFamily: 'inherit',
+          fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-primary)',
+          transition: 'border-color 150ms ease-out', outline: 'none',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ps-text-tertiary)' }}
+        onMouseLeave={(e) => { if (!open) e.currentTarget.style.borderColor = '' }}
+        onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--ps-text-primary)' }}
+        onBlur={(e) => { if (!open) e.currentTarget.style.borderColor = '' }}>
+        <span>{activeLabel}</span>
+        <ChevronDown size={14} style={{
+          color: 'var(--ps-text-tertiary)', transition: 'transform 150ms ease-out',
+          transform: open ? 'rotate(180deg)' : undefined,
+        }} aria-hidden="true" />
+      </button>
+
+      {open && createPortal(
+        <div ref={dropRef} role="listbox" aria-label="Platform filter"
+          style={{
+            position: 'fixed', top: dropPos.top, left: dropPos.left, width: dropPos.width,
+            zIndex: 9999, borderRadius: '12px',
+            border: '1px solid var(--ps-border)',
+            background: 'var(--ps-bg-panel)', backdropFilter: 'blur(16px)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            padding: '4px', overflow: 'hidden',
+          }}>
+          {options.map((opt) => {
+            const isActive = value === opt.value
+            return (
+              <button key={opt.value} type="button" role="option" aria-selected={isActive}
+                onClick={() => { onChange(opt.value); setOpen(false) }}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '8px 12px', borderRadius: '8px',
+                  background: isActive ? 'rgba(124,93,250,0.08)' : 'transparent',
+                  border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                  fontSize: '13px', fontWeight: 500,
+                  color: isActive ? '#7C5DFA' : 'var(--ps-text-primary)',
+                  transition: 'background 100ms ease-out',
+                }}
+                onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+                onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = isActive ? 'rgba(124,93,250,0.08)' : 'transparent' }}>
+                <span>{opt.label}</span>
+                {isActive && <Check size={14} strokeWidth={2.5} style={{ color: '#7C5DFA' }} aria-hidden="true" />}
+              </button>
+            )
+          })}
+        </div>,
+        document.body
+      )}
+    </div>
+  )
+}
+
+// ── Legal menu — matches Paletta's DockLegalMenu exactly ──
+function LegalMenu() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const links = [
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+  ]
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button type="button" onClick={() => setOpen((o) => !o)}
+        aria-label="Legal links" aria-expanded={open}
+        style={{
+          width: '100%', height: '48px', display: 'flex', alignItems: 'center',
+          gap: '12px', padding: '0 14px', borderRadius: '12px',
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontSize: '14px', fontWeight: 500, fontFamily: 'inherit',
+          color: 'var(--ps-text-tertiary)',
+          transition: 'color 150ms ease-out, background 150ms ease-out',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)'; e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)'; e.currentTarget.style.background = 'none' }}>
+        <Shield size={20} aria-hidden="true" />
+        <span>Legal</span>
+      </button>
+      {open && (
+        <div role="menu" style={{
+          position: 'absolute', left: 0, bottom: '100%', marginBottom: '4px',
+          borderRadius: '8px', border: '0.5px solid var(--ps-border)',
+          background: 'var(--ps-bg-panel)', boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+          minWidth: '180px', padding: '4px', zIndex: 50,
+        }}>
+          {links.map((l) => (
+            <a key={l.href} href={l.href} role="menuitem" onClick={() => setOpen(false)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-primary)', textDecoration: 'none', padding: '8px 12px', borderRadius: '6px', transition: 'background 150ms ease-out' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+              {l.label}
+              <ExternalLink size={12} style={{ opacity: 0.4, marginLeft: 'auto' }} aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Collapsed Legal menu — MoreHorizontal icon, popover opens right ──
+function CollapsedLegalMenu() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const links = [
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+  ]
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+      <button type="button" onClick={() => setOpen((o) => !o)}
+        aria-label="Legal links" aria-expanded={open}
+        style={{
+          width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: 'none', borderRadius: '9999px', cursor: 'pointer',
+          background: 'transparent', color: 'var(--ps-text-tertiary)',
+          transition: 'color 150ms ease-out, background 150ms ease-out',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)'; e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)'; e.currentTarget.style.background = 'transparent' }}
+        onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)' }}
+        onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+        <MoreHorizontal size={20} aria-hidden="true" />
+      </button>
+      {open && (
+        <div role="menu" style={{
+          position: 'absolute', left: '100%', top: '50%', transform: 'translateY(-50%)',
+          marginLeft: '10px', borderRadius: '8px', border: '0.5px solid var(--ps-border)',
+          background: 'var(--ps-bg-panel)', boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+          minWidth: '180px', padding: '4px', zIndex: 50,
+        }}>
+          {links.map((l) => (
+            <a key={l.href} href={l.href} role="menuitem" onClick={() => setOpen(false)}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-primary)', textDecoration: 'none', padding: '8px 12px', borderRadius: '6px', transition: 'background 150ms ease-out' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+              {l.label}
+              <ExternalLink size={12} style={{ opacity: 0.4, marginLeft: 'auto' }} aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function LeftPanel() {
   const collapsed = useEditorStore((s) => s.leftPanelCollapsed)
   const setCollapsed = useEditorStore((s) => s.setLeftPanelCollapsed)
@@ -84,7 +298,6 @@ export function LeftPanel() {
   const setActiveTemplate = useEditorStore((s) => s.setActiveTemplate)
   const theme = useEditorStore((s) => s.theme)
   const setTheme = useEditorStore((s) => s.setTheme)
-  const user = useEditorStore((s) => s.user)
 
   const [tab, setTab] = useState<'templates' | 'assets'>('templates')
   const [platformFilter, setPlatformFilter] = useState<string>('all')
@@ -115,85 +328,85 @@ export function LeftPanel() {
         WebkitBackdropFilter: 'blur(16px)',
         border: '0.5px solid var(--ps-border-panel)',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'space-between', padding: '10px 0 10px',
-        zIndex: 10, transition: 'width 220ms ease',
+        padding: '12px 8px',
+        zIndex: 10, transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1)',
       }}>
+        {/* Logo */}
         <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
           style={{
-            width: '28px', height: '28px', borderRadius: 'var(--ps-radius-sm)',
+            width: '40px', height: '40px', borderRadius: '12px',
             background: 'var(--ps-brand-gradient)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             border: 'none', cursor: 'pointer', flexShrink: 0,
+            marginBottom: '10px',
             transition: 'transform 150ms ease-out',
           }}
           onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
           onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
             <path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" />
           </svg>
         </button>
-        <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ps-text-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', borderRadius: 'var(--ps-radius-sm)', transition: 'all 150ms ease-out' }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M4.5 2.5L8 6L4.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        <button type="button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer', background: 'transparent', color: 'var(--ps-text-tertiary)', flexShrink: 0, transition: 'all 150ms ease-out' }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
-          {theme === 'light' ? <Sun size={14} aria-hidden="true" /> : <Moon size={14} aria-hidden="true" />}
-        </button>
+
+        {/* Spacer */}
+        <div style={{ flex: 1 }} />
+
+        {/* Bottom utility group — matches Paletta collapsed dock */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+          {/* Theme toggle — single icon with tooltip */}
+          <DarkTooltip label={theme === 'light' ? 'Dark mode' : 'Light mode'} position="right">
+            <button type="button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              style={{
+                width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', borderRadius: '9999px', cursor: 'pointer',
+                background: 'transparent', color: 'var(--ps-text-tertiary)',
+                transition: 'color 150ms ease-out, background 150ms ease-out',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)'; e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)'; e.currentTarget.style.background = 'transparent' }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)' }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+              {theme === 'light' ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
+            </button>
+          </DarkTooltip>
+
+          {/* Legal — MoreHorizontal icon */}
+          <CollapsedLegalMenu />
+
+          {/* Expand — ChevronRight with tooltip */}
+          <DarkTooltip label="Expand" position="right">
+            <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
+              style={{
+                width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', borderRadius: '9999px', cursor: 'pointer',
+                background: 'transparent', color: 'var(--ps-text-tertiary)',
+                transition: 'color 150ms ease-out, background 150ms ease-out',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)'; e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)'; e.currentTarget.style.background = 'transparent' }}
+              onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)' }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+              <ChevronRight size={20} aria-hidden="true" />
+            </button>
+          </DarkTooltip>
+        </div>
       </div>
     )
   }
 
   return (
     <div style={{ ...floatingBase, width: `${PANEL_WIDTH}px`, transition: 'width 220ms ease' }}>
-      {/* Header */}
-      <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+      {/* Header — Fix 1: more vertical breathing room */}
+      <div style={{ padding: '20px 14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '24px', height: '24px', borderRadius: '7px', background: 'var(--ps-brand-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" /></svg>
           </div>
           <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ps-text-primary)' }}>Popshot</span>
         </div>
-        <button type="button" onClick={() => setCollapsed(true)} aria-label="Collapse panel"
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: 'var(--ps-radius-sm)', color: 'var(--ps-text-tertiary)', display: 'flex', transition: 'all 150ms ease-out' }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
-          <ChevronDown size={16} style={{ transform: 'rotate(90deg)' }} aria-hidden="true" />
-        </button>
       </div>
-
-      {/* Auth */}
-      {user ? (
-        <div style={{ margin: '0 14px 8px', padding: '8px 10px', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: 'var(--ps-radius-sm)', border: `1px solid var(--ps-border)` }}>
-          {user.user_metadata?.avatar_url && (
-            <img src={user.user_metadata.avatar_url} alt="" style={{ width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0 }} />
-          )}
-          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {user.email}
-          </span>
-          <button type="button" onClick={signOut} aria-label="Sign out"
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px', color: 'var(--ps-text-tertiary)', display: 'flex', transition: 'color 150ms ease-out' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
-            <LogOut size={14} aria-hidden="true" />
-          </button>
-        </div>
-      ) : (
-        <button type="button" onClick={signInWithGoogle}
-          style={{ margin: '0 14px 8px', padding: '8px 12px', background: 'transparent', border: `1px solid var(--ps-border)`, borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--ps-text-secondary)', textAlign: 'left', transition: 'border-color 150ms ease-out', width: 'calc(100% - 28px)' }}
-          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ps-border-selected)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '' }}>
-          Sign in with Google &rarr;
-        </button>
-      )}
 
       {/* Tabs */}
       <div style={{ margin: '0 14px 8px', padding: '3px', background: 'var(--ps-bg-hover)', borderRadius: '100px', display: 'flex', gap: '2px', flexShrink: 0 }}>
@@ -215,32 +428,8 @@ export function LeftPanel() {
 
       {tab === 'templates' ? (
         <>
-          {/* Platform dropdown */}
-          <div style={{ padding: '0 14px 10px', flexShrink: 0 }}>
-            <div style={{ position: 'relative' }}>
-              <select
-                value={platformFilter}
-                onChange={(e) => setPlatformFilter(e.target.value)}
-                style={{
-                  width: '100%', height: '32px',
-                  border: '1px solid var(--ps-border)', borderRadius: '8px',
-                  background: 'var(--ps-bg-surface)', padding: '6px 28px 6px 10px',
-                  fontSize: '12px', fontWeight: 500, fontFamily: 'inherit',
-                  color: 'var(--ps-text-primary)', cursor: 'pointer',
-                  appearance: 'none', outline: 'none',
-                }}
-              >
-                <option value="all">All platforms</option>
-                {PLATFORMS.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-              <ChevronDown size={14} style={{
-                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                color: 'var(--ps-text-tertiary)', pointerEvents: 'none',
-              }} aria-hidden="true" />
-            </div>
-          </div>
+          {/* Platform dropdown — custom, matching Paletta */}
+          <PlatformDropdown value={platformFilter} onChange={setPlatformFilter} />
 
           {/* Template list */}
           <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '0 14px' }}>
@@ -277,41 +466,55 @@ export function LeftPanel() {
         </div>
       )}
 
-      {/* Bottom section */}
-      <div style={{ borderTop: `0.5px solid var(--ps-border)`, flexShrink: 0, padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {/* Theme toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ display: 'flex', gap: '2px', background: 'var(--ps-bg-hover)', borderRadius: 'var(--ps-radius-sm)', padding: '2px' }}>
+      {/* Bottom bar — matches Paletta Dock expanded exactly */}
+      <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 12px 14px' }}>
+        {/* Theme icons — two bare icons side by side with tooltips */}
+        <div style={{ height: '48px', display: 'flex', alignItems: 'center', padding: '0 14px', gap: '16px' }}>
+          <DarkTooltip label="Light mode" position="top">
             <button type="button" onClick={() => setTheme('light')} aria-label="Light mode"
-              style={{ width: '28px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: '6px', cursor: 'pointer', background: theme === 'light' ? 'var(--ps-bg-surface)' : 'transparent', color: theme === 'light' ? 'var(--ps-text-primary)' : 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out', boxShadow: theme === 'light' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>
-              <Sun size={14} aria-hidden="true" />
+              style={{
+                background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                color: theme === 'light' ? '#7C5DFA' : undefined,
+                opacity: theme === 'light' ? 1 : 0.4,
+                transition: 'opacity 150ms ease-out, color 150ms ease-out',
+              }}
+              onMouseEnter={(e) => { if (theme !== 'light') e.currentTarget.style.opacity = '0.7' }}
+              onMouseLeave={(e) => { if (theme !== 'light') e.currentTarget.style.opacity = '0.4' }}>
+              <Sun size={20} aria-hidden="true" />
             </button>
+          </DarkTooltip>
+          <DarkTooltip label="Dark mode" position="top">
             <button type="button" onClick={() => setTheme('dark')} aria-label="Dark mode"
-              style={{ width: '28px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: '6px', cursor: 'pointer', background: theme === 'dark' ? 'var(--ps-bg-surface)' : 'transparent', color: theme === 'dark' ? 'var(--ps-text-primary)' : 'var(--ps-text-tertiary)', transition: 'all 150ms ease-out', boxShadow: theme === 'dark' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>
-              <Moon size={14} aria-hidden="true" />
-            </button>
-          </div>
-          <span style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)' }}>Appearance</span>
+            style={{
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              color: theme === 'dark' ? '#7C5DFA' : undefined,
+              opacity: theme === 'dark' ? 1 : 0.4,
+              transition: 'opacity 150ms ease-out, color 150ms ease-out',
+            }}
+            onMouseEnter={(e) => { if (theme !== 'dark') e.currentTarget.style.opacity = '0.7' }}
+            onMouseLeave={(e) => { if (theme !== 'dark') e.currentTarget.style.opacity = '0.4' }}>
+            <Moon size={20} aria-hidden="true" />
+          </button>
+          </DarkTooltip>
         </div>
 
-        {/* Legal links */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <a href="/privacy" style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
-            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
-            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>Privacy</a>
-          <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>&middot;</span>
-          <a href="/terms" style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
-            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
-            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>Terms</a>
-        </div>
+        {/* Legal menu — Shield icon + popover */}
+        <LegalMenu />
 
-        {/* Collapse */}
-        <button type="button" onClick={() => setCollapsed(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 0', fontSize: '12px', fontFamily: 'inherit', color: 'var(--ps-text-tertiary)', transition: 'color 150ms ease-out' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-secondary)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
-          <ChevronsLeft size={14} aria-hidden="true" />
-          Collapse
+        {/* Collapse — ChevronLeft + label */}
+        <button type="button" onClick={() => setCollapsed(true)} aria-label="Collapse panel"
+          style={{
+            width: '100%', height: '48px', display: 'flex', alignItems: 'center',
+            gap: '12px', padding: '0 14px', borderRadius: '12px',
+            background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: '14px', fontWeight: 500, fontFamily: 'inherit',
+            color: 'var(--ps-text-tertiary)',
+            transition: 'color 150ms ease-out, background 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)'; e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-tertiary)'; e.currentTarget.style.background = 'none' }}>
+          <ChevronLeft size={20} aria-hidden="true" />
+          <span>Collapse</span>
         </button>
       </div>
     </div>

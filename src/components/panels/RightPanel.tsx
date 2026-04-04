@@ -1,4 +1,6 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
+import { HexColorPicker } from 'react-colorful'
 import { ChevronDown, Lock, Upload, X, RotateCcw, Check, UserRound, ArrowRightCircle } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
@@ -23,17 +25,21 @@ function Section({ label, locked, defaultOpen = true, isLast, children }: { labe
   return (
     <div style={{ borderBottom: isLast ? 'none' : '1px solid var(--ps-border)', padding: '0 16px' }}>
       <button type="button" onClick={() => !locked && setOpen(!open)}
+        aria-expanded={locked ? undefined : open}
         style={{
           width: '100%', background: 'transparent', border: 'none',
           cursor: locked ? 'default' : 'pointer', padding: '4px 0',
           fontFamily: 'inherit', display: 'flex', alignItems: 'center',
           justifyContent: 'space-between', minHeight: '32px',
-        }}>
-        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          outline: 'none',
+        }}
+        onFocus={(e) => { e.currentTarget.style.outline = '2px solid var(--ps-text-primary)'; e.currentTarget.style.outlineOffset = '2px'; e.currentTarget.style.borderRadius = '6px' }}
+        onBlur={(e) => { e.currentTarget.style.outline = 'none' }}>
+        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
           {label}
           {locked && <Lock size={10} strokeWidth={2.5} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
         </span>
-        {!locked && <ChevronDown size={16} style={{ transform: open ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 220ms ease', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
+        {!locked && <ChevronDown size={16} style={{ transform: open ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 220ms var(--ease-out)', color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />}
       </button>
       <div style={{
         overflow: 'hidden',
@@ -68,6 +74,127 @@ function FrameThumb({ type }: { type: import('@/types').FrameType }) {
 
 const IMAGE_POSITIONS: ImagePosition[] = ['top-left', 'top', 'top-right', 'left', 'center', 'right', 'bottom-left', 'bottom', 'bottom-right']
 const WM_POSITIONS: WatermarkPosition[] = ['top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right']
+
+// ── Custom color picker — Paletta pattern: swatch + hex input + react-colorful popover ──
+function CustomColorPicker({ value, onChange }: { value: string; onChange: (hex: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [hexDraft, setHexDraft] = useState(value.replace('#', '').toUpperCase())
+  const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0, width: 0 })
+  const swatchRef = useRef<HTMLButtonElement>(null)
+  const pickerRef = useRef<HTMLDivElement>(null)
+
+  // Sync draft when value changes externally
+  useEffect(() => {
+    setHexDraft(value.replace('#', '').toUpperCase())
+  }, [value])
+
+  // Position popover using getBoundingClientRect
+  const openPicker = useCallback(() => {
+    if (swatchRef.current) {
+      const rect = swatchRef.current.getBoundingClientRect()
+      setPopoverPos({ top: rect.bottom + 6, left: rect.left, width: rect.width + 120 })
+    }
+    setOpen((o) => !o)
+  }, [])
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (pickerRef.current?.contains(e.target as Node) || swatchRef.current?.contains(e.target as Node)) return
+      setOpen(false)
+    }
+    const raf = requestAnimationFrame(() => document.addEventListener('mousedown', handler))
+    return () => { cancelAnimationFrame(raf); document.removeEventListener('mousedown', handler) }
+  }, [open])
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [open])
+
+  const handlePickerChange = useCallback((hex: string) => {
+    onChange(hex)
+    setHexDraft(hex.replace('#', '').toUpperCase())
+  }, [onChange])
+
+  return (
+    <div>
+      {/* Swatch + hex input row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* Color swatch — click to toggle picker */}
+        <button ref={swatchRef} type="button" onClick={openPicker} aria-label="Open color picker"
+          style={{
+            width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+            background: value, border: '1px solid var(--ps-border)',
+            cursor: 'pointer', transition: 'border-color 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--ps-text-tertiary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '' }} />
+
+        {/* Hex input */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: '4px',
+          height: '36px', padding: '0 10px', borderRadius: '10px',
+          background: 'var(--ps-bg-surface)', border: '1px solid var(--ps-border)',
+          transition: 'border-color 150ms ease-out',
+        }}>
+          <span style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>#</span>
+          <input
+            value={hexDraft}
+            onChange={(e) => {
+              const cleaned = e.target.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6)
+              setHexDraft(cleaned.toUpperCase())
+              if (cleaned.length === 6) onChange('#' + cleaned)
+            }}
+            onBlur={() => {
+              if (hexDraft.length === 6) onChange('#' + hexDraft)
+              else setHexDraft(value.replace('#', '').toUpperCase())
+            }}
+            onKeyDown={(e) => {
+              e.stopPropagation()
+              if (e.key === 'Enter') {
+                if (hexDraft.length === 6) onChange('#' + hexDraft)
+                else setHexDraft(value.replace('#', '').toUpperCase())
+                ;(e.target as HTMLInputElement).blur()
+              }
+            }}
+            onClick={(e) => e.stopPropagation()}
+            maxLength={6}
+            aria-label="Hex color value"
+            style={{
+              flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none',
+              fontSize: '13px', fontWeight: 500, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+              color: 'var(--ps-text-primary)', textTransform: 'uppercase',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Picker popover — portal to escape overflow:hidden */}
+      {open && createPortal(
+        <div ref={pickerRef}
+          onMouseDown={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed', top: popoverPos.top, left: popoverPos.left,
+            width: popoverPos.width, zIndex: 9999,
+            background: 'var(--ps-bg-panel)', borderRadius: '16px',
+            border: '1px solid var(--ps-border)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+            padding: '12px',
+          }}>
+          <div className="custom-color-picker">
+            <HexColorPicker color={value} onChange={handlePickerChange} />
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  )
+}
 
 export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   const imageUrl = useEditorStore((s) => s.imageUrl)
@@ -147,22 +274,28 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       {/* Action buttons */}
       <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0 }}>
         {/* Export — secondary when Go Pro visible, primary when alone */}
-        <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
-          style={{
-            flex: 1, height: '36px',
-            background: (user && proUnlocked) ? 'var(--ps-text-primary)' : 'transparent',
-            color: (user && proUnlocked) ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
-            border: (user && proUnlocked) ? 'none' : '1px solid var(--ps-border-strong)',
-            borderRadius: '100px', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
-            cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-            transition: 'transform 100ms ease',
-          }}
-          onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-          Export {(user && proUnlocked) && <ChevronDown size={14} aria-hidden="true" />}
-        </button>
+        {(() => {
+          const isPrimary = user && proUnlocked
+          return (
+            <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
+              style={{
+                flex: 1, height: '36px',
+                background: isPrimary ? 'var(--ps-text-primary)' : 'transparent',
+                color: isPrimary ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
+                border: isPrimary ? 'none' : '1px solid var(--ps-border-strong)',
+                borderRadius: '100px', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
+                cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                transition: 'transform 100ms ease, opacity 150ms ease-out',
+              }}
+              onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
+              onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
+              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
+              Export {isPrimary && <ChevronDown size={14} aria-hidden="true" />}
+            </button>
+          )
+        })()}
         {/* Go Pro — only when not pro */}
         {!proUnlocked && (
           <button type="button" onClick={openUpgradeModal}
@@ -171,11 +304,12 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
               color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
               fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-              transition: 'transform 100ms ease',
+              transition: 'transform 100ms ease, opacity 150ms ease-out',
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
             onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
             onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = '1' }}>
             Go Pro <ArrowRightCircle size={16} aria-hidden="true" />
           </button>
         )}
@@ -217,6 +351,18 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
                 </button>
               )
             })}
+          </div>
+          {/* Custom color */}
+          <div style={{ marginBottom: '10px' }}>
+            <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Custom color</span>
+            <CustomColorPicker
+              value={background.type === 'solid' ? background.value : '#ffffff'}
+              onChange={(hex) => {
+                setBackground({ type: 'solid', value: hex })
+                if (backgroundImageUrl) setBackgroundImageUrl(null)
+                if (autoColor) setAutoColor(false)
+              }}
+            />
           </div>
           {/* Match to image */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

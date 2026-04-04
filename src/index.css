@@ -360,3 +360,24 @@ input[type="range"]::-moz-range-track {
     scroll-behavior: auto !important;
   }
 }
+
+/* react-colorful — custom sizing for panel */
+.custom-color-picker .react-colorful {
+  width: 100%;
+  height: auto;
+}
+.custom-color-picker .react-colorful__saturation {
+  border-radius: 10px;
+  height: 140px;
+}
+.custom-color-picker .react-colorful__hue {
+  height: 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+.custom-color-picker .react-colorful__saturation-pointer,
+.custom-color-picker .react-colorful__hue-pointer {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}

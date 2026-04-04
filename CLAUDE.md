@@ -10,16 +10,15 @@ no arbitrary Tailwind — all apply from global.
 Do not re-state those rules here.
 
 ## Monetization notes
-- Watermark: bottom-right, 11px system-ui, 0.5 opacity, auto light/dark
-- Watermark = #1 Pro benefit (removal unlocks first)
-- Pro price: $19 one-time (show ~~$29~~ as launch framing)
+- Pro price: $5/month or $45/year (subscription, matches Paletta)
+- Stripe Checkout Sessions for payment (not Payment Links)
 - 2x export is free — never gate resolution
-- Lemon Squeezy variant ID: VARIANT_ID_PLACEHOLDER (update before launch)
+- Watermark is NOT enforced on free exports
+- Free users CAN export clean images without watermark
+- Pro conversion driven by: Device Mockups, Animation/Video export (v2)
 - localStorage key: 'popshot_pro' = 'true'
-- License key stored: 'popshot_license_key' in localStorage
-- Pro validated via /api/validate-license Vercel serverless function
-- No OAuth/auth needed — license key IS the proof of purchase
-- Export gate shows on every export for free users
+- Supabase Google OAuth for user identity
+- Stripe subscription managed via checkout session redirect
 
 ## Global rule adaptations for Popshot
 - Background transition: 200ms var(--ease-out) — not 600ms
@@ -43,7 +42,7 @@ Do not re-state those rules here.
 - Zustand (global editor state)
 - html-to-image (PNG export) — use stable useRef, not getElementById
 - colorthief (auto color extraction) — run once per image load only
-- Lemon Squeezy (payments, Pro gate — future)
+- Stripe (subscription payments, $5/mo or $45/yr)
 - Vercel (hosting)
 - Domain: popshot.app (Cloudflare)
 
@@ -119,7 +118,7 @@ The dev tool is a separate future product — not this repo.
 - "Calm over clever" motion — no bounce, no elastic, no spring
 - Swatch hover previews canvas, click commits (local state only)
 - Pro copy: lead with outcome — "Make every screenshot stunning"
-- Pro CTA: "Get Popshot Pro" — "$19 · one-time · no subscription" below
+- Pro CTA: "Go Pro — $5/mo" or "Go Pro — $45/yr" (matches Paletta)
 - Toast copy: "Saved · 1x" / "Saved · 2x" / "Image copied"
 - Export buttons: "Copy image" (primary filled) + "Save PNG" (outline)
 - Section labels: sentence case — "Background" not "BACKGROUND"
@@ -198,11 +197,11 @@ The dev tool is a separate future product — not this repo.
 - [x] hoveredBackground in local state (not Zustand)
 - [x] lastShuffle timestamp pattern with @keyframes canvasPop
 - [x] Canvas decomposed (CanvasLoading extracted)
-- [x] Price updated to $19 throughout UI (~~$29~~ launch framing)
+- [x] Price updated to $5/mo $45/yr subscription (Stripe)
 - [x] 2x export is free for all users
 - [x] 'Made with Popshot' watermark on free exports (system-ui font)
 - [x] Export gate modal (first export shows watermark vs no-watermark)
-- [x] Lemon Squeezy overlay checkout wired (localStorage flow)
+- [x] Stripe checkout wired (localStorage flow)
 - [x] Jordan fixes: pixelRatio 2, double rAF, URL cleanup, CORS note
 - [x] Error toasts: export fail, wrong type, file too large (4000ms)
 - [x] Meta tags + favicon in index.html
@@ -227,7 +226,15 @@ The dev tool is a separate future product — not this repo.
 - [x] iconPulse wrapped in prefers-reduced-motion: no-preference
 - [x] Font swap: Inter → Satoshi (Fontshare CDN), letter-spacing refinements
 - [ ] Social presets
-- [ ] Pro gate (Lemon Squeezy — variant ID needed)
+- [ ] Pro gate (Stripe — create checkout session URLs)
+- [x] UpgradeModal rewrite (Paletta pattern, $5/mo $45/yr)
+- [x] DarkTooltip component (Paletta pattern)
+- [x] Left panel bottom bar (Paletta Dock pattern)
+- [x] Custom platform dropdown (portal popover)
+- [x] Custom color picker (react-colorful)
+- [x] Section headers 13px/600
+- [x] Right panel button hover states
+- [x] Figma design system synced
 
 ---
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Undo2, Redo2, Minus, Plus } from 'lucide-react'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { DarkTooltip } from '@/components/shared/ToolTooltip'
 import { useEditorStore } from '@/store/useEditorStore'
 import { TEMPLATES } from '@/data/templates'
 import type { AspectRatioType } from '@/types'
@@ -63,20 +63,20 @@ export function BottomToolbar() {
   const zoomPercent = Math.round(zoom * 100)
 
   return (
-    <div className="frosted-pill" style={{
+    <div className="frosted-pill" role="toolbar" aria-label="Canvas controls" style={{
       position: 'absolute', bottom: '18px', left: '50%', transform: 'translateX(-50%)',
       zIndex: 10, display: 'flex', alignItems: 'center', gap: '2px', padding: '4px 6px',
     }}>
-      {/* Zoom */}
-      <Tooltip>
-        <TooltipTrigger render={
-          <button type="button" onClick={() => setZoom(Math.max(0.25, zoom - 0.1))} aria-label="Zoom out" style={iconBtn}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
-        }><Minus size={14} aria-hidden="true" /></TooltipTrigger>
-        <TooltipContent side="top">Zoom out</TooltipContent>
-      </Tooltip>
+      {/* Zoom out */}
+      <DarkTooltip label="Zoom out" position="top">
+        <button type="button" onClick={() => setZoom(Math.max(0.25, zoom - 0.1))} aria-label="Zoom out" style={iconBtn}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}>
+          <Minus size={14} aria-hidden="true" />
+        </button>
+      </DarkTooltip>
 
+      {/* Zoom value popover */}
       <Popover open={zoomOpen} onOpenChange={setZoomOpen}>
         <PopoverTrigger render={
           <button type="button" aria-label={`Zoom ${zoomPercent}%`}
@@ -97,40 +97,46 @@ export function BottomToolbar() {
           <button type="button" onClick={() => { requestFit(); setZoomOpen(false) }} style={menuItem}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
-            Fit to screen <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>\u2318 0</span>
+            Fit to screen <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>{'\u2318'}0</span>
           </button>
           <button type="button" onClick={() => { setZoom(1); setZoomOpen(false) }} style={menuItem}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
-            Actual size <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>\u2318 1</span>
+            Actual size <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>{'\u2318'}1</span>
           </button>
         </PopoverContent>
       </Popover>
 
-      <Tooltip>
-        <TooltipTrigger render={
-          <button type="button" onClick={() => setZoom(Math.min(4, zoom + 0.1))} aria-label="Zoom in" style={iconBtn}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
-        }><Plus size={14} aria-hidden="true" /></TooltipTrigger>
-        <TooltipContent side="top">Zoom in</TooltipContent>
-      </Tooltip>
+      {/* Zoom in */}
+      <DarkTooltip label="Zoom in" position="top">
+        <button type="button" onClick={() => setZoom(Math.min(4, zoom + 0.1))} aria-label="Zoom in" style={iconBtn}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}>
+          <Plus size={14} aria-hidden="true" />
+        </button>
+      </DarkTooltip>
 
       <div style={sep} />
 
-      {/* Ratio pills — clicking clears active template */}
+      {/* Ratio pills */}
       {CANVAS_SIZES.map((size) => {
         const active = !activeTemplate && aspectRatio === size.id
-        return (
-          <Tooltip key={size.id}>
-            <TooltipTrigger render={
-              <button type="button" onClick={() => { if (activeTemplate) setActiveTemplate(null); setAspectRatio(size.id) }} aria-pressed={active} aria-label={`${size.label} canvas`}
-                style={pillBtn(active)}
-                onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
-                onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' } }} />
-            }>{size.label}</TooltipTrigger>
-            {size.dims && <TooltipContent side="top">{size.dims}</TooltipContent>}
-          </Tooltip>
+        return size.dims ? (
+          <DarkTooltip key={size.id} label={size.dims} position="top">
+            <button type="button" onClick={() => { if (activeTemplate) setActiveTemplate(null); setAspectRatio(size.id) }} aria-pressed={active} aria-label={`${size.label} canvas`}
+              style={pillBtn(active)}
+              onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
+              onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' } }}>
+              {size.label}
+            </button>
+          </DarkTooltip>
+        ) : (
+          <button key={size.id} type="button" onClick={() => { if (activeTemplate) setActiveTemplate(null); setAspectRatio(size.id) }} aria-pressed={active} aria-label={`${size.label} canvas`}
+            style={pillBtn(active)}
+            onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
+            onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' } }}>
+            {size.label}
+          </button>
         )
       })}
 
@@ -146,25 +152,25 @@ export function BottomToolbar() {
 
       <div style={sep} />
 
-      {/* Undo/Redo */}
-      <Tooltip>
-        <TooltipTrigger render={
-          <button type="button" aria-label="Undo" onClick={() => useEditorStore.getState().undo()}
-            style={{ ...iconBtn, opacity: useEditorStore.getState().canUndo() ? 1 : 0.35, cursor: useEditorStore.getState().canUndo() ? 'pointer' : 'default' }}
-            onMouseEnter={(e) => { if (useEditorStore.getState().canUndo()) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
-        }><Undo2 size={15} aria-hidden="true" /></TooltipTrigger>
-        <TooltipContent side="top">Undo</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger render={
-          <button type="button" aria-label="Redo" onClick={() => useEditorStore.getState().redo()}
-            style={{ ...iconBtn, opacity: useEditorStore.getState().canRedo() ? 1 : 0.35, cursor: useEditorStore.getState().canRedo() ? 'pointer' : 'default' }}
-            onMouseEnter={(e) => { if (useEditorStore.getState().canRedo()) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }} />
-        }><Redo2 size={15} aria-hidden="true" /></TooltipTrigger>
-        <TooltipContent side="top">Redo</TooltipContent>
-      </Tooltip>
+      {/* Undo */}
+      <DarkTooltip label="Undo" position="top">
+        <button type="button" aria-label="Undo" onClick={() => useEditorStore.getState().undo()}
+          style={{ ...iconBtn, opacity: useEditorStore.getState().canUndo() ? 1 : 0.35, cursor: useEditorStore.getState().canUndo() ? 'pointer' : 'default' }}
+          onMouseEnter={(e) => { if (useEditorStore.getState().canUndo()) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}>
+          <Undo2 size={15} aria-hidden="true" />
+        </button>
+      </DarkTooltip>
+
+      {/* Redo */}
+      <DarkTooltip label="Redo" position="top">
+        <button type="button" aria-label="Redo" onClick={() => useEditorStore.getState().redo()}
+          style={{ ...iconBtn, opacity: useEditorStore.getState().canRedo() ? 1 : 0.35, cursor: useEditorStore.getState().canRedo() ? 'pointer' : 'default' }}
+          onMouseEnter={(e) => { if (useEditorStore.getState().canRedo()) { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' } }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}>
+          <Redo2 size={15} aria-hidden="true" />
+        </button>
+      </DarkTooltip>
     </div>
   )
 }

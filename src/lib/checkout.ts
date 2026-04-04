@@ -1,16 +1,25 @@
 /**
  * Stripe checkout integration.
  *
+ * Pricing: $5/month or $45/year (matches Paletta)
+ *
  * Set VITE_STRIPE_MONTHLY_URL and VITE_STRIPE_ANNUAL_URL in .env.local
- * with your Stripe Payment Link URLs.
+ * with your Stripe Payment Link URLs from the Stripe dashboard.
+ *
+ * TODO: Replace placeholder URLs before launch.
  */
 
-// TODO: Replace with real Stripe Payment Link URLs from dashboard
-const MONTHLY_URL = import.meta.env.VITE_STRIPE_MONTHLY_URL || 'https://buy.stripe.com/MONTHLY_PLACEHOLDER'
-const ANNUAL_URL = import.meta.env.VITE_STRIPE_ANNUAL_URL || 'https://buy.stripe.com/ANNUAL_PLACEHOLDER'
+const MONTHLY_URL = import.meta.env.VITE_STRIPE_MONTHLY_URL || ''
+const ANNUAL_URL = import.meta.env.VITE_STRIPE_ANNUAL_URL || ''
 
 export function openCheckout(plan: 'monthly' | 'annual' = 'annual') {
   const url = plan === 'monthly' ? MONTHLY_URL : ANNUAL_URL
+
+  if (!url || url.includes('PLACEHOLDER')) {
+    console.warn('[Popshot] Stripe checkout URL not configured. Set VITE_STRIPE_MONTHLY_URL and VITE_STRIPE_ANNUAL_URL in .env.local')
+    return
+  }
+
   window.open(url, '_blank')
 }
 

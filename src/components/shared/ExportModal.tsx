@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { ArrowDownToLine, Copy, Share2 } from 'lucide-react'
 import { useExport } from '@/hooks/useExport'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { useEditorStore } from '@/store/useEditorStore'
 import { showToast } from '@/components/shared/Toast'
 import type { ExportFormat, ExportScale } from '@/lib/exportImage'
@@ -32,6 +33,8 @@ export function ExportModal() {
   const setBadgeEnabled = useEditorStore((s) => s.setBadgeEnabled)
 
   openExportGlobal = () => setOpen(true)
+  const handleClose = useCallback(() => setOpen(false), [])
+  const modalRef = useFocusTrap(open, handleClose)
 
   const handleDownload = useCallback(async () => {
     setOpen(false)
@@ -52,21 +55,21 @@ export function ExportModal() {
 
   return (
     <>
-      <div onClick={() => setOpen(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 100 }} />
-      <div style={{
+      <div onClick={handleClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 100 }} />
+      <div ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="export-heading" style={{
         position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         zIndex: 101, width: '100%', maxWidth: '360px', background: 'var(--ps-bg-surface)',
         borderRadius: 'var(--ps-radius-xl)', padding: '24px',
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
       }}>
-        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ps-text-primary)', marginBottom: '20px' }}>Export</h2>
+        <h2 id="export-heading" style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ps-text-primary)', marginBottom: '20px' }}>Export</h2>
 
         {/* Format */}
         <div style={{ marginBottom: '14px' }}>
           <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Format</span>
           <div style={{ display: 'flex', gap: '2px', background: 'var(--ps-bg-hover)', borderRadius: 'var(--ps-radius-sm)', padding: '2px' }}>
-            <button type="button" onClick={() => setFormat('png')} style={segBtn(format === 'png')}>PNG</button>
-            <button type="button" onClick={() => setFormat('jpg')} style={segBtn(format === 'jpg')}>JPG</button>
+            <button type="button" onClick={() => setFormat('png')} aria-pressed={format === 'png'} style={segBtn(format === 'png')}>PNG</button>
+            <button type="button" onClick={() => setFormat('jpg')} aria-pressed={format === 'jpg'} style={segBtn(format === 'jpg')}>JPG</button>
           </div>
         </div>
 
@@ -75,7 +78,7 @@ export function ExportModal() {
           <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Resolution</span>
           <div style={{ display: 'flex', gap: '2px', background: 'var(--ps-bg-hover)', borderRadius: 'var(--ps-radius-sm)', padding: '2px' }}>
             {([1, 2, 3] as ExportScale[]).map((s) => (
-              <button key={s} type="button" onClick={() => setScale(s)} style={segBtn(scale === s)}>{s}×</button>
+              <button key={s} type="button" onClick={() => setScale(s)} aria-pressed={scale === s} style={segBtn(scale === s)}>{s}×</button>
             ))}
           </div>
         </div>
@@ -89,20 +92,23 @@ export function ExportModal() {
 
         {/* Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <button type="button" onClick={handleDownload}
+          <button type="button" onClick={handleDownload} aria-label={`Export ${format.toUpperCase()} at ${scale}x`}
             style={{ ...actionBtn, background: 'var(--ps-text-primary)', color: 'var(--ps-bg-page)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
             onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
             onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = '1' }}>
             <ArrowDownToLine size={14} aria-hidden="true" /> Export {format.toUpperCase()} {scale}×
           </button>
-          <button type="button" onClick={handleCopy}
+          <button type="button" onClick={handleCopy} aria-label="Copy image to clipboard"
             style={{ ...actionBtn, background: 'transparent', border: `1px solid var(--ps-border-strong)`, color: 'var(--ps-text-primary)' }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
+            onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'scale(1)' }}>
             <Copy size={14} aria-hidden="true" /> Copy to clipboard
           </button>
-          <button type="button" onClick={handleShare}
+          <button type="button" onClick={handleShare} aria-label="Copy share link"
             style={{ ...actionBtn, background: 'transparent', border: 'none', color: 'var(--ps-text-secondary)' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ps-text-primary)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ps-text-secondary)' }}>
@@ -110,7 +116,7 @@ export function ExportModal() {
           </button>
         </div>
 
-        <button type="button" onClick={() => setOpen(false)}
+        <button type="button" onClick={handleClose}
           style={{ display: 'block', width: '100%', marginTop: '8px', background: 'transparent', border: 'none', fontSize: '13px', fontFamily: 'inherit', color: 'var(--ps-text-tertiary)', cursor: 'pointer', padding: '8px', textAlign: 'center' }}>
           Cancel
         </button>
