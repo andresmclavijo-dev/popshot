@@ -19,6 +19,8 @@ type EventName =
   | 'export_started'
   | 'export_completed'
   | 'pro_modal_shown'
+  | 'pro_modal_dismissed'
+  | 'pro_plan_toggle'
   | 'upgrade_clicked'
   | 'license_activated'
 

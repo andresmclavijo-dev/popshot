@@ -16,7 +16,7 @@ const SHADOW_OPTIONS = SHADOW_PRESETS
 
 type Tab = 'background' | 'layout' | 'effects'
 
-export function MobileControlsSheet({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
+export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background | null) => void }) {
   const [expanded, setExpanded] = useState(false)
   const [tab, setTab] = useState<Tab>('background')
 
