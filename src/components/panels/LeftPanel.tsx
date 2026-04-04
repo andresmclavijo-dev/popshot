@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
-import { ChevronLeft, Sun, Moon, Search, FolderOpen, ChevronsLeft, LogOut } from 'lucide-react'
+import { ChevronDown, Sun, Moon, FolderOpen, ChevronsLeft, LogOut } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { openUpgradeModal } from '@/components/shared/UpgradeModal'
 import { signInWithGoogle, signOut } from '@/lib/auth'
-import { TEMPLATES, type Template, type TemplateCategory } from '@/data/templates'
+import { TEMPLATES, type Template } from '@/data/templates'
 
 const PANEL_WIDTH = 220
 const COLLAPSED_WIDTH = 44
@@ -22,12 +22,8 @@ const floatingBase: React.CSSProperties = {
   zIndex: 10,
 }
 
-const FILTERS: { label: string; value: TemplateCategory | 'all' }[] = [
-  { label: 'All', value: 'all' },
-  { label: 'Social', value: 'social' },
-  { label: 'Portfolio', value: 'portfolio' },
-  { label: 'Product Hunt', value: 'producthunt' },
-]
+// Get unique platforms from template data
+const PLATFORMS = Array.from(new Set(TEMPLATES.map(t => t.platform)))
 
 function PlatformIcon({ icon }: { icon: string }) {
   const s = { width: 14, height: 14, display: 'block' }
@@ -43,31 +39,41 @@ function PlatformIcon({ icon }: { icon: string }) {
   }
 }
 
+// ── Template Card — labels INSIDE the card ──
 function TemplateCard({ template, active, onSelect }: { template: Template; active: boolean; onSelect: () => void }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'stretch' }}>
-      <button type="button" onClick={onSelect} aria-pressed={active} aria-label={`${template.name} ${template.width}×${template.height}`}
-        style={{
-          width: '100%', height: '60px', background: 'var(--ps-bg-surface)',
-          border: active ? '1.5px solid var(--ps-text-primary)' : '1px solid var(--ps-border)',
-          borderRadius: '12px', cursor: 'pointer', padding: 0, fontFamily: 'inherit',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          overflow: 'hidden', transition: 'all 150ms ease-out', outline: 'none',
-        }}
-        onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ps-bg-surface)' }}>
-        {/* Proportional gray preview */}
-        <div style={{
-          width: '70%', maxHeight: '40px', aspectRatio: `${template.width}/${template.height}`,
-          background: 'var(--ps-bg-hover)', borderRadius: '4px',
-        }} />
-      </button>
-      <div style={{ textAlign: 'center' }}>
-        <span style={{ fontSize: '12px', fontWeight: active ? 600 : 400, color: 'var(--ps-text-primary)', display: 'block', lineHeight: 1.3 }}>{template.name}</span>
-        <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--ps-text-tertiary)', display: 'block' }}>{template.width} × {template.height}</span>
-        <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--ps-text-tertiary)' }}>{template.ratioLabel}</span>
+    <button type="button" onClick={onSelect} aria-pressed={active}
+      aria-label={`${template.name} ${template.width}×${template.height}`}
+      style={{
+        width: '100%', background: 'var(--ps-bg-surface)',
+        border: active ? '1.5px solid var(--ps-text-secondary)' : '1px solid var(--ps-border)',
+        borderRadius: '12px', cursor: 'pointer',
+        padding: '16px 12px', fontFamily: 'inherit',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+        overflow: 'hidden', transition: 'all 150ms ease-out', outline: 'none',
+      }}
+      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--ps-bg-surface)' }}
+    >
+      {/* Proportional preview shape */}
+      <div style={{
+        width: '100%', maxHeight: '40px',
+        aspectRatio: `${template.width}/${template.height}`,
+        background: 'var(--ps-border)', borderRadius: '4px',
+      }} />
+      {/* Labels inside card */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+        <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', textAlign: 'center', lineHeight: 1.3 }}>
+          {template.name}
+        </span>
+        <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--ps-text-secondary)', textAlign: 'center' }}>
+          {template.width} × {template.height}
+        </span>
+        <span style={{ fontSize: '10px', fontWeight: 400, color: 'var(--ps-text-secondary)', textAlign: 'center' }}>
+          {template.ratioLabel}
+        </span>
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -81,18 +87,13 @@ export function LeftPanel() {
   const user = useEditorStore((s) => s.user)
 
   const [tab, setTab] = useState<'templates' | 'assets'>('templates')
-  const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState<TemplateCategory | 'all'>('all')
+  const [platformFilter, setPlatformFilter] = useState<string>('all')
 
+  // Filter templates by selected platform
   const filtered = useMemo(() => {
-    let list = TEMPLATES
-    if (filter !== 'all') list = list.filter((t) => t.category.includes(filter))
-    if (search.trim()) {
-      const q = search.toLowerCase()
-      list = list.filter((t) => t.name.toLowerCase().includes(q) || t.platform.toLowerCase().includes(q))
-    }
-    return list
-  }, [filter, search])
+    if (platformFilter === 'all') return TEMPLATES
+    return TEMPLATES.filter((t) => t.platform === platformFilter)
+  }, [platformFilter])
 
   // Group by platform
   const grouped = useMemo(() => {
@@ -117,7 +118,6 @@ export function LeftPanel() {
         justifyContent: 'space-between', padding: '10px 0 10px',
         zIndex: 10, transition: 'width 220ms ease',
       }}>
-        {/* Logo mark — click to expand */}
         <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
           style={{
             width: '28px', height: '28px', borderRadius: 'var(--ps-radius-sm)',
@@ -133,31 +133,17 @@ export function LeftPanel() {
             <path d="M6 0.5L11 3.5V8.5L6 11.5L1 8.5V3.5L6 0.5Z" fill="white" fillOpacity="0.95" />
           </svg>
         </button>
-
-        {/* Expand chevron hint */}
         <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand panel"
-          style={{
-            background: 'transparent', border: 'none', cursor: 'pointer',
-            color: 'var(--ps-text-tertiary)', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', padding: '4px', borderRadius: 'var(--ps-radius-sm)',
-            transition: 'all 150ms ease-out',
-          }}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ps-text-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', borderRadius: 'var(--ps-radius-sm)', transition: 'all 150ms ease-out' }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-secondary)' }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
             <path d="M4.5 2.5L8 6L4.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-
-        {/* Theme toggle — functional when collapsed */}
         <button type="button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
           aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-          style={{
-            width: '28px', height: '28px', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', border: 'none', borderRadius: 'var(--ps-radius-sm)',
-            cursor: 'pointer', background: 'transparent', color: 'var(--ps-text-tertiary)',
-            flexShrink: 0, transition: 'all 150ms ease-out',
-          }}
+          style={{ width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: 'var(--ps-radius-sm)', cursor: 'pointer', background: 'transparent', color: 'var(--ps-text-tertiary)', flexShrink: 0, transition: 'all 150ms ease-out' }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)'; e.currentTarget.style.color = 'var(--ps-text-primary)' }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ps-text-tertiary)' }}>
           {theme === 'light' ? <Sun size={14} aria-hidden="true" /> : <Moon size={14} aria-hidden="true" />}
@@ -180,11 +166,11 @@ export function LeftPanel() {
           style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: 'var(--ps-radius-sm)', color: 'var(--ps-text-tertiary)', display: 'flex', transition: 'all 150ms ease-out' }}
           onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
-          <ChevronLeft size={16} aria-hidden="true" />
+          <ChevronDown size={16} style={{ transform: 'rotate(90deg)' }} aria-hidden="true" />
         </button>
       </div>
 
-      {/* Auth — sign in or user profile */}
+      {/* Auth */}
       {user ? (
         <div style={{ margin: '0 14px 8px', padding: '8px 10px', display: 'flex', alignItems: 'center', gap: '8px', borderRadius: 'var(--ps-radius-sm)', border: `1px solid var(--ps-border)` }}>
           {user.user_metadata?.avatar_url && (
@@ -209,7 +195,7 @@ export function LeftPanel() {
         </button>
       )}
 
-      {/* Tabs — segmented control */}
+      {/* Tabs */}
       <div style={{ margin: '0 14px 8px', padding: '3px', background: 'var(--ps-bg-hover)', borderRadius: '100px', display: 'flex', gap: '2px', flexShrink: 0 }}>
         {(['templates', 'assets'] as const).map((t) => (
           <button key={t} type="button" onClick={() => setTab(t)}
@@ -229,39 +215,43 @@ export function LeftPanel() {
 
       {tab === 'templates' ? (
         <>
-          {/* Search */}
-          <div style={{ padding: '0 14px 8px', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', height: '32px', border: `1px solid var(--ps-border-strong)`, borderRadius: 'var(--ps-radius-sm)', padding: '0 8px', gap: '6px', background: 'var(--ps-bg-surface)' }}>
-              <Search size={14} style={{ color: 'var(--ps-text-tertiary)', flexShrink: 0 }} aria-hidden="true" />
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search templates..."
-                style={{ flex: 1, border: 'none', outline: 'none', fontSize: '12px', fontFamily: 'inherit', color: 'var(--ps-text-primary)', background: 'transparent', minWidth: 0 }} />
-            </div>
-          </div>
-
-          {/* Filters */}
-          <div style={{ display: 'flex', gap: '4px', padding: '0 14px 10px', flexShrink: 0, flexWrap: 'wrap' }}>
-            {FILTERS.map((f) => (
-              <button key={f.value} type="button" onClick={() => setFilter(f.value)}
+          {/* Platform dropdown */}
+          <div style={{ padding: '0 14px 10px', flexShrink: 0 }}>
+            <div style={{ position: 'relative' }}>
+              <select
+                value={platformFilter}
+                onChange={(e) => setPlatformFilter(e.target.value)}
                 style={{
-                  padding: '4px 10px', fontSize: '11px', fontWeight: 500, fontFamily: 'inherit',
-                  background: filter === f.value ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)',
-                  color: filter === f.value ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)',
-                  border: 'none', borderRadius: 'var(--ps-radius-pill)', cursor: 'pointer',
-                  transition: 'all 150ms ease-out',
-                }}>
-                {f.label}
-              </button>
-            ))}
+                  width: '100%', height: '32px',
+                  border: '1px solid var(--ps-border)', borderRadius: '8px',
+                  background: 'var(--ps-bg-surface)', padding: '6px 28px 6px 10px',
+                  fontSize: '12px', fontWeight: 500, fontFamily: 'inherit',
+                  color: 'var(--ps-text-primary)', cursor: 'pointer',
+                  appearance: 'none', outline: 'none',
+                }}
+              >
+                <option value="all">All platforms</option>
+                {PLATFORMS.map((p) => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+              <ChevronDown size={14} style={{
+                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
+                color: 'var(--ps-text-tertiary)', pointerEvents: 'none',
+              }} aria-hidden="true" />
+            </div>
           </div>
 
           {/* Template list */}
           <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '0 14px' }}>
             {Array.from(grouped.entries()).map(([platform, templates]) => (
               <div key={platform} style={{ marginBottom: '16px' }}>
+                {/* Platform section header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 0 5px' }}>
                   <span style={{ color: 'var(--ps-text-secondary)' }}><PlatformIcon icon={templates[0].platformIcon} /></span>
                   <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>{platform}</span>
                 </div>
+                {/* 2-col card grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                   {templates.map((t) => (
                     <TemplateCard key={t.id} template={t} active={activeTemplate === t.id}
@@ -306,19 +296,13 @@ export function LeftPanel() {
 
         {/* Legal links */}
         <div style={{ display: 'flex', gap: '8px' }}>
-          <a href="/privacy"
-            style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
+          <a href="/privacy" style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
             onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
-            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>
-            Privacy
-          </a>
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>Privacy</a>
           <span style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)' }}>&middot;</span>
-          <a href="/terms"
-            style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
+          <a href="/terms" style={{ fontSize: '11px', color: 'var(--ps-text-tertiary)', textDecoration: 'none' }}
             onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
-            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>
-            Terms
-          </a>
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}>Terms</a>
         </div>
 
         {/* Collapse */}
