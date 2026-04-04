@@ -240,13 +240,13 @@ function UserMenu({ user }: { user: import('@supabase/supabase-js').User }) {
         <ChevronDown size={14} style={{ color: 'var(--ps-text-tertiary)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease-out' }} aria-hidden="true" />
       </button>
 
-      {/* Dropdown */}
+      {/* Dropdown — solid bg to prevent bleed-through */}
       {open && (
         <div style={{
-          position: 'absolute', top: '100%', left: '8px', right: '8px', zIndex: 50,
-          background: 'var(--ps-bg-panel)', borderRadius: '10px',
-          border: '0.5px solid var(--ps-border)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+          position: 'absolute', top: '100%', left: '8px', right: '8px', zIndex: 999,
+          background: 'var(--ps-bg-surface)', borderRadius: '8px',
+          border: '1px solid var(--ps-border)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           overflow: 'hidden', marginTop: '2px',
         }}>
           <div style={{ padding: '10px 14px', borderBottom: '0.5px solid var(--ps-border)' }}>
@@ -344,12 +344,12 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       {/* Divider */}
       <div style={{ height: '1px', background: 'var(--ps-border)', flexShrink: 0 }} />
 
-      {/* Action buttons — Fix 2: hover on Export, Fix 3: Go Pro always visible for free, Fix 5: chevron on both */}
-      <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0 }}>
-        {/* Export — secondary when Go Pro visible, primary when pro */}
+      {/* Action buttons — stacked: Export (outline for free, filled for pro) + Go Pro (filled, free only) */}
+      <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
+        {/* Export */}
         <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
           style={{
-            flex: 1, height: '36px',
+            width: '100%', height: '36px',
             background: proUnlocked ? 'var(--ps-text-primary)' : 'transparent',
             color: proUnlocked ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
             border: proUnlocked ? 'none' : '1px solid var(--ps-border-strong)',
@@ -364,11 +364,11 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
           Export <ChevronDown size={14} aria-hidden="true" />
         </button>
-        {/* Go Pro — visible for all free users (not just signed-out) */}
+        {/* Go Pro — full-width primary CTA for free users */}
         {!proUnlocked && (
           <button type="button" onClick={openUpgradeModal}
             style={{
-              flex: 1, height: '36px', background: 'var(--ps-text-primary)',
+              width: '100%', height: '36px', background: 'var(--ps-text-primary)',
               color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
               fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
