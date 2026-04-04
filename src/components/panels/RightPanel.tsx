@@ -198,7 +198,7 @@ function CustomColorPicker({ value, onChange }: { value: string; onChange: (hex:
 }
 
 // ── User menu — Paletta pattern: avatar click opens dropdown with sign out ──
-function UserMenu({ user }: { user: import('@supabase/supabase-js').User }) {
+function UserMenu({ user, isPro }: { user: import('@supabase/supabase-js').User; isPro: boolean }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -235,7 +235,7 @@ function UserMenu({ user }: { user: import('@supabase/supabase-js').User }) {
           <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: '1.2' }}>
             {user.user_metadata?.full_name || user.email || 'User'}
           </span>
-          <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-secondary)', lineHeight: '1' }}>Pro user</span>
+          {isPro && <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-secondary)', lineHeight: '1' }}>Pro user</span>}
         </div>
         <ChevronDown size={14} style={{ color: 'var(--ps-text-tertiary)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease-out' }} aria-hidden="true" />
       </button>
@@ -323,7 +323,7 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
     }}>
       {/* User row — Fix 1: hover on Sign In, Fix 4: tighter spacing + dropdown for pro */}
       {user ? (
-        <UserMenu user={user} />
+        <UserMenu user={user} isPro={proUnlocked} />
       ) : (
         <button type="button" onClick={signInWithGoogle}
           style={{
@@ -344,12 +344,12 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       {/* Divider */}
       <div style={{ height: '1px', background: 'var(--ps-border)', flexShrink: 0 }} />
 
-      {/* Action buttons — stacked: Export + Go Pro (free) or Export alone (pro) */}
-      <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
-        {/* Export — outline when free, filled when pro */}
+      {/* Action buttons */}
+      <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0 }}>
+        {/* Export — outline when free, filled+full-width when pro */}
         <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
           style={{
-            width: '100%', height: '36px',
+            flex: 1, height: '36px',
             background: proUnlocked ? 'var(--ps-text-primary)' : 'transparent',
             color: proUnlocked ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
             border: proUnlocked ? 'none' : '1px solid var(--ps-border-strong)',
@@ -364,11 +364,11 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
           Export <ChevronDown size={14} aria-hidden="true" />
         </button>
-        {/* Go Pro — full-width below Export for free users */}
+        {/* Go Pro — side by side with Export, only for free users */}
         {!proUnlocked && (
           <button type="button" onClick={openUpgradeModal}
             style={{
-              width: '100%', height: '36px', background: 'var(--ps-text-primary)',
+              flex: 1, height: '36px', background: 'var(--ps-text-primary)',
               color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
               fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
