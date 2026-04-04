@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ChevronDown, Lock, Upload, X, RotateCcw, Check } from 'lucide-react'
+import { ChevronDown, Lock, Upload, X, RotateCcw, Check, UserRound, ArrowRightCircle } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -117,75 +117,72 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       border: '0.5px solid var(--ps-border-panel)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
-      {/* Header — Pro user or Free user state */}
-      {user ? (
-        <>
-          {/* Pro user: avatar + name */}
-          <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
-            {user.user_metadata?.avatar_url ? (
-              <img src={user.user_metadata.avatar_url} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0 }} />
-            ) : (
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--ps-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '14px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>
-                {(user.email?.[0] || 'U').toUpperCase()}
-              </div>
-            )}
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ps-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user.user_metadata?.full_name || user.email || 'User'}
-              </span>
-              <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--ps-text-secondary)' }}>Pro user</span>
-            </div>
+      {/* User row */}
+      <div style={{ padding: '16px 16px 12px', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+        {user?.user_metadata?.avatar_url ? (
+          <img src={user.user_metadata.avatar_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '16px', flexShrink: 0 }} />
+        ) : (
+          <div style={{ width: '32px', height: '32px', borderRadius: '16px', background: '#eeeeed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <UserRound size={16} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />
           </div>
-          {/* Export only */}
-          <div style={{ padding: '16px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
-            <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
-              style={{
-                width: '100%', height: '36px', background: 'var(--ps-text-primary)',
-                color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
-                fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
-                cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                transition: 'transform 100ms ease',
-              }}
-              onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
-              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-              Export <ChevronDown size={14} aria-hidden="true" />
-            </button>
+        )}
+        {user ? (
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user.user_metadata?.full_name || user.email || 'User'}
+            </span>
+            <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-secondary)' }}>Pro user</span>
           </div>
-        </>
-      ) : (
-        /* Free user: Go Pro + Export */
-        <div style={{ padding: '16px', display: 'flex', gap: '8px', flexShrink: 0, borderBottom: '1px solid var(--ps-border)' }}>
-          <button type="button" onClick={openUpgradeModal}
-            style={{
-              flex: 1, height: '36px', background: 'transparent',
-              border: '0.5px solid var(--ps-border-strong)', borderRadius: '100px',
-              fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
-              color: 'var(--ps-text-primary)', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 150ms ease-out',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
-            Go Pro
+        ) : (
+          <button type="button" onClick={() => { import('@/lib/auth').then(m => m.signInWithGoogle()) }}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: 700, fontFamily: 'inherit', color: 'var(--ps-text-primary)', padding: 0 }}>
+            Sign In
           </button>
-          <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
+        )}
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: '1px', background: 'var(--ps-border)', flexShrink: 0 }} />
+
+      {/* Action buttons */}
+      <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0 }}>
+        {/* Export — secondary when Go Pro visible, primary when alone */}
+        <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
+          style={{
+            flex: 1, height: '36px',
+            background: (user && proUnlocked) ? 'var(--ps-text-primary)' : 'transparent',
+            color: (user && proUnlocked) ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
+            border: (user && proUnlocked) ? 'none' : '1px solid var(--ps-border-strong)',
+            borderRadius: '100px', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
+            cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+            transition: 'transform 100ms ease',
+          }}
+          onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
+          Export {(user && proUnlocked) && <ChevronDown size={14} aria-hidden="true" />}
+        </button>
+        {/* Go Pro — only when not pro */}
+        {!proUnlocked && (
+          <button type="button" onClick={openUpgradeModal}
             style={{
               flex: 1, height: '36px', background: 'var(--ps-text-primary)',
               color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
-              fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
-              cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+              fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
               transition: 'transform 100ms ease',
             }}
-            onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
+            onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.97)' }}
             onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}>
-            Export <ChevronDown size={14} aria-hidden="true" />
+            Go Pro <ArrowRightCircle size={16} aria-hidden="true" />
           </button>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: '1px', background: 'var(--ps-border)', flexShrink: 0 }} />
 
       {/* Scrollable sections */}
       <div className="canvas-workspace" style={{ flex: 1, overflowY: 'auto', padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 0, opacity: dimmed ? 0.35 : 1, pointerEvents: dimmed ? 'none' : 'auto', transition: 'opacity 200ms ease-out' }}>

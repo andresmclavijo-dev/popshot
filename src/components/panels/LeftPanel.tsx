@@ -57,12 +57,12 @@ function TemplateCard({ template, active, onSelect }: { template: Template; acti
     >
       {/* Proportional preview shape */}
       <div style={{
-        width: '100%', maxHeight: '40px',
+        width: '100%', height: '33px',
         aspectRatio: `${template.width}/${template.height}`,
-        background: 'var(--ps-border)', borderRadius: '4px',
+        background: '#d9d9d9', borderRadius: '4px',
       }} />
       {/* Labels inside card */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
         <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-primary)', textAlign: 'center', lineHeight: 1.3 }}>
           {template.name}
         </span>
