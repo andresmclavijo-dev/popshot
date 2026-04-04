@@ -1,2 +1,2 @@
-/** Self-use bypass — all Pro features unlocked */
-export const IS_PRO = true
+/** Pro status — determined at runtime from localStorage/Supabase, not hardcoded */
+export const IS_PRO = false

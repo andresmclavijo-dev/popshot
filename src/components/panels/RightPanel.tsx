@@ -344,12 +344,12 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       {/* Divider */}
       <div style={{ height: '1px', background: 'var(--ps-border)', flexShrink: 0 }} />
 
-      {/* Action buttons — row: Export + Go Pro (free) or Export alone (pro) */}
-      <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0 }}>
+      {/* Action buttons — stacked: Export + Go Pro (free) or Export alone (pro) */}
+      <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
         {/* Export — outline when free, filled when pro */}
         <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
           style={{
-            flex: 1, height: '36px',
+            width: '100%', height: '36px',
             background: proUnlocked ? 'var(--ps-text-primary)' : 'transparent',
             color: proUnlocked ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
             border: proUnlocked ? 'none' : '1px solid var(--ps-border-strong)',
@@ -364,11 +364,11 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
           onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
           Export <ChevronDown size={14} aria-hidden="true" />
         </button>
-        {/* Go Pro — side by side with Export for free users */}
+        {/* Go Pro — full-width below Export for free users */}
         {!proUnlocked && (
           <button type="button" onClick={openUpgradeModal}
             style={{
-              flex: 1, height: '36px', background: 'var(--ps-text-primary)',
+              width: '100%', height: '36px', background: 'var(--ps-text-primary)',
               color: 'var(--ps-bg-page)', border: 'none', borderRadius: '100px',
               fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
