@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Sun, Moon, FolderOpen, Shield, MoreHorizontal, ExternalLink } from 'lucide-react'
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Sun, Moon, FolderOpen, Shield, MoreHorizontal, ExternalLink, ArrowRightCircle } from 'lucide-react'
 import { useEditorStore } from '@/store/useEditorStore'
 import { DarkTooltip } from '@/components/shared/ToolTooltip'
 import { openUpgradeModal } from '@/components/shared/UpgradeModal'
@@ -460,8 +460,16 @@ export function LeftPanel() {
           <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-primary)', marginBottom: '4px' }}>No assets yet</p>
           <p style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)', marginBottom: '16px', lineHeight: 1.4 }}>Save logos, watermarks, and brand colors to reuse across all your screenshots.</p>
           <button type="button" onClick={openUpgradeModal}
-            style={{ fontSize: '12px', fontWeight: 500, fontFamily: 'inherit', color: 'var(--ps-text-secondary)', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
-            Unlock with Pro &rarr;
+            style={{
+              height: '32px', padding: '0 16px', fontSize: '12px', fontWeight: 500, fontFamily: 'inherit',
+              color: 'var(--ps-text-primary)', background: 'transparent',
+              border: '1px solid var(--ps-border-strong)', borderRadius: '100px',
+              cursor: 'pointer', transition: 'opacity 150ms ease-out',
+              display: 'flex', alignItems: 'center', gap: '4px',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}>
+            Unlock with Pro <ArrowRightCircle size={12} aria-hidden="true" />
           </button>
         </div>
       )}

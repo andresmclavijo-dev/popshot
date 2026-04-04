@@ -231,11 +231,11 @@ function UserMenu({ user }: { user: import('@supabase/supabase-js').User }) {
             <UserRound size={16} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />
           </div>
         )}
-        <div style={{ flex: 1, overflow: 'hidden', textAlign: 'left' }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: '1.2' }}>
+        <div style={{ flex: 1, overflow: 'hidden', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: '1.2' }}>
             {user.user_metadata?.full_name || user.email || 'User'}
           </span>
-          <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-secondary)', lineHeight: '1.2' }}>Pro user</span>
+          <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-secondary)', lineHeight: '1' }}>Pro user</span>
         </div>
         <ChevronDown size={14} style={{ color: 'var(--ps-text-tertiary)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease-out' }} aria-hidden="true" />
       </button>
