@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { HexColorPicker } from 'react-colorful'
-import { ChevronDown, Lock, Upload, X, RotateCcw, Check, UserRound, ArrowRightCircle } from 'lucide-react'
+import { ChevronDown, Lock, Upload, X, RotateCcw, Check, UserRound, ArrowRightCircle, LogOut } from 'lucide-react'
+import { signInWithGoogle, signOut } from '@/lib/auth'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -196,6 +197,82 @@ function CustomColorPicker({ value, onChange }: { value: string; onChange: (hex:
   )
 }
 
+// ── User menu — Paletta pattern: avatar click opens dropdown with sign out ──
+function UserMenu({ user }: { user: import('@supabase/supabase-js').User }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  return (
+    <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
+      <button type="button" onClick={() => setOpen((o) => !o)}
+        aria-label="Account menu" aria-expanded={open}
+        style={{
+          width: '100%', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '10px',
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          fontFamily: 'inherit', borderRadius: 0,
+          transition: 'background 150ms ease-out',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+        {user.user_metadata?.avatar_url ? (
+          <img src={user.user_metadata.avatar_url} alt="" referrerPolicy="no-referrer"
+            style={{ width: '32px', height: '32px', borderRadius: '16px', flexShrink: 0 }} />
+        ) : (
+          <div style={{ width: '32px', height: '32px', borderRadius: '16px', background: 'var(--ps-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <UserRound size={16} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />
+          </div>
+        )}
+        <div style={{ flex: 1, overflow: 'hidden', textAlign: 'left' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: '1.2' }}>
+            {user.user_metadata?.full_name || user.email || 'User'}
+          </span>
+          <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-secondary)', lineHeight: '1.2' }}>Pro user</span>
+        </div>
+        <ChevronDown size={14} style={{ color: 'var(--ps-text-tertiary)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease-out' }} aria-hidden="true" />
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: '8px', right: '8px', zIndex: 50,
+          background: 'var(--ps-bg-panel)', borderRadius: '10px',
+          border: '0.5px solid var(--ps-border)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+          overflow: 'hidden', marginTop: '2px',
+        }}>
+          <div style={{ padding: '10px 14px', borderBottom: '0.5px solid var(--ps-border)' }}>
+            <span style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+              {user.email}
+            </span>
+          </div>
+          <button type="button" onClick={() => { signOut(); setOpen(false) }}
+            style={{
+              width: '100%', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '8px',
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              fontSize: '13px', fontWeight: 500, fontFamily: 'inherit',
+              color: 'var(--ps-text-danger, #dc2626)',
+              transition: 'background 150ms ease-out',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+            <LogOut size={14} aria-hidden="true" />
+            Sign out
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Background | null) => void }) {
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const background = useEditorStore((s) => s.background)
@@ -244,59 +321,50 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       border: '0.5px solid var(--ps-border-panel)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
-      {/* User row */}
-      <div style={{ padding: '16px 16px 12px', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        {user?.user_metadata?.avatar_url ? (
-          <img src={user.user_metadata.avatar_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '16px', flexShrink: 0 }} />
-        ) : (
-          <div style={{ width: '32px', height: '32px', borderRadius: '16px', background: '#eeeeed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      {/* User row — Fix 1: hover on Sign In, Fix 4: tighter spacing + dropdown for pro */}
+      {user ? (
+        <UserMenu user={user} />
+      ) : (
+        <button type="button" onClick={signInWithGoogle}
+          style={{
+            width: '100%', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '10px',
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            fontFamily: 'inherit', flexShrink: 0, borderRadius: 0,
+            transition: 'background 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ps-bg-hover)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}>
+          <div style={{ width: '32px', height: '32px', borderRadius: '16px', background: 'var(--ps-bg-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <UserRound size={16} style={{ color: 'var(--ps-text-tertiary)' }} aria-hidden="true" />
           </div>
-        )}
-        {user ? (
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {user.user_metadata?.full_name || user.email || 'User'}
-            </span>
-            <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--ps-text-secondary)' }}>Pro user</span>
-          </div>
-        ) : (
-          <button type="button" onClick={() => { import('@/lib/auth').then(m => m.signInWithGoogle()) }}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: 700, fontFamily: 'inherit', color: 'var(--ps-text-primary)', padding: 0 }}>
-            Sign In
-          </button>
-        )}
-      </div>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ps-text-primary)' }}>Sign In</span>
+        </button>
+      )}
 
       {/* Divider */}
       <div style={{ height: '1px', background: 'var(--ps-border)', flexShrink: 0 }} />
 
-      {/* Action buttons */}
+      {/* Action buttons — Fix 2: hover on Export, Fix 3: Go Pro always visible for free, Fix 5: chevron on both */}
       <div style={{ padding: '12px 16px', display: 'flex', gap: '8px', flexShrink: 0 }}>
-        {/* Export — secondary when Go Pro visible, primary when alone */}
-        {(() => {
-          const isPrimary = user && proUnlocked
-          return (
-            <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
-              style={{
-                flex: 1, height: '36px',
-                background: isPrimary ? 'var(--ps-text-primary)' : 'transparent',
-                color: isPrimary ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
-                border: isPrimary ? 'none' : '1px solid var(--ps-border-strong)',
-                borderRadius: '100px', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
-                cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                transition: 'transform 100ms ease, opacity 150ms ease-out',
-              }}
-              onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
-              onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
-              onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
-              Export {isPrimary && <ChevronDown size={14} aria-hidden="true" />}
-            </button>
-          )
-        })()}
-        {/* Go Pro — only when not pro */}
+        {/* Export — secondary when Go Pro visible, primary when pro */}
+        <button type="button" onClick={() => hasImage && openExportModal()} disabled={!hasImage}
+          style={{
+            flex: 1, height: '36px',
+            background: proUnlocked ? 'var(--ps-text-primary)' : 'transparent',
+            color: proUnlocked ? 'var(--ps-bg-page)' : 'var(--ps-text-primary)',
+            border: proUnlocked ? 'none' : '1px solid var(--ps-border-strong)',
+            borderRadius: '100px', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
+            cursor: hasImage ? 'pointer' : 'not-allowed', opacity: hasImage ? 1 : 0.35,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+            transition: 'transform 100ms ease, opacity 150ms ease-out',
+          }}
+          onMouseEnter={(e) => { if (hasImage) e.currentTarget.style.opacity = '0.85' }}
+          onMouseDown={(e) => { if (hasImage) e.currentTarget.style.transform = 'scale(0.97)' }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = hasImage ? '1' : '0.35' }}>
+          Export <ChevronDown size={14} aria-hidden="true" />
+        </button>
+        {/* Go Pro — visible for all free users (not just signed-out) */}
         {!proUnlocked && (
           <button type="button" onClick={openUpgradeModal}
             style={{
