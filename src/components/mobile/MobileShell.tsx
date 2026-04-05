@@ -20,7 +20,7 @@ export function MobileShell() {
       <div style={{
         flex: 1, position: 'relative', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: 0, background: '#ffffff',
+        minHeight: 0, background: 'var(--ps-bg-page)',
       }}>
         <Canvas hoveredBackground={null} />
         <MobileControlsSheet activeTab={activeTab} onClose={handleCloseSheet} />

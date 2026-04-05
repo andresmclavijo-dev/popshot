@@ -13,7 +13,7 @@ export const primitive = {
       950: '#141414',
     },
     sand: {
-      50: '#f0ede8',
+      50: '#ffffff',
     },
     green: {
       600: '#16a34a',

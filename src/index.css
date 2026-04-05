@@ -8,9 +8,9 @@
 :root {
   /* ── Popshot Design System Tokens ── */
   /* Text — WCAG AA contrast ratios:
-     #1a1a1a on #f0ede8 → 13.5:1 ✓
-     #5c5c5c on #f0ede8 →  5.0:1 ✓ (min 4.5:1 body)
-     #8a8a8a on #f0ede8 →  3.0:1 ✓ (decorative/large only) */
+     #1a1a1a on #ffffff → 18.1:1 ✓
+     #5c5c5c on #ffffff →  5.9:1 ✓ (min 4.5:1 body)
+     #8a8a8a on #ffffff →  3.5:1 ✓ (decorative/large only) */
   --ps-text-primary: #1a1a1a;
   --ps-text-secondary: #5c5c5c;
   --ps-text-tertiary: #8a8a8a;
@@ -19,9 +19,9 @@
   --ps-text-danger: #dc2626;
 
   /* Backgrounds */
-  --ps-bg-page: #f0ede8;
-  --ps-bg-panel: rgba(255,255,255,0.88);
-  --ps-bg-surface: #ffffff;
+  --ps-bg-page: #ffffff;
+  --ps-bg-panel: #ffffff;
+  --ps-bg-surface: #f7f7f7;
   --ps-bg-hover: rgba(0,0,0,0.04);
   --ps-bg-active: rgba(0,0,0,0.08);
   --ps-bg-dark: rgba(0,0,0,0.85);
@@ -117,9 +117,9 @@
 
 /* ── Dark mode tokens ── */
 .dark {
-  --ps-bg-page: #141414;
-  --ps-bg-panel: rgba(28,28,28,0.92);
-  --ps-bg-surface: #1e1e1e;
+  --ps-bg-page: #111111;
+  --ps-bg-panel: #1a1a1a;
+  --ps-bg-surface: #222222;
   --ps-bg-hover: rgba(255,255,255,0.06);
   --ps-bg-active: rgba(255,255,255,0.10);
   --ps-bg-dark: rgba(0,0,0,0.9);

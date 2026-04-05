@@ -135,8 +135,9 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const canvasStyle: React.CSSProperties = {
     position: 'relative',
     aspectRatio: `${canvasW} / ${canvasH}`,
-    maxWidth: isMobile ? 'calc(100% - 16px)' : 'calc(100% - 64px)',
-    maxHeight: isMobile ? 'calc(100% - 16px)' : 'calc(100% - 56px)',
+    maxWidth: isMobile ? 'calc(100% - 24px)' : 'calc(100% - 64px)',
+    maxHeight: isMobile ? 'calc(100% - 24px)' : 'calc(100% - 56px)',
+    width: isMobile ? '100%' : undefined,
     borderRadius: '8px',
     boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
     overflow: 'hidden',
@@ -188,6 +189,8 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
           transform: zoom !== 1 ? `scale(${zoom})` : undefined,
           transformOrigin: 'center center',
           transition: 'transform 150ms var(--ease-out)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          ...(isMobile ? { width: '100%', height: '100%' } : {}),
         }}
       >
           <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>

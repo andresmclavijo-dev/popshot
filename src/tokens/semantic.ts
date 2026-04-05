@@ -19,9 +19,9 @@ export const semantic = {
       danger: primitive.color.red[600],             // #dc2626  →  --ps-text-danger
     },
     bg: {
-      page: primitive.color.sand[50],               // #f0ede8  →  --ps-bg-page
-      surface: primitive.color.white,               // #ffffff  →  --ps-bg-surface
-      panel: `rgba(255,255,255,${primitive.opacity[88]})`,  //  →  --ps-bg-panel
+      page: primitive.color.sand[50],               // #ffffff  →  --ps-bg-page
+      surface: '#f7f7f7',                           // light gray  →  --ps-bg-surface
+      panel: primitive.color.white,                  // #ffffff  →  --ps-bg-panel
       hover: `rgba(0,0,0,${primitive.opacity[4]})`,         //  →  --ps-bg-hover
       active: `rgba(0,0,0,${primitive.opacity[8]})`,        //  →  --ps-bg-active
       dark: `rgba(0,0,0,${primitive.opacity[85]})`,         //  →  --ps-bg-dark
