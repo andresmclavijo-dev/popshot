@@ -1,25 +1,21 @@
-import { useState } from 'react'
-import { ChevronUp, ChevronDown, Check, Lock } from 'lucide-react'
+import { Check, Lock } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { useEditorStore } from '@/store/useEditorStore'
 import { BACKGROUND_PRESETS, SHADOW_PRESETS } from '@/lib/presets'
 import { extractColorsFromImage } from '@/lib/colorExtract'
 import { openUpgradeModal } from '@/components/shared/UpgradeModal'
-import type { Background, ImagePosition } from '@/types'
+import { openExportModal } from '@/components/shared/ExportModal'
+import { TEMPLATES } from '@/data/templates'
+import type { ImagePosition } from '@/types'
+import type { MobileTab } from './MobileBottomBar'
 
 const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach', 'transparent'])
 const CHECKERBOARD = 'repeating-conic-gradient(#D0D0CE 0% 25%, #F0F0EE 0% 50%) 0 0 / 8px 8px'
 const FREE_SWATCH_COUNT = 6
 const IMAGE_POSITIONS: ImagePosition[] = ['top-left', 'top', 'top-right', 'left', 'center', 'right', 'bottom-left', 'bottom', 'bottom-right']
-const SHADOW_OPTIONS = SHADOW_PRESETS
 
-type Tab = 'background' | 'layout' | 'effects'
-
-export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background | null) => void }) {
-  const [expanded, setExpanded] = useState(false)
-  const [tab, setTab] = useState<Tab>('background')
-
+export function MobileControlsSheet({ activeTab, onClose }: { activeTab: MobileTab | null; onClose: () => void }) {
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const background = useEditorStore((s) => s.background)
   const setBackground = useEditorStore((s) => s.setBackground)
@@ -38,60 +34,74 @@ export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background
   const setImageOffsetY = useEditorStore((s) => s.setImageOffsetY)
   const backgroundImageUrl = useEditorStore((s) => s.backgroundImageUrl)
   const setBackgroundImageUrl = useEditorStore((s) => s.setBackgroundImageUrl)
+  const activeTemplate = useEditorStore((s) => s.activeTemplate)
+  const setActiveTemplate = useEditorStore((s) => s.setActiveTemplate)
 
-  if (!imageUrl) return null
+  // Export tab triggers modal directly
+  if (activeTab === 'export') {
+    if (imageUrl) openExportModal()
+    // Close sheet after triggering
+    setTimeout(() => onClose(), 50)
+    return null
+  }
+
+  if (!activeTab) return null
 
   return (
     <div style={{
       position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20,
-      background: 'var(--ps-bg-panel)',
+      background: 'var(--ps-bg-surface)',
       borderTop: '0.5px solid var(--ps-border)',
-      borderRadius: '20px 20px 0 0',
-      boxShadow: '0 -4px 30px rgba(0,0,0,0.08)',
-      transition: 'max-height 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-      maxHeight: expanded ? '65dvh' : '140px',
-      overflow: 'hidden',
+      borderRadius: '16px 16px 0 0',
+      boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
+      maxHeight: '55dvh',
       display: 'flex', flexDirection: 'column',
-      paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)',
+      overflow: 'hidden',
     }}>
-      {/* Drag handle + toggle */}
-      <button type="button" onClick={() => setExpanded((e) => !e)}
-        aria-label={expanded ? 'Collapse controls' : 'Expand controls'}
-        style={{
-          width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: '10px 0 6px', background: 'transparent', border: 'none', cursor: 'pointer',
-        }}>
-        <div style={{ width: '40px', height: '5px', borderRadius: '100px', background: 'var(--ps-border-strong)' }} />
-        <div style={{ marginTop: '4px', color: 'var(--ps-text-tertiary)' }}>
-          {expanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-        </div>
-      </button>
-
-      {/* Tabs */}
-      <div style={{
-        display: 'flex', gap: '2px', padding: '0 16px 10px',
-        flexShrink: 0,
-      }}>
-        {(['background', 'layout', 'effects'] as Tab[]).map((t) => (
-          <button key={t} type="button" onClick={() => { setTab(t); if (!expanded) setExpanded(true) }}
-            style={{
-              flex: 1, height: '32px', fontSize: '12px', fontWeight: tab === t ? 600 : 400,
-              fontFamily: 'inherit',
-              background: tab === t ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)',
-              color: tab === t ? 'var(--ps-bg-page)' : 'var(--ps-text-secondary)',
-              border: 'none', borderRadius: '100px', cursor: 'pointer',
-              textTransform: 'capitalize',
-            }}>
-            {t}
-          </button>
-        ))}
+      {/* Drag handle */}
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 4px', flexShrink: 0 }}>
+        <div style={{ width: '36px', height: '4px', borderRadius: '100px', background: 'var(--ps-border-strong)' }} />
       </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 16px', WebkitOverflowScrolling: 'touch' as never }}>
-        {tab === 'background' && (
+      {/* Content — scrollable */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 16px', WebkitOverflowScrolling: 'touch' as never }}>
+
+        {/* Templates */}
+        {activeTab === 'templates' && (
           <div>
-            {/* Swatches */}
+            {Array.from(new Set(TEMPLATES.map(t => t.platform))).map((platform) => {
+              const templates = TEMPLATES.filter(t => t.platform === platform)
+              return (
+                <div key={platform} style={{ marginBottom: '14px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ps-text-primary)', display: 'block', marginBottom: '6px' }}>{platform}</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
+                    {templates.map((t) => {
+                      const active = activeTemplate === t.id
+                      return (
+                        <button key={t.id} type="button"
+                          onClick={() => { setActiveTemplate(active ? null : t.id); onClose() }}
+                          aria-pressed={active}
+                          style={{
+                            padding: '10px', borderRadius: '10px',
+                            background: active ? 'var(--ps-bg-hover)' : 'transparent',
+                            border: active ? '1.5px solid var(--ps-text-secondary)' : '1px solid var(--ps-border)',
+                            cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center',
+                          }}>
+                          <span style={{ fontSize: '12px', fontWeight: active ? 600 : 400, color: 'var(--ps-text-primary)', display: 'block' }}>{t.name}</span>
+                          <span style={{ fontSize: '10px', color: 'var(--ps-text-tertiary)' }}>{t.width}×{t.height}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Background */}
+        {activeTab === 'background' && (
+          <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px' }}>
               {BACKGROUND_PRESETS.map((preset, i) => {
                 const active = background.value === preset.background.value && !backgroundImageUrl
@@ -119,7 +129,6 @@ export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background
                 )
               })}
             </div>
-            {/* Match to image */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <label htmlFor="m-match" style={{ fontSize: '13px', color: 'var(--ps-text-secondary)' }}>Match to image</label>
               <Switch id="m-match" checked={autoColor} onCheckedChange={async (checked) => { setAutoColor(checked); if (checked && imageUrl) { try { const bg = await extractColorsFromImage(imageUrl); setBackground(bg) } catch {} } }} size="sm" />
@@ -127,9 +136,9 @@ export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background
           </div>
         )}
 
-        {tab === 'layout' && (
+        {/* Layout */}
+        {activeTab === 'layout' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Padding */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>Padding</span>
@@ -137,7 +146,6 @@ export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background
               </div>
               <Slider value={[padding]} onValueChange={(v) => setPadding(Array.isArray(v) ? v[0] : v)} min={0} max={240} step={4} aria-label="Padding" />
             </div>
-            {/* Corners */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-secondary)' }}>Corners</span>
@@ -145,7 +153,6 @@ export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background
               </div>
               <Slider value={[cornerRadius]} onValueChange={(v) => setCornerRadius(Array.isArray(v) ? v[0] : v)} min={0} max={48} step={2} aria-label="Corner radius" />
             </div>
-            {/* Position */}
             <div>
               <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '8px' }}>Position</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 28px)', gap: '6px', justifyContent: 'center' }}>
@@ -159,12 +166,7 @@ export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background
                       setImageOffsetX(xMap[pos] ?? 0)
                       setImageOffsetY(yMap[pos] ?? 0)
                     }} aria-label={`Position ${pos}`} aria-pressed={active}
-                      style={{
-                        width: '28px', height: '28px', borderRadius: '50%',
-                        border: active ? 'none' : '1px solid var(--ps-border)',
-                        background: active ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)',
-                        cursor: 'pointer',
-                      }} />
+                      style={{ width: '28px', height: '28px', borderRadius: '50%', border: active ? 'none' : '1px solid var(--ps-border)', background: active ? 'var(--ps-text-primary)' : 'var(--ps-bg-hover)', cursor: 'pointer' }} />
                   )
                 })}
               </div>
@@ -172,11 +174,12 @@ export function MobileControlsSheet(_props: { onHoverBackground: (bg: Background
           </div>
         )}
 
-        {tab === 'effects' && (
+        {/* Effects */}
+        {activeTab === 'effects' && (
           <div>
             <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '8px' }}>Shadow</span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-              {SHADOW_OPTIONS.map((opt) => {
+              {SHADOW_PRESETS.map((opt) => {
                 const active = shadow === opt.id
                 const previewShadow = opt.id === 'soft' ? '0 2px 8px rgba(0,0,0,0.12)' : opt.id === 'deep' ? '0 3px 12px rgba(0,0,0,0.3)' : 'none'
                 return (
