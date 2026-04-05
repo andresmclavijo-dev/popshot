@@ -15,7 +15,8 @@ export function MobileBottomBar({ activeTab, onTabChange }: { activeTab: MobileT
     <nav aria-label="Editor controls" style={{
       flexShrink: 0,
       background: 'var(--ps-bg-panel)',
-      borderTop: '0.5px solid var(--ps-border)',
+      borderTop: '1px solid rgba(0,0,0,0.06)',
+      boxShadow: '0 -1px 3px rgba(0,0,0,0.04)',
       paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 6px)',
       paddingTop: '6px',
     }}>

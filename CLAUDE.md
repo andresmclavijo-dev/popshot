@@ -52,7 +52,7 @@ Do not re-state those rules here.
 --color-text-primary: #222222
 --color-text-secondary: #717171
 --color-text-tertiary: #767672
---color-bg-page: #FFFFFF (white canvas)
+--color-bg-page: #F5F5F5 (light gray canvas surface)
 --color-bg-panel: #FFFFFF (pure white)
 --color-border: #EBEBEB
 --color-border-input: #DDDDDD

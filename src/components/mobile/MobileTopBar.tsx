@@ -16,7 +16,8 @@ export function MobileTopBar() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 14px',
         background: 'var(--ps-bg-panel)',
-        borderBottom: '0.5px solid var(--ps-border)',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

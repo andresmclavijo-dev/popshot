@@ -317,8 +317,8 @@ export function RightPanel({ onHoverBackground }: { onHoverBackground: (bg: Back
       width: `${PANEL_WIDTH}px`, flexShrink: 0,
       height: '100%', borderRadius: '16px',
       background: 'var(--ps-bg-panel)',
-      backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-      border: '0.5px solid var(--ps-border-panel)',
+      border: '1px solid rgba(0,0,0,0.06)',
+      boxShadow: '-1px 0 3px rgba(0,0,0,0.04)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 10,
     }}>
       {/* User row — Fix 1: hover on Sign In, Fix 4: tighter spacing + dropdown for pro */}

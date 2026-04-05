@@ -135,10 +135,13 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const canvasStyle: React.CSSProperties = {
     position: 'relative',
     aspectRatio: `${canvasW} / ${canvasH}`,
-    maxWidth: isMobile ? 'calc(100% - 24px)' : 'calc(100% - 64px)',
-    maxHeight: isMobile ? 'calc(100% - 24px)' : 'calc(100% - 56px)',
-    width: isMobile ? '100%' : undefined,
-    borderRadius: '8px',
+    // Mobile: use aggressive constraints so canvas fills most of viewport
+    maxWidth: isMobile ? 'calc(100vw - 32px)' : 'calc(100% - 64px)',
+    maxHeight: isMobile ? 'calc(100dvh - 140px)' : 'calc(100% - 56px)',
+    // Let the browser pick width or height as constraint based on aspect ratio
+    width: 'auto',
+    height: 'auto',
+    borderRadius: isMobile ? '12px' : '8px',
     boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
     overflow: 'hidden',
     background: isImageBg ? 'transparent' : isTransparentBg ? 'transparent' : displayBg.value,
@@ -186,11 +189,9 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
       {/* Canvas with zoom — only export content inside */}
       <div
         style={{
-          transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+          transform: (zoom !== 1 && !isMobile) ? `scale(${zoom})` : undefined,
           transformOrigin: 'center center',
           transition: 'transform 150ms var(--ease-out)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          ...(isMobile ? { width: '100%', height: '100%' } : {}),
         }}
       >
           <div key={popKey} id="export-canvas" ref={canvasRef} style={canvasStyle}>
