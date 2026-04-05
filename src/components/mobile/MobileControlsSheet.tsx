@@ -1,4 +1,6 @@
+import { useState, useCallback } from 'react'
 import { Check, Lock } from 'lucide-react'
+import { HexColorPicker } from 'react-colorful'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { useEditorStore } from '@/store/useEditorStore'
@@ -9,6 +11,41 @@ import { openExportModal } from '@/components/shared/ExportModal'
 import { TEMPLATES } from '@/data/templates'
 import type { ImagePosition } from '@/types'
 import type { MobileTab } from './MobileBottomBar'
+
+// ── Mobile color picker — swatch + hex input + inline picker ──
+function MobileColorPicker({ value, onChange }: { value: string; onChange: (hex: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [hexDraft, setHexDraft] = useState(value.replace('#', '').toUpperCase())
+
+  const handlePickerChange = useCallback((hex: string) => {
+    onChange(hex)
+    setHexDraft(hex.replace('#', '').toUpperCase())
+  }, [onChange])
+
+  return (
+    <div style={{ marginBottom: '4px' }}>
+      <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--ps-text-secondary)', display: 'block', marginBottom: '6px' }}>Custom color</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-label="Open color picker"
+          style={{ width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0, background: value, border: '1px solid var(--ps-border)', cursor: 'pointer' }} />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '4px', height: '36px', padding: '0 10px', borderRadius: '10px', background: 'var(--ps-bg-surface)', border: '1px solid var(--ps-border)' }}>
+          <span style={{ fontSize: '12px', color: 'var(--ps-text-tertiary)', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>#</span>
+          <input value={hexDraft}
+            onChange={(e) => { const c = e.target.value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6); setHexDraft(c.toUpperCase()); if (c.length === 6) onChange('#' + c) }}
+            onBlur={() => { if (hexDraft.length === 6) onChange('#' + hexDraft); else setHexDraft(value.replace('#', '').toUpperCase()) }}
+            onKeyDown={(e) => { e.stopPropagation(); if (e.key === 'Enter') { if (hexDraft.length === 6) onChange('#' + hexDraft); (e.target as HTMLInputElement).blur() } }}
+            maxLength={6} aria-label="Hex color value"
+            style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', fontSize: '13px', fontWeight: 500, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', color: 'var(--ps-text-primary)', textTransform: 'uppercase' }} />
+        </div>
+      </div>
+      {open && (
+        <div style={{ marginTop: '8px', borderRadius: '12px', overflow: 'hidden' }} className="custom-color-picker">
+          <HexColorPicker color={value} onChange={handlePickerChange} />
+        </div>
+      )}
+    </div>
+  )
+}
 
 const LIGHT_SWATCHES = new Set(['pure-white', 'soft-gray', 'peach', 'transparent'])
 const CHECKERBOARD = 'repeating-conic-gradient(#D0D0CE 0% 25%, #F0F0EE 0% 50%) 0 0 / 8px 8px'
@@ -129,7 +166,17 @@ export function MobileControlsSheet({ activeTab, onClose }: { activeTab: MobileT
                 )
               })}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            {/* Custom color */}
+            <MobileColorPicker
+              value={background.type === 'solid' ? background.value : '#ffffff'}
+              onChange={(hex) => {
+                setBackground({ type: 'solid', value: hex })
+                if (backgroundImageUrl) setBackgroundImageUrl(null)
+                if (autoColor) setAutoColor(false)
+              }}
+            />
+            {/* Match to image */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px' }}>
               <label htmlFor="m-match" style={{ fontSize: '13px', color: 'var(--ps-text-secondary)' }}>Match to image</label>
               <Switch id="m-match" checked={autoColor} onCheckedChange={async (checked) => { setAutoColor(checked); if (checked && imageUrl) { try { const bg = await extractColorsFromImage(imageUrl); setBackground(bg) } catch {} } }} size="sm" />
             </div>

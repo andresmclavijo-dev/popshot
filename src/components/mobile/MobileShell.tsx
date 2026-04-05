@@ -16,11 +16,11 @@ export function MobileShell() {
     }}>
       <MobileTopBar />
 
-      {/* Canvas area — fills space between top bar and bottom bar */}
+      {/* Canvas area — fills space between top bar and bottom bar, white bg */}
       <div style={{
         flex: 1, position: 'relative', overflow: 'hidden',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: 0, padding: '8px',
+        minHeight: 0, background: '#ffffff',
       }}>
         <Canvas hoveredBackground={null} />
         <MobileControlsSheet activeTab={activeTab} onClose={handleCloseSheet} />

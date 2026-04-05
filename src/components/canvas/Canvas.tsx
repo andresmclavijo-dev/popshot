@@ -7,6 +7,7 @@ import { DropZone } from './DropZone'
 import { FrameOverlay, getFrameTopPadding, getFrameRadius } from './FrameOverlay'
 import { CanvasLoading } from './CanvasLoading'
 import { useImageUpload } from '@/hooks/useImageUpload'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { useZoom } from '@/hooks/useZoom'
 import type { Background, WatermarkPosition } from '@/types'
 
@@ -27,6 +28,7 @@ function wmPositionStyle(pos: WatermarkPosition): React.CSSProperties {
 }
 
 export function Canvas({ hoveredBackground }: { hoveredBackground: Background | null }) {
+  const isMobile = useIsMobile()
   const imageUrl = useEditorStore((s) => s.imageUrl)
   const background = useEditorStore((s) => s.background)
   const padding = useEditorStore((s) => s.padding)
@@ -133,8 +135,8 @@ export function Canvas({ hoveredBackground }: { hoveredBackground: Background | 
   const canvasStyle: React.CSSProperties = {
     position: 'relative',
     aspectRatio: `${canvasW} / ${canvasH}`,
-    maxWidth: 'calc(100% - 64px)',
-    maxHeight: 'calc(100% - 56px)',
+    maxWidth: isMobile ? 'calc(100% - 16px)' : 'calc(100% - 64px)',
+    maxHeight: isMobile ? 'calc(100% - 16px)' : 'calc(100% - 56px)',
     borderRadius: '8px',
     boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)',
     overflow: 'hidden',
